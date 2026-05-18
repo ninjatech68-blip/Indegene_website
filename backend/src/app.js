@@ -50,7 +50,25 @@ app.use(helmet({
 }));
 app.use(compression());
 app.use(cors({
-  origin: [env.FRONTEND_URL, env.APP_URL],
+  origin(origin, callback) {
+    if (!origin) {
+      return callback(null, true);
+    }
+    const allowedOrigins = [env.FRONTEND_URL, env.APP_URL];
+    if (allowedOrigins.includes(origin)) {
+      return callback(null, true);
+    }
+    try {
+      const parsed = new URL(origin);
+      const host = parsed.hostname.toLowerCase();
+      if (host.endsWith('.netlify.app') || host.endsWith('.onrender.com')) {
+        return callback(null, true);
+      }
+    } catch (error) {
+      // Ignore malformed origin; reject below.
+    }
+    return callback(new Error('CORS origin not allowed'), false);
+  },
   credentials: true
 }));
 app.use(morgan(isProduction ? 'combined' : 'dev'));

@@ -445,7 +445,10 @@
         if (!window.OCOCMS || typeof window.OCOCMS.postForm !== 'function') {
           return Promise.reject(new Error('The contact form service is not configured on this deployment.'));
         }
-        return window.OCOCMS.postForm('/contact', payload).catch(function () {
+        return window.OCOCMS.postForm('/contact', payload).catch(function (error) {
+          if (error && error.message) {
+            throw error;
+          }
           throw new Error('The contact form service is not connected on this deployment. Please connect the backend API or use the full contact page.');
         });
       },
