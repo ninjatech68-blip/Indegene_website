@@ -12,6 +12,7 @@
   --brand-primary:      #004e9d;
   --brand-primary-deep: #00336a;
   --brand-accent:       #ed0977;
+  --brand-accent-strong:#c40562;
   --ink:                #0b1220;
   --ink-70:             rgba(11,18,32,0.70);
   --ink-50:             rgba(11,18,32,0.50);
@@ -114,13 +115,13 @@ input:focus-visible {
   font-weight: 700;
   letter-spacing: 0.16em;
   text-transform: uppercase;
-  color: var(--brand-accent);
+  color: var(--brand-accent-strong);
   margin-bottom: 14px;
 }
 .oco-overline::before {
   content: "";
   width: 24px; height: 2px;
-  background: var(--brand-accent);
+  background: var(--brand-accent-strong);
   flex-shrink: 0;
 }
 
@@ -2688,13 +2689,15 @@ html {
 }
 .oco-footer__brand img {
   height: 38px;
+  width: auto !important;
+  max-width: none;
   margin-bottom: 18px;
   /* invert white logo */
   filter: brightness(0) invert(1);
 }
 .oco-footer__brand p {
   font-size: 13.5px;
-  color: rgba(255,255,255,0.42);
+  color: rgba(255,255,255,0.62);
   max-width: 260px;
   line-height: 1.7;
   margin: 0 0 20px;
@@ -2724,7 +2727,7 @@ html {
   font-weight: 700;
   letter-spacing: 0.12em;
   text-transform: uppercase;
-  color: rgba(255,255,255,0.36);
+  color: rgba(255,255,255,0.72);
   line-height: 1.2;
   margin-top: 0;
   margin-bottom: 20px;
@@ -2754,14 +2757,14 @@ html {
 .oco-footer__bottom p {
   margin: 0;
   font-size: 12.5px;
-  color: rgba(255,255,255,0.32);
+  color: rgba(255,255,255,0.62);
 }
 .oco-footer__backtop {
   display: inline-flex;
   align-items: center;
   gap: 6px;
   font-size: 12.5px;
-  color: rgba(255,255,255,0.38);
+  color: rgba(255,255,255,0.66);
   transition: color 160ms ease;
 }
 .oco-footer__backtop:hover { color: #fff; }
@@ -4528,7 +4531,7 @@ html {
 .oco-contact-section__sub {
   font-size: 1rem;
   font-weight: 600;
-  color: var(--brand-accent);
+  color: var(--brand-accent-strong);
   letter-spacing: 0.04em;
 }
 
@@ -6519,6 +6522,10 @@ textarea.oco-form-control { resize: vertical; }
   color: var(--ink);
 }
 
+.oco-contact-detail__label {
+  color: var(--ink-70);
+}
+
 .oco-link-arrow {
   font-weight: 700;
 }
@@ -6756,7 +6763,7 @@ textarea.oco-form-control { resize: vertical; }
 }
 
 .oco-cap-stage--capability-proof .oco-cap-stage__card-label {
-  color: var(--ink-50);
+  color: var(--ink-70);
 }
 
 .oco-cap-stage--capability-proof .oco-proof-column {

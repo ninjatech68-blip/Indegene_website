@@ -6,10 +6,21 @@ const ADMIN_EMAIL = process.env.DEFAULT_ADMIN_EMAIL || 'admin@local.test';
 const ADMIN_PASSWORD = process.env.DEFAULT_ADMIN_PASSWORD || 'LocalStrongPass123!';
 
 async function loginAdmin(page) {
-  await page.goto(`${ADMIN_BASE_URL}/admin/login`, { waitUntil: 'domcontentloaded' });
-  await page.getByTestId('admin-email').fill(ADMIN_EMAIL);
-  await page.getByTestId('admin-password').fill(ADMIN_PASSWORD);
-  await page.getByTestId('admin-signin').click();
+  await page.goto(`${ADMIN_BASE_URL}/admin/login`, { waitUntil: 'networkidle' });
+  await expect(page).toHaveURL(/\/admin(?:\/login)?(?:\?|$)/);
+
+  if (!/\/admin\/login(?:\?|$)/.test(page.url())) {
+    return;
+  }
+
+  const emailField = page.locator('[data-testid="admin-email"], #email').first();
+  const passwordField = page.locator('[data-testid="admin-password"], #password').first();
+  const submitButton = page.locator('[data-testid="admin-signin"], button[type="submit"]').first();
+
+  await emailField.waitFor({ state: 'visible', timeout: 20_000 });
+  await emailField.fill(ADMIN_EMAIL);
+  await passwordField.fill(ADMIN_PASSWORD);
+  await submitButton.click();
   await expect(page).toHaveURL(/\/admin(\/|$)/);
 }
 

@@ -6,10 +6,10 @@ const TARGET_PAGES = ['index.html', 'services.html', 'genai.html', 'contactus.ht
 
 test.describe('Accessibility audit (axe)', () => {
   for (const pageName of TARGET_PAGES) {
-    test(`no critical violations on ${pageName}`, async ({ page }) => {
+    test(`no serious or critical violations on ${pageName}`, async ({ page }) => {
       await page.goto(`${FRONTEND_BASE_URL}/${pageName}`, { waitUntil: 'networkidle' });
       const results = await new AxeBuilder({ page }).analyze();
-      const blocking = results.violations.filter((item) => item.impact === 'critical');
+      const blocking = results.violations.filter((item) => item.impact === 'critical' || item.impact === 'serious');
 
       expect(
         blocking,
