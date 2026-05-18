@@ -27,6 +27,11 @@
       return 'http://localhost:4000/api/public';
     }
 
+    // Netlify review deployments should default to the hosted backend API.
+    if (/\.netlify\.app$/i.test(window.location.hostname)) {
+      return 'https://indegene-backend.onrender.com/api/public';
+    }
+
     if (window.location.protocol.indexOf('http') === 0) {
       return window.location.origin.replace(/\/$/, '') + '/api/public';
     }
