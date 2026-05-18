@@ -1,0 +1,34 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <%- include('partials/head') %>
+</head>
+<body>
+  <main class="admin-login">
+    <form class="admin-card admin-panel admin-login__card" method="post" action="/admin/login">
+      <input type="hidden" name="_csrf" value="<%= csrfToken %>">
+      <input type="hidden" name="next" value="<%= typeof next === 'string' ? next : '' %>">
+      <p class="admin-eyebrow">OCO CMS</p>
+      <h1 class="admin-login__title">Admin sign in</h1>
+      <p class="admin-login__copy">Access a single workspace to manage homepage sections, services, case studies, resources, client proof points, and inbound form activity.</p>
+
+      <% if (typeof error !== 'undefined' && error) { %>
+        <div class="admin-login__error"><%= error %></div>
+      <% } %>
+
+      <div class="admin-form admin-form--spaced">
+        <div>
+          <label for="email">Email</label>
+          <input class="admin-input" id="email" type="email" name="email" required autocomplete="username">
+        </div>
+        <div>
+          <label for="password">Password</label>
+          <input class="admin-input" id="password" type="password" name="password" required autocomplete="current-password">
+        </div>
+        <button class="admin-btn" type="submit">Sign in <i class="bi bi-arrow-right"></i></button>
+      </div>
+    </form>
+  </main>
+  <script src="/admin-assets/admin.js" defer></script>
+</body>
+</html>

@@ -1,0 +1,619 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <%- include('partials/head') %>
+</head>
+<body>
+  <div class="admin-shell">
+    <%- include('partials/sidebar', { collections, activeCollectionKey, currentUser }) %>
+
+    <main class="admin-main">
+      <div class="admin-topbar">
+        <div>
+          <p class="admin-eyebrow"><%= collection.label %></p>
+          <h1 class="admin-title"><%= title %></h1>
+          <p class="admin-subtitle"><%= collection.description %></p>
+        </div>
+        <div class="admin-actions">
+          <a class="admin-btn-secondary" href="/admin/<%= collectionKey %>">Back to collection</a>
+        </div>
+      </div>
+
+      <%- include('partials/notice', { notice }) %>
+
+      <div class="admin-card admin-panel">
+        <div class="admin-page-actions admin-page-actions--spaced">
+          <div>
+            <h2 class="admin-section-title admin-section-title--tight">Record details</h2>
+            <p class="admin-section-copy">Update the live website content below. Editors are tailored to the frontend layout so non-technical teams can work in plain language instead of implementation detail.</p>
+          </div>
+          <% if (readOnly && collectionKey === 'formSubmissions') { %>
+            <div class="admin-actions">
+              <% if (item.meta?.status === 'READ' || item.meta?.read) { %>
+                <form method="post" action="/admin/formSubmissions/<%= item.id %>/unread">
+                  <input type="hidden" name="_csrf" value="<%= csrfToken %>">
+                  <button class="admin-btn-secondary" type="submit">Mark unread</button>
+                </form>
+              <% } else { %>
+                <form method="post" action="/admin/formSubmissions/<%= item.id %>/read">
+                  <input type="hidden" name="_csrf" value="<%= csrfToken %>">
+                  <button class="admin-btn" type="submit">Mark read</button>
+                </form>
+              <% } %>
+            </div>
+          <% } %>
+        </div>
+
+        <% if (readOnly) { %>
+          <div class="admin-form__grid">
+            <% collection.fields.forEach((field) => { %>
+              <div class="<%= ['message'].includes(field) ? 'admin-form__field--full' : '' %>">
+                <label><%= field %></label>
+                <div class="admin-card admin-panel admin-panel--compact">
+                  <%= serializeFieldValue(field, item[field]) || '—' %>
+                </div>
+              </div>
+            <% }) %>
+            <div class="admin-form__field--full">
+              <label>status</label>
+              <div class="admin-card admin-panel admin-panel--compact">
+                <%= (item.meta?.status === 'READ' || item.meta?.read) ? 'READ' : 'UNREAD' %>
+              </div>
+            </div>
+          </div>
+        <% } else if (collectionKey === 'pages') { %>
+          <form class="admin-form" method="post" action="<%= item.id ? `/admin/${collectionKey}/${item.id}` : `/admin/${collectionKey}` %>">
+            <input type="hidden" name="_csrf" value="<%= csrfToken %>">
+
+            <% (editorState?.pageGroups || []).forEach((group) => { %>
+              <section class="admin-editor-group">
+                <div class="admin-editor-group__head">
+                  <div>
+                    <h3 class="admin-section-title admin-section-title--tight"><%= group.title %></h3>
+                    <p class="admin-section-copy"><%= group.copy %></p>
+                  </div>
+                </div>
+                <div class="admin-form__grid">
+                  <% group.fields.forEach((field) => { %>
+                    <div class="<%= field.full ? 'admin-form__field--full' : '' %>">
+                      <label for="<%= field.name %>"><%= field.label %></label>
+                      <% if (field.type === 'textarea') { %>
+                        <textarea class="admin-textarea" id="<%= field.name %>" name="<%= field.name %>" placeholder="<%= field.placeholder || '' %>" <%= field.readOnly ? 'readonly' : '' %>><%= field.value %></textarea>
+                      <% } else if (field.type === 'select' && (field.choices || []).length) { %>
+                        <select class="admin-select" id="<%= field.name %>" name="<%= field.name %>" <%= field.readOnly ? 'disabled' : '' %>>
+                          <option value="">Select an option</option>
+                          <% (field.choices || []).forEach((choice) => { %>
+                            <option value="<%= choice.value %>" <%= String(choice.value) === String(field.value ?? '') ? 'selected' : '' %>><%= choice.label %></option>
+                          <% }) %>
+                        </select>
+                        <% if (field.readOnly) { %>
+                          <input type="hidden" name="<%= field.name %>" value="<%= field.value %>">
+                        <% } %>
+                      <% } else if (field.type === 'select') { %>
+                        <input class="admin-input" id="<%= field.name %>" type="text" name="<%= field.name %>" value="<%= field.value %>" placeholder="<%= field.placeholder || '' %>" <%= field.readOnly ? 'readonly' : '' %>>
+                      <% } else { %>
+                        <input class="admin-input" id="<%= field.name %>" type="<%= field.type %>" name="<%= field.name %>" value="<%= field.value %>" placeholder="<%= field.placeholder || '' %>" <%= field.readOnly ? 'readonly' : '' %>>
+                      <% } %>
+                      <% if (field.help) { %>
+                        <div class="admin-field-help"><%= field.help %></div>
+                      <% } %>
+                    </div>
+                  <% }) %>
+                </div>
+              </section>
+            <% }) %>
+
+            <% (editorState?.sections || []).forEach((section) => { %>
+              <section class="admin-editor-group">
+                <div class="admin-editor-group__head">
+                  <div>
+                    <h3 class="admin-section-title admin-section-title--tight"><%= section.sectionLabel %></h3>
+                    <p class="admin-section-copy">These fields control the live section rendered on the page. Changes here update the frontend immediately without exposing internal section wiring.</p>
+                  </div>
+                </div>
+                <% section.groups.forEach((group) => { %>
+                  <div class="admin-editor-subgroup">
+                    <div class="admin-editor-subgroup__head">
+                      <h4 class="admin-subgroup-title"><%= group.title %></h4>
+                      <p class="admin-section-copy"><%= group.copy %></p>
+                    </div>
+                    <% if ((group.fields || []).length) { %>
+                    <div class="admin-form__grid">
+                      <% (group.fields || []).forEach((field) => { 
+                        const fieldName = `section__${section.id}__${field.name}`;
+                        const fieldId = `section-${section.id}-${field.name}`;
+                      %>
+                        <div class="<%= field.full ? 'admin-form__field--full' : '' %>">
+                          <label for="<%= fieldId %>"><%= field.label %></label>
+                          <% if (field.type === 'textarea') { %>
+                            <textarea class="admin-textarea" id="<%= fieldId %>" name="<%= fieldName %>" placeholder="<%= field.placeholder || '' %>" <%= field.readOnly ? 'readonly' : '' %>><%= field.value %></textarea>
+                          <% } else if (field.type === 'select' && (field.choices || []).length) { %>
+                            <select class="admin-select" id="<%= fieldId %>" name="<%= fieldName %>" <%= field.readOnly ? 'disabled' : '' %>>
+                              <option value="">Select an option</option>
+                              <% (field.choices || []).forEach((choice) => { %>
+                                <option value="<%= choice.value %>" <%= String(choice.value) === String(field.value ?? '') ? 'selected' : '' %>><%= choice.label %></option>
+                              <% }) %>
+                            </select>
+                            <% if (field.readOnly) { %>
+                              <input type="hidden" name="<%= fieldName %>" value="<%= field.value %>">
+                            <% } %>
+                          <% } else if (field.type === 'select') { %>
+                            <input class="admin-input" id="<%= fieldId %>" type="text" name="<%= fieldName %>" value="<%= field.value %>" placeholder="<%= field.placeholder || '' %>" <%= field.readOnly ? 'readonly' : '' %>>
+                          <% } else { %>
+                            <input class="admin-input" id="<%= fieldId %>" type="<%= field.type %>" name="<%= fieldName %>" value="<%= field.value %>" placeholder="<%= field.placeholder || '' %>" <%= field.readOnly ? 'readonly' : '' %>>
+                          <% } %>
+                          <% if (field.help) { %>
+                            <div class="admin-field-help"><%= field.help %></div>
+                        <% } %>
+                      </div>
+                      <% }) %>
+                    </div>
+                    <% } %>
+                  </div>
+                <% }) %>
+              </section>
+            <% }) %>
+
+            <div class="admin-page-actions admin-page-actions--stack-gap">
+              <div class="admin-actions">
+                <button class="admin-btn" type="submit">Save changes</button>
+                <a class="admin-btn-secondary" href="/admin/<%= collectionKey %>">Cancel</a>
+              </div>
+            </div>
+          </form>
+          <% if (item.id) { %>
+            <div class="admin-page-actions admin-page-actions--stack-gap">
+              <form method="post" action="/admin/<%= collectionKey %>/<%= item.id %>/delete">
+                <input type="hidden" name="_csrf" value="<%= csrfToken %>">
+                <button class="admin-btn-danger" type="submit" data-confirm="Delete this record permanently?">Delete record</button>
+              </form>
+            </div>
+          <% } %>
+        <% } else if (collectionKey === 'caseStudies') { %>
+          <form class="admin-form" method="post" action="<%= item.id ? `/admin/${collectionKey}/${item.id}` : `/admin/${collectionKey}` %>">
+            <input type="hidden" name="_csrf" value="<%= csrfToken %>">
+
+            <section class="admin-editor-group">
+              <div class="admin-editor-group__head">
+                <div>
+                  <h3 class="admin-section-title admin-section-title--tight">Core record</h3>
+                  <p class="admin-section-copy">Manage the core case study metadata used in listing pages, search, and page hydration.</p>
+                </div>
+                <% if (editorState?.previewUrl) { %>
+                  <div class="admin-actions">
+                    <a class="admin-btn-secondary" href="/<%= editorState.previewUrl %>" target="_blank" rel="noreferrer">Open live page</a>
+                  </div>
+                <% } %>
+              </div>
+              <div class="admin-form__grid">
+                <% ['slug', 'title', 'excerpt', 'status', 'publishedAt', 'isFeatured'].forEach((field) => { 
+                  const fieldType = getFieldType(field);
+                  const choices = getFieldChoices(field, fieldOptions);
+                  const isFull = ['excerpt'].includes(field);
+                %>
+                  <div class="<%= isFull ? 'admin-form__field--full' : '' %>">
+                    <label for="<%= field %>"><%= humanizeField(field) %></label>
+                    <% if (fieldType === 'textarea') { %>
+                      <textarea class="admin-textarea" id="<%= field %>" name="<%= field %>"><%= serializeFieldValue(field, item[field]) %></textarea>
+                    <% } else if (fieldType === 'select' && choices.length) { %>
+                      <select class="admin-select" id="<%= field %>" name="<%= field %>">
+                        <option value="">Select an option</option>
+                        <% choices.forEach((choice) => { %>
+                          <option value="<%= choice.value %>" <%= String(choice.value) === String(item[field] ?? '') ? 'selected' : '' %>><%= choice.label %></option>
+                        <% }) %>
+                      </select>
+                    <% } else if (fieldType === 'select') { %>
+                      <input class="admin-input" id="<%= field %>" type="text" name="<%= field %>" value="<%= serializeFieldValue(field, item[field]) %>">
+                    <% } else { %>
+                      <input class="admin-input" id="<%= field %>" type="<%= fieldType %>" name="<%= field %>" value="<%= serializeFieldValue(field, item[field]) %>">
+                    <% } %>
+                    <% if (collection.fieldHelp && collection.fieldHelp[field]) { %>
+                      <div class="admin-field-help"><%= collection.fieldHelp[field] %></div>
+                    <% } %>
+                  </div>
+                <% }) %>
+                <div>
+                  <label for="editorFeaturedImageId">Featured media</label>
+                  <select class="admin-select" id="editorFeaturedImageId" name="editorFeaturedImageId">
+                    <option value="">No featured media</option>
+                    <% (fieldOptions.featuredImageId || []).forEach((choice) => { %>
+                      <option value="<%= choice.value %>" <%= String(choice.value) === String(editorState?.featuredImageId || '') ? 'selected' : '' %>><%= choice.label %></option>
+                    <% }) %>
+                  </select>
+                  <div class="admin-field-help">Use the media library when this case study needs an explicit featured asset for cards or APIs.</div>
+                </div>
+                <div class="admin-form__field--full">
+                  <label>Tags</label>
+                  <div class="admin-check-grid">
+                    <% (fieldOptions.caseStudyTags || []).forEach((choice) => { %>
+                      <label class="admin-check-item">
+                        <input type="checkbox" name="editorSelectedTagIds" value="<%= choice.value %>" <%= (editorState?.selectedTagIds || []).includes(choice.value) ? 'checked' : '' %>>
+                        <span><%= choice.label %></span>
+                      </label>
+                    <% }) %>
+                  </div>
+                  <div class="admin-field-help">Select the tags that should be associated with this case study.</div>
+                </div>
+                <div class="admin-form__field--full">
+                  <label for="editorNewTags">Add new tags</label>
+                  <input class="admin-input" id="editorNewTags" name="editorNewTags" type="text" placeholder="Add comma-separated tags only when needed">
+                  <div class="admin-field-help">Use this only when a suitable tag does not already exist.</div>
+                </div>
+              </div>
+            </section>
+
+            <section class="admin-editor-group">
+              <div class="admin-editor-group__head">
+                <div>
+                  <h3 class="admin-section-title admin-section-title--tight">Website placement</h3>
+                  <p class="admin-section-copy">Choose the website page connected to this story and select the related stories that should appear alongside it.</p>
+                </div>
+              </div>
+              <div class="admin-form__grid">
+                <div>
+                  <label for="editorPageFile">Connected website page</label>
+                  <select class="admin-select" id="editorPageFile" name="editorPageFile">
+                    <option value="">Select a case study page</option>
+                    <% (fieldOptions.caseStudyPageFiles || []).forEach((choice) => { %>
+                      <option value="<%= choice.value %>" <%= String(choice.value) === String(editorState?.pageFile || '') ? 'selected' : '' %>><%= choice.label %></option>
+                    <% }) %>
+                  </select>
+                  <div class="admin-field-help">This keeps the story linked to the correct case study page in the website package.</div>
+                </div>
+                <div>
+                  <label for="editorOriginalSourceUrl">Reference source URL</label>
+                  <input class="admin-input" id="editorOriginalSourceUrl" name="editorOriginalSourceUrl" type="url" value="<%= editorState?.originalSourceUrl || '' %>">
+                  <div class="admin-field-help">Optional reference only. Keep this when the story originated from another system.</div>
+                </div>
+                <div class="admin-form__field--full">
+                  <label>Related stories</label>
+                  <div class="admin-check-grid admin-check-grid--two">
+                    <% (fieldOptions.relatedCaseStudies || []).forEach((choice) => { %>
+                      <% if (choice.value !== item.slug) { %>
+                        <label class="admin-check-item">
+                          <input type="checkbox" name="editorRelatedSlugs" value="<%= choice.value %>" <%= (editorState?.relatedSlugs || []).includes(choice.value) ? 'checked' : '' %>>
+                          <span><%= choice.label %></span>
+                        </label>
+                      <% } %>
+                    <% }) %>
+                  </div>
+                  <div class="admin-field-help">Selected stories appear as related proof on the case study detail page.</div>
+                </div>
+              </div>
+            </section>
+
+            <section class="admin-editor-group">
+              <div class="admin-editor-group__head">
+                <div>
+                  <h3 class="admin-section-title admin-section-title--tight">Case study content blocks</h3>
+                  <p class="admin-section-copy">The live page is assembled from these fields. Edit headings, body copy, media, and outcome metrics without touching code.</p>
+                </div>
+              </div>
+              <div class="admin-form__grid">
+                <div class="admin-form__field--full">
+                  <label for="editorHeroImageUrl">Hero image URL</label>
+                  <input class="admin-input" id="editorHeroImageUrl" name="editorHeroImageUrl" type="url" value="<%= editorState?.heroImageUrl || '' %>">
+                </div>
+                <div class="admin-form__field--full">
+                  <label for="editorHeroImageAlt">Hero image alt text</label>
+                  <input class="admin-input" id="editorHeroImageAlt" name="editorHeroImageAlt" type="text" value="<%= editorState?.heroImageAlt || '' %>">
+                </div>
+                <% (editorState?.sections || []).forEach((section, index) => { %>
+                  <div>
+                    <label for="editorSection<%= index + 1 %>Heading">Section <%= index + 1 %> heading</label>
+                    <input class="admin-input" id="editorSection<%= index + 1 %>Heading" name="editorSection<%= index + 1 %>Heading" type="text" value="<%= section.heading || '' %>">
+                  </div>
+                  <div class="admin-form__field--full">
+                    <label for="editorSection<%= index + 1 %>Body">Section <%= index + 1 %> body</label>
+                    <textarea class="admin-textarea" id="editorSection<%= index + 1 %>Body" name="editorSection<%= index + 1 %>Body"><%= section.body || '' %></textarea>
+                    <% if (index === 0) { %>
+                      <div class="admin-field-help">Use paragraph breaks to separate ideas. The site template will keep the existing article styling.</div>
+                    <% } %>
+                  </div>
+                <% }) %>
+              </div>
+            </section>
+
+            <section class="admin-editor-group">
+              <div class="admin-editor-group__head">
+                <div>
+                  <h3 class="admin-section-title admin-section-title--tight">Outcomes and proof points</h3>
+                  <p class="admin-section-copy">Manage the case study outcome heading, supporting summary, and stat cards shown on the detail page.</p>
+                </div>
+              </div>
+              <div class="admin-form__grid">
+                <div>
+                  <label for="editorOutcomesTitle">Outcomes heading</label>
+                  <input class="admin-input" id="editorOutcomesTitle" name="editorOutcomesTitle" type="text" value="<%= editorState?.outcomesTitle || '' %>">
+                </div>
+                <div class="admin-form__field--full">
+                  <label for="editorOutcomesIntro">Outcomes summary</label>
+                  <textarea class="admin-textarea" id="editorOutcomesIntro" name="editorOutcomesIntro"><%= editorState?.outcomesIntro || '' %></textarea>
+                </div>
+                <% (editorState?.outcomeStats || []).forEach((stat, index) => { %>
+                  <div>
+                    <label for="editorOutcome<%= index + 1 %>Value">Metric <%= index + 1 %> value</label>
+                    <input class="admin-input" id="editorOutcome<%= index + 1 %>Value" name="editorOutcome<%= index + 1 %>Value" type="text" value="<%= stat.value || '' %>">
+                  </div>
+                  <div>
+                    <label for="editorOutcome<%= index + 1 %>Label">Metric <%= index + 1 %> label</label>
+                    <input class="admin-input" id="editorOutcome<%= index + 1 %>Label" name="editorOutcome<%= index + 1 %>Label" type="text" value="<%= stat.label || '' %>">
+                  </div>
+                <% }) %>
+              </div>
+            </section>
+
+            <section class="admin-editor-group">
+              <div class="admin-editor-group__head">
+                <div>
+                  <h3 class="admin-section-title admin-section-title--tight">Supporting visual</h3>
+                  <p class="admin-section-copy">Optional supporting visual shown after the outcomes block.</p>
+                </div>
+              </div>
+              <div class="admin-form__grid">
+                <div class="admin-form__field--full">
+                  <label for="editorSupportingImageUrl">Supporting image URL</label>
+                  <input class="admin-input" id="editorSupportingImageUrl" name="editorSupportingImageUrl" type="url" value="<%= editorState?.supportingImageUrl || '' %>">
+                </div>
+                <div class="admin-form__field--full">
+                  <label for="editorSupportingImageAlt">Supporting image alt text</label>
+                  <input class="admin-input" id="editorSupportingImageAlt" name="editorSupportingImageAlt" type="text" value="<%= editorState?.supportingImageAlt || '' %>">
+                </div>
+              </div>
+            </section>
+
+            <section class="admin-editor-group">
+              <div class="admin-editor-group__head">
+                <div>
+                  <h3 class="admin-section-title admin-section-title--tight">SEO fields</h3>
+                  <p class="admin-section-copy">Use these fields when you want search-facing titles and descriptions to differ from the on-page heading.</p>
+                </div>
+              </div>
+              <div class="admin-form__grid">
+                <% ['seoTitle', 'seoDescription'].forEach((field) => { 
+                  const fieldType = getFieldType(field);
+                  const isFull = field === 'seoDescription';
+                %>
+                  <div class="<%= isFull ? 'admin-form__field--full' : '' %>">
+                    <label for="<%= field %>"><%= humanizeField(field) %></label>
+                    <% if (fieldType === 'textarea') { %>
+                      <textarea class="admin-textarea" id="<%= field %>" name="<%= field %>"><%= serializeFieldValue(field, item[field]) %></textarea>
+                    <% } else { %>
+                      <input class="admin-input" id="<%= field %>" type="<%= fieldType %>" name="<%= field %>" value="<%= serializeFieldValue(field, item[field]) %>">
+                    <% } %>
+                  </div>
+                <% }) %>
+              </div>
+            </section>
+
+            <div class="admin-page-actions admin-page-actions--stack-gap">
+              <div class="admin-actions">
+                <button class="admin-btn" type="submit">Save changes</button>
+                <a class="admin-btn-secondary" href="/admin/<%= collectionKey %>">Cancel</a>
+              </div>
+            </div>
+          </form>
+          <% if (item.id) { %>
+            <div class="admin-page-actions admin-page-actions--stack-gap">
+              <form method="post" action="/admin/<%= collectionKey %>/<%= item.id %>/delete">
+                <input type="hidden" name="_csrf" value="<%= csrfToken %>">
+                <button class="admin-btn-danger" type="submit" data-confirm="Delete this record permanently?">Delete record</button>
+              </form>
+            </div>
+          <% } %>
+        <% } else if (collectionKey === 'privatePageCredentials') { %>
+          <form class="admin-form" method="post" action="<%= item.id ? `/admin/${collectionKey}/${item.id}` : `/admin/${collectionKey}` %>">
+            <input type="hidden" name="_csrf" value="<%= csrfToken %>">
+
+            <section class="admin-editor-group">
+              <div class="admin-editor-group__head">
+                <div>
+                  <h3 class="admin-section-title admin-section-title--tight">Credential details</h3>
+                  <p class="admin-section-copy">Create a private login and control which protected resources this credential can see.</p>
+                </div>
+              </div>
+
+              <div class="admin-form__grid">
+                <% collection.fields.forEach((field) => { 
+                  const fieldType = getFieldType(field);
+                  const choices = getFieldChoices(field, fieldOptions);
+                  const isFull = ['description'].includes(field);
+                %>
+                  <div class="<%= isFull ? 'admin-form__field--full' : '' %>">
+                    <label for="<%= field %>"><%= humanizeField(field) %></label>
+
+                    <% if (fieldType === 'textarea') { %>
+                      <textarea class="admin-textarea" id="<%= field %>" name="<%= field %>"><%= serializeFieldValue(field, item[field]) %></textarea>
+                    <% } else if (fieldType === 'select') { %>
+                      <select class="admin-select" id="<%= field %>" name="<%= field %>">
+                        <option value="">Select an option</option>
+                        <% choices.forEach((choice) => { %>
+                          <option value="<%= choice.value %>" <%= String(choice.value) === String(item[field] ?? '') ? 'selected' : '' %>><%= choice.label %></option>
+                        <% }) %>
+                      </select>
+                    <% } else { %>
+                      <input class="admin-input" id="<%= field %>" type="<%= fieldType %>" name="<%= field %>" value="<%= serializeFieldValue(field, item[field]) %>">
+                    <% } %>
+
+                    <% if (collection.fieldHelp && collection.fieldHelp[field]) { %>
+                      <div class="admin-field-help"><%= collection.fieldHelp[field] %></div>
+                    <% } %>
+                  </div>
+                <% }) %>
+
+                <div>
+                  <label for="password">Password</label>
+                  <input class="admin-input" id="password" type="password" name="password" value="">
+                  <div class="admin-field-help"><%= collection.fieldHelp?.password %></div>
+                </div>
+              </div>
+            </section>
+
+            <section class="admin-editor-group">
+              <div class="admin-editor-group__head">
+                <div>
+                  <h3 class="admin-section-title admin-section-title--tight">Assigned resources</h3>
+                  <p class="admin-section-copy">Only the checked resources will appear after this credential signs in.</p>
+                </div>
+              </div>
+
+              <% if (!editorState?.resources?.length) { %>
+                <div class="admin-card admin-panel admin-panel--compact">
+                  No private page resources exist for this page yet. Create resources first, then assign them here.
+                </div>
+              <% } else { %>
+                <div class="admin-form__grid">
+                  <div class="admin-form__field--full">
+                    <label><%= humanizeField('assignedResources') %></label>
+                    <div class="admin-field-help"><%= collection.fieldHelp?.assignedResources %></div>
+                    <div class="admin-card admin-panel admin-panel--compact">
+                      <% editorState.resources.forEach((resource) => { %>
+                        <label style="display:flex; gap:12px; align-items:flex-start; padding:12px 0; border-bottom:1px solid rgba(13, 36, 69, 0.08);">
+                          <input
+                            type="checkbox"
+                            name="assignedResourceIds"
+                            value="<%= resource.id %>"
+                            <%= editorState.assignedResourceIds.includes(resource.id) ? 'checked' : '' %>
+                          >
+                          <span>
+                            <strong><%= resource.title %></strong>
+                            <span style="display:block; color:rgba(13, 36, 69, 0.7); font-size:13px; margin-top:4px;">
+                              <%= humanizeField(resource.resourceType) %> · <%= resource.url %>
+                            </span>
+                            <% if (resource.description) { %>
+                              <span style="display:block; color:rgba(13, 36, 69, 0.7); font-size:13px; margin-top:4px;">
+                                <%= resource.description %>
+                              </span>
+                            <% } %>
+                          </span>
+                        </label>
+                      <% }) %>
+                    </div>
+                  </div>
+                </div>
+              <% } %>
+            </section>
+
+            <div class="admin-page-actions admin-page-actions--stack-gap">
+              <div class="admin-actions">
+                <button class="admin-btn" type="submit">Save changes</button>
+                <a class="admin-btn-secondary" href="/admin/<%= collectionKey %>">Cancel</a>
+              </div>
+            </div>
+          </form>
+          <% if (item.id) { %>
+            <div class="admin-page-actions admin-page-actions--stack-gap">
+              <form method="post" action="/admin/<%= collectionKey %>/<%= item.id %>/delete">
+                <input type="hidden" name="_csrf" value="<%= csrfToken %>">
+                <button class="admin-btn-danger" type="submit" data-confirm="Delete this record permanently?">Delete record</button>
+              </form>
+            </div>
+          <% } %>
+        <% } else if (collectionKey === 'settings') { %>
+          <form class="admin-form" method="post" action="<%= item.id ? `/admin/${collectionKey}/${item.id}` : `/admin/${collectionKey}` %>">
+            <input type="hidden" name="_csrf" value="<%= csrfToken %>">
+            <input type="hidden" name="key" value="<%= item.key || '' %>">
+
+            <section class="admin-editor-group">
+              <div class="admin-editor-group__head">
+                <div>
+                  <h3 class="admin-section-title admin-section-title--tight"><%= item.key || 'Shared setting' %></h3>
+                  <p class="admin-section-copy"><%= item.description || 'This record controls shared website copy or shared navigation text.' %></p>
+                </div>
+              </div>
+              <% (editorState?.groups || []).forEach((group) => { %>
+                <div class="admin-editor-subgroup">
+                  <div class="admin-editor-subgroup__head">
+                    <h4 class="admin-subgroup-title"><%= group.title %></h4>
+                    <p class="admin-section-copy"><%= group.copy %></p>
+                  </div>
+                  <div class="admin-form__grid">
+                    <% group.fields.forEach((field) => { %>
+                      <div class="<%= field.full ? 'admin-form__field--full' : '' %>">
+                        <label for="<%= field.name %>"><%= field.label %></label>
+                        <% if (field.type === 'textarea') { %>
+                          <textarea class="admin-textarea" id="<%= field.name %>" name="<%= field.name %>"><%= field.value %></textarea>
+                        <% } else { %>
+                          <input class="admin-input" id="<%= field.name %>" type="<%= field.type %>" name="<%= field.name %>" value="<%= field.value %>">
+                        <% } %>
+                        <% if (field.help) { %>
+                          <div class="admin-field-help"><%= field.help %></div>
+                        <% } %>
+                      </div>
+                    <% }) %>
+                  </div>
+                </div>
+              <% }) %>
+            </section>
+
+            <div class="admin-page-actions admin-page-actions--stack-gap">
+              <div class="admin-actions">
+                <button class="admin-btn" type="submit">Save changes</button>
+                <a class="admin-btn-secondary" href="/admin/<%= collectionKey %>">Cancel</a>
+              </div>
+            </div>
+          </form>
+          <% if (item.id) { %>
+            <div class="admin-page-actions admin-page-actions--stack-gap">
+              <form method="post" action="/admin/<%= collectionKey %>/<%= item.id %>/delete">
+                <input type="hidden" name="_csrf" value="<%= csrfToken %>">
+                <button class="admin-btn-danger" type="submit" data-confirm="Delete this record permanently?">Delete record</button>
+              </form>
+            </div>
+          <% } %>
+        <% } else { %>
+          <form class="admin-form" method="post" action="<%= item.id ? `/admin/${collectionKey}/${item.id}` : `/admin/${collectionKey}` %>">
+            <input type="hidden" name="_csrf" value="<%= csrfToken %>">
+
+            <div class="admin-form__grid">
+              <% collection.fields.filter((field) => !['body', 'config', 'structuredData', 'value'].includes(field)).forEach((field) => { 
+                const fieldType = getFieldType(field);
+                const choices = getFieldChoices(field, fieldOptions);
+                const isFull = ['content','excerpt','quote','summary','subheading','seoDescription','description'].includes(field);
+              %>
+                <div class="<%= isFull ? 'admin-form__field--full' : '' %>">
+                  <label for="<%= field %>"><%= humanizeField(field) %></label>
+
+                  <% if (fieldType === 'textarea') { %>
+                      <textarea class="admin-textarea" id="<%= field %>" name="<%= field %>"><%= serializeFieldValue(field, item[field]) %></textarea>
+                  <% } else if (fieldType === 'select' && choices.length) { %>
+                    <select class="admin-select" id="<%= field %>" name="<%= field %>">
+                      <option value="">Select an option</option>
+                      <% choices.forEach((choice) => { %>
+                        <option value="<%= choice.value %>" <%= String(choice.value) === String(item[field] ?? '') ? 'selected' : '' %>><%= choice.label %></option>
+                      <% }) %>
+                    </select>
+                  <% } else if (fieldType === 'select') { %>
+                      <input class="admin-input" id="<%= field %>" type="text" name="<%= field %>" value="<%= serializeFieldValue(field, item[field]) %>">
+                  <% } else { %>
+                      <input class="admin-input" id="<%= field %>" type="<%= fieldType %>" name="<%= field %>" value="<%= serializeFieldValue(field, item[field]) %>">
+                  <% } %>
+                  <% if (collection.fieldHelp && collection.fieldHelp[field]) { %>
+                    <div class="admin-field-help"><%= collection.fieldHelp[field] %></div>
+                  <% } %>
+                </div>
+              <% }) %>
+            </div>
+
+            <div class="admin-page-actions admin-page-actions--stack-gap">
+              <div class="admin-actions">
+                <button class="admin-btn" type="submit">Save changes</button>
+                <a class="admin-btn-secondary" href="/admin/<%= collectionKey %>">Cancel</a>
+              </div>
+            </div>
+          </form>
+          <% if (item.id) { %>
+            <div class="admin-page-actions admin-page-actions--stack-gap">
+              <form method="post" action="/admin/<%= collectionKey %>/<%= item.id %>/delete">
+                <input type="hidden" name="_csrf" value="<%= csrfToken %>">
+                <button class="admin-btn-danger" type="submit" data-confirm="Delete this record permanently?">Delete record</button>
+              </form>
+            </div>
+          <% } %>
+        <% } %>
+      </div>
+    </main>
+  </div>
+  <script src="/admin-assets/admin.js" defer></script>
+</body>
+</html>

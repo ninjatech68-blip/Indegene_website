@@ -1,0 +1,49 @@
+services:
+  db:
+    image: postgres:16-alpine
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: oco_cms
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+
+  redis:
+    image: redis:7-alpine
+    restart: unless-stopped
+
+  app:
+    build:
+      context: .
+      dockerfile: dockerfile
+    restart: unless-stopped
+    env_file:
+      - .env
+    environment:
+      DATABASE_URL: postgresql://postgres:postgres@db:5432/oco_cms?schema=public
+      APP_URL: http://localhost:8081
+      FRONTEND_URL: http://localhost:8081
+      PUBLIC_ROOT: /app/public
+    depends_on:
+      - db
+    ports:
+      - "4000:4000"
+    volumes:
+      - ./src:/app/src
+      - ./prisma:/app/prisma
+      - ./uploads:/app/uploads
+      - ..:/app/public:ro
+
+  frontend:
+    build:
+      context: ..
+      dockerfile: Dockerfile.frontend
+    restart: unless-stopped
+    depends_on:
+      - app
+    ports:
+      - "8081:80"
+
+volumes:
+  postgres_data:

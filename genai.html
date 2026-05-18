@@ -1,0 +1,2103 @@
+<!doctype html>
+<!-- Source signature: Piyush Sharma -->
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="robots" content="index,follow">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="referrer" content="strict-origin-when-cross-origin">
+  <title>GenAI for Omnichannel Orchestration in Life Sciences | Indegene</title>
+  <meta name="description" content="Explore how Indegene applies GenAI to omnichannel orchestration, medical communications, content workflows, HCP engagement, analytics, and life sciences execution.">
+  <meta property="og:title" content="GenAI for Omnichannel Orchestration in Life Sciences | Indegene">
+  <meta property="og:description" content="Explore how Indegene applies GenAI to omnichannel orchestration, medical communications, content workflows, HCP engagement, analytics, and life sciences execution.">
+  <meta property="og:type" content="website">
+  <meta property="og:site_name" content="Indegene">
+  <meta name="twitter:card" content="summary">
+  <meta name="twitter:title" content="GenAI for Omnichannel Orchestration in Life Sciences | Indegene">
+  <meta name="twitter:description" content="Explore how Indegene applies GenAI to omnichannel orchestration, medical communications, content workflows, HCP engagement, analytics, and life sciences execution.">
+  <link rel="icon" type="image/png" href="images/favicon.png">
+  <link rel="preload" as="image" href="images/logo.webp" type="image/webp">
+  <link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin>
+  <link rel="preconnect" href="https://code.jquery.com" crossorigin>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-sRIl4kxILFvY47J16cr9ZwB07vP4J8+LH7qKQnuqkuIAvNWLzeN8tE5YBujZqJLB" crossorigin="anonymous">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.13.1/font/bootstrap-icons.min.css">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Nunito+Sans:wght@400;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="oco-styles.css">
+  <link rel="stylesheet" href="oco-heading-system.css">
+  <link rel="stylesheet" href="oco-topbar-scroll.css">
+  <style>
+    .oco-genai-hero {
+      position: relative;
+      overflow: hidden;
+      background:
+        radial-gradient(circle at top right, rgba(237, 9, 119, 0.16), transparent 28%),
+        radial-gradient(circle at 15% 18%, rgba(32, 181, 255, 0.16), transparent 22%),
+        linear-gradient(135deg, #082247 0%, #00336a 46%, #004e9d 100%);
+      color: #fff;
+      padding: clamp(54px, 6vw, 90px) 0;
+    }
+    .oco-genai-hero::before {
+      content: "";
+      position: absolute;
+      inset: 0;
+      background:
+        linear-gradient(115deg, rgba(11,18,32,0.08) 0%, rgba(11,18,32,0) 45%),
+        repeating-linear-gradient(90deg, rgba(255,255,255,0.025) 0 1px, transparent 1px 100px);
+      pointer-events: none;
+    }
+    .oco-genai-hero__grid {
+      position: relative;
+      z-index: 1;
+      display: grid;
+      grid-template-columns: minmax(0, 1.05fr) minmax(320px, 0.95fr);
+      gap: clamp(32px, 4vw, 60px);
+      align-items: center;
+    }
+    .oco-genai-hero__copy {
+      max-width: 780px;
+    }
+    .oco-genai-hero__eyebrow {
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+      color: var(--brand-accent);
+      margin-bottom: 20px;
+    }
+    .oco-genai-hero__eyebrow::before {
+      content: "";
+      width: 24px;
+      height: 2px;
+      background: var(--brand-accent);
+      flex-shrink: 0;
+    }
+    .oco-genai-hero__title {
+      font-size: 45px;
+      font-weight: 800;
+      line-height: 1.08;
+      letter-spacing: -0.03em;
+      margin-bottom: 24px;
+      max-width: 780px;
+      color: #fff;
+    }
+    .oco-genai-hero__title em {
+      font-style: normal;
+      color: rgba(255,255,255,0.48);
+    }
+    .oco-genai-hero__sub {
+      font-size: 16px;
+      line-height: 1.75;
+      color: rgba(255,255,255,0.72);
+      max-width: 600px;
+      margin-bottom: 40px;
+    }
+    .oco-genai-hero__actions {
+      display: flex;
+      gap: 16px;
+      flex-wrap: wrap;
+      margin-bottom: 32px;
+    }
+    .oco-btn-secondary-light {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 14px 26px;
+      border-radius: var(--radius-sm);
+      border: 1px solid rgba(255,255,255,0.22);
+      color: #fff;
+      font-size: 15px;
+      font-weight: 600;
+      background: rgba(255,255,255,0.05);
+      transition: transform 160ms ease, border-color 160ms ease, background 160ms ease;
+    }
+    .oco-btn-secondary-light:hover {
+      color: #fff;
+      background: rgba(255,255,255,0.09);
+      border-color: rgba(255,255,255,0.38);
+      transform: translateY(-1px);
+    }
+    .oco-genai-hero__meta {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+    }
+    .oco-genai-pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 8px 12px;
+      border-radius: 999px;
+      background: rgba(255,255,255,0.08);
+      border: 1px solid rgba(255,255,255,0.10);
+      color: rgba(255,255,255,0.72);
+      font-size: 12px;
+      font-weight: 600;
+    }
+    .oco-genai-pill i {
+      color: var(--brand-accent);
+    }
+    .oco-genai-visual {
+      position: relative;
+      min-height: 520px;
+      border-radius: 28px;
+      border: 1px solid rgba(255,255,255,0.10);
+      background:
+        radial-gradient(circle at 20% 22%, rgba(32,181,255,0.12), transparent 24%),
+        radial-gradient(circle at 82% 25%, rgba(237,9,119,0.16), transparent 20%),
+        linear-gradient(180deg, rgba(255,255,255,0.07), rgba(255,255,255,0.03));
+      backdrop-filter: blur(12px);
+      overflow: hidden;
+      box-shadow: 0 24px 80px rgba(3, 16, 34, 0.34);
+    }
+    .oco-genai-visual__grid {
+      position: absolute;
+      inset: 0;
+      background:
+        linear-gradient(rgba(255,255,255,0.04) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(255,255,255,0.04) 1px, transparent 1px);
+      background-size: 72px 72px;
+      mask-image: radial-gradient(circle at center, #000 55%, transparent 92%);
+    }
+    .oco-genai-node {
+      position: absolute;
+      width: 14px;
+      height: 14px;
+      border-radius: 50%;
+      background: radial-gradient(circle at 30% 30%, #fff, #7fd8ff 55%, #20b5ff 100%);
+      box-shadow: 0 0 0 10px rgba(32,181,255,0.08), 0 0 24px rgba(32,181,255,0.38);
+      animation: ocoNodePulse 3.8s ease-in-out infinite;
+    }
+    .oco-genai-node--accent {
+      background: radial-gradient(circle at 30% 30%, #fff, #ff9ecc 54%, #ed0977 100%);
+      box-shadow: 0 0 0 10px rgba(237,9,119,0.08), 0 0 24px rgba(237,9,119,0.32);
+      animation-delay: 0.9s;
+    }
+    .oco-genai-visual svg {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      overflow: visible;
+    }
+    .oco-genai-visual line {
+      stroke: rgba(255,255,255,0.28);
+      stroke-width: 1.5;
+      stroke-dasharray: 6 8;
+      animation: ocoLineFlow 11s linear infinite;
+    }
+    .oco-genai-visual__panel {
+      position: absolute;
+      border-radius: 18px;
+      background: rgba(255,255,255,0.11);
+      border: 1px solid rgba(255,255,255,0.14);
+      backdrop-filter: blur(12px);
+      box-shadow: 0 18px 40px rgba(3,16,34,0.20);
+    }
+    .oco-genai-visual__panel {
+      left: 8%;
+      right: 8%;
+      top: 9%;
+      bottom: 9%;
+      min-height: 0;
+      padding: 24px;
+      z-index: 3;
+      background: linear-gradient(180deg, rgba(255,255,255,0.16), rgba(255,255,255,0.11));
+      animation: ocoFloat 7.5s ease-in-out infinite;
+    }
+    .oco-genai-visual__panel-body {
+      display: grid;
+      grid-template-columns: minmax(0, 1.15fr) minmax(170px, 0.85fr);
+      gap: 20px;
+      align-items: start;
+    }
+    .oco-genai-visual__panel-head {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 18px;
+      color: rgba(255,255,255,0.74);
+      font-size: 12px;
+      font-weight: 700;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+    }
+    .oco-genai-visual__chips {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin-bottom: 22px;
+    }
+    .oco-genai-visual__chips span {
+      padding: 8px 11px;
+      border-radius: 999px;
+      background: rgba(255,255,255,0.08);
+      color: rgba(255,255,255,0.78);
+      font-size: 12px;
+      font-weight: 600;
+    }
+    .oco-genai-visual__bars {
+      display: grid;
+      gap: 14px;
+      margin-bottom: 20px;
+    }
+    .oco-genai-visual__bar {
+      height: 12px;
+      border-radius: 999px;
+      overflow: hidden;
+      background: rgba(255,255,255,0.10);
+    }
+    .oco-genai-visual__bar span {
+      display: block;
+      height: 100%;
+      border-radius: inherit;
+      background: linear-gradient(90deg, #20b5ff, #ed0977);
+      animation: ocoBarPulse 4s ease-in-out infinite;
+    }
+    .oco-genai-visual__insight {
+      padding: 18px;
+      border-radius: 16px;
+      background: rgba(255,255,255,0.08);
+      border: 1px solid rgba(255,255,255,0.10);
+      color: rgba(255,255,255,0.82);
+      font-size: 13px;
+      line-height: 1.55;
+      min-height: 0;
+    }
+    .oco-genai-visual__insight h3 {
+      font-size: 13px;
+      font-weight: 800;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      color: #fff;
+      margin-bottom: 12px;
+    }
+    .oco-genai-visual__insight ul {
+      list-style: none;
+      margin: 0;
+      padding: 0;
+      display: grid;
+      gap: 12px;
+    }
+    .oco-genai-visual__insight li {
+      display: flex;
+      gap: 10px;
+      align-items: flex-start;
+    }
+    .oco-genai-visual__insight i {
+      color: var(--brand-accent);
+      margin-top: 3px;
+    }
+    .oco-genai-statline {
+      display: flex;
+      gap: 22px;
+      margin-top: 14px;
+      flex-wrap: wrap;
+    }
+    .oco-genai-statline strong {
+      display: block;
+      font-size: 22px;
+      line-height: 1;
+      color: #fff;
+      margin-bottom: 4px;
+    }
+    .oco-genai-statline span {
+      display: block;
+      font-size: 11px;
+      text-transform: uppercase;
+      letter-spacing: 0.12em;
+      color: rgba(255,255,255,0.52);
+    }
+    .oco-genai-overview {
+      display: grid;
+      grid-template-columns: minmax(0, 1.1fr) minmax(0, 0.9fr);
+      gap: 36px;
+      align-items: start;
+    }
+    .oco-genai-note {
+      background: linear-gradient(180deg, rgba(0,78,157,0.06), rgba(0,78,157,0.02));
+      border: 1px solid rgba(0,78,157,0.10);
+      border-radius: var(--radius);
+      padding: 28px;
+    }
+    .oco-genai-note h3 {
+      font-size: 1rem;
+      margin-bottom: 12px;
+    }
+    .oco-genai-note p {
+      margin: 0;
+      font-size: 14px;
+      line-height: 1.8;
+      color: var(--ink-70);
+    }
+    .oco-genai-stack {
+      display: grid;
+      gap: 16px;
+    }
+    .oco-genai-stack-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 24px 22px;
+      box-shadow: var(--shadow-sm);
+      transition: transform 180ms ease, box-shadow 180ms ease, border-color 180ms ease;
+    }
+    .oco-genai-stack-card:hover {
+      transform: translateY(-3px);
+      box-shadow: var(--shadow-md);
+      border-color: rgba(0,78,157,0.18);
+    }
+    .oco-genai-stack-card h3,
+    .oco-genai-offer h3 {
+      font-size: 1rem;
+      margin-bottom: 10px;
+      color: var(--ink);
+    }
+    .oco-genai-stack-card p,
+    .oco-genai-offer p {
+      margin: 0;
+      font-size: 14px;
+      color: var(--ink-70);
+      line-height: 1.75;
+    }
+    .oco-genai-capability {
+      position: relative;
+      height: 100%;
+      padding: 32px 28px;
+      border-radius: 24px;
+      background: linear-gradient(180deg, #ffffff 0%, #f8fbff 100%);
+      border: 1px solid rgba(11,18,32,0.08);
+      box-shadow: var(--shadow-sm);
+      overflow: hidden;
+      transition: transform 200ms ease, box-shadow 200ms ease, border-color 200ms ease;
+    }
+    .oco-genai-capability:hover {
+      transform: translateY(-4px);
+      box-shadow: var(--shadow-md);
+      border-color: rgba(0,78,157,0.18);
+    }
+    .oco-genai-capability::before {
+      content: "";
+      position: absolute;
+      inset: 0 auto auto 0;
+      width: 100%;
+      height: 4px;
+      background: linear-gradient(90deg, var(--brand-primary), var(--brand-accent));
+      opacity: 0.95;
+    }
+    .oco-genai-capability__icon {
+      width: 54px;
+      height: 54px;
+      border-radius: 18px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      margin-bottom: 20px;
+      background: rgba(0,78,157,0.08);
+      color: var(--brand-primary);
+      font-size: 22px;
+    }
+    .oco-genai-capability__eyebrow {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      margin-bottom: 10px;
+      color: var(--brand-primary);
+      font-size: 11px;
+      font-weight: 800;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+    }
+    .oco-genai-capability h3 {
+      margin-bottom: 12px;
+      font-size: 1.25rem;
+      color: var(--ink);
+    }
+    .oco-genai-capability > p {
+      margin-bottom: 18px;
+      font-size: 14px;
+      line-height: 1.8;
+      color: var(--ink-70);
+    }
+    .oco-genai-capability__stats {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 12px;
+      margin-bottom: 18px;
+    }
+    .oco-genai-capability__stats span {
+      display: inline-flex;
+      align-items: center;
+      padding: 8px 12px;
+      border-radius: 999px;
+      background: rgba(0,78,157,0.06);
+      color: var(--ink);
+      font-size: 12px;
+      font-weight: 700;
+    }
+    .oco-genai-capability__list {
+      list-style: none;
+      padding: 0;
+      margin: 0;
+      display: grid;
+      gap: 9px;
+    }
+    .oco-genai-capability__list li {
+      display: flex;
+      gap: 10px;
+      align-items: flex-start;
+      color: var(--ink-70);
+      font-size: 13px;
+      line-height: 1.65;
+    }
+    .oco-genai-capability__list i {
+      color: var(--brand-primary);
+      margin-top: 3px;
+    }
+    .oco-genai-switcher {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 24px;
+      margin-top: 8px;
+    }
+    .oco-genai-switcher__card {
+      position: relative;
+      display: block;
+      padding: 30px 28px;
+      border-radius: 24px;
+      overflow: hidden;
+      border: 1px solid rgba(11,18,32,0.08);
+      background: linear-gradient(180deg, #ffffff 0%, #f8fbff 100%);
+      box-shadow: var(--shadow-sm);
+      transition: transform 200ms ease, box-shadow 200ms ease, border-color 200ms ease;
+    }
+    .oco-genai-switcher__card:hover {
+      transform: translateY(-4px);
+      box-shadow: var(--shadow-md);
+      border-color: rgba(0,78,157,0.18);
+    }
+    .oco-genai-switcher__card::before {
+      content: "";
+      position: absolute;
+      inset: 0 auto auto 0;
+      width: 100%;
+      height: 4px;
+      background: linear-gradient(90deg, var(--brand-primary), var(--brand-accent));
+    }
+    .oco-genai-switcher__card--agentforce {
+      background:
+        radial-gradient(circle at top right, rgba(237,9,119,0.08), transparent 22%),
+        linear-gradient(180deg, #ffffff 0%, #f7fbff 100%);
+    }
+    .oco-genai-switcher__eyebrow {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      margin-bottom: 12px;
+      font-size: 11px;
+      font-weight: 800;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: var(--brand-primary);
+    }
+    .oco-genai-switcher__card h3 {
+      margin-bottom: 12px;
+      font-size: 1.3rem;
+      color: var(--ink);
+    }
+    .oco-genai-switcher__card p {
+      margin: 0 0 18px;
+      font-size: 14px;
+      line-height: 1.8;
+      color: var(--ink-70);
+    }
+    .oco-genai-switcher__meta {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+    }
+    .oco-genai-switcher__meta span {
+      display: inline-flex;
+      align-items: center;
+      padding: 8px 12px;
+      border-radius: 999px;
+      background: rgba(0,78,157,0.06);
+      color: var(--ink);
+      font-size: 12px;
+      font-weight: 700;
+    }
+    .oco-genai-story {
+      display: grid;
+      grid-template-columns: minmax(0, 1.05fr) minmax(0, 0.95fr);
+      gap: 34px;
+      align-items: start;
+    }
+    .oco-genai-story__panel {
+      height: 100%;
+      border-radius: 24px;
+      background: linear-gradient(180deg, #ffffff 0%, #f8fbff 100%);
+      border: 1px solid rgba(11,18,32,0.08);
+      box-shadow: var(--shadow-sm);
+      padding: 32px 30px;
+    }
+    .oco-genai-story__panel--accent {
+      background:
+        radial-gradient(circle at top right, rgba(237, 9, 119, 0.08), transparent 24%),
+        radial-gradient(circle at top left, rgba(32, 181, 255, 0.08), transparent 24%),
+        linear-gradient(180deg, #ffffff 0%, #f7fbff 100%);
+    }
+    .oco-genai-story__panel h3 {
+      font-size: 1.15rem;
+      margin-bottom: 12px;
+      color: var(--ink);
+    }
+    .oco-genai-story__panel p {
+      margin: 0;
+      color: var(--ink-70);
+      font-size: 14px;
+      line-height: 1.8;
+    }
+    .oco-genai-story__points {
+      display: grid;
+      gap: 16px;
+    }
+    .oco-genai-story__point {
+      padding: 18px 0;
+      border-bottom: 1px solid rgba(11,18,32,0.08);
+    }
+    .oco-genai-story__point:last-child {
+      border-bottom: 0;
+      padding-bottom: 0;
+    }
+    .oco-genai-story__point strong {
+      display: block;
+      margin-bottom: 8px;
+      color: var(--ink);
+      font-size: 15px;
+    }
+    .oco-genai-story__matrix {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 14px;
+      margin-top: 22px;
+    }
+    .oco-genai-story__tile {
+      padding: 18px 16px;
+      border-radius: 18px;
+      background: rgba(0,78,157,0.05);
+      border: 1px solid rgba(0,78,157,0.08);
+    }
+    .oco-genai-story__tile strong {
+      display: block;
+      margin-bottom: 6px;
+      font-size: 13px;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: var(--brand-primary);
+    }
+    .oco-genai-story__tile span {
+      display: block;
+      color: var(--ink-70);
+      font-size: 13px;
+      line-height: 1.7;
+    }
+    .oco-genai-chapter {
+      position: relative;
+      overflow: hidden;
+    }
+    .oco-genai-chapter--prompt {
+      background:
+        radial-gradient(circle at top right, rgba(32,181,255,0.07), transparent 22%),
+        linear-gradient(180deg, #ffffff 0%, #f8fbff 100%);
+    }
+    .oco-genai-chapter--agentforce {
+      background:
+        radial-gradient(circle at top left, rgba(237,9,119,0.08), transparent 24%),
+        linear-gradient(180deg, #0a1c37 0%, #082247 100%);
+    }
+    .oco-genai-chapter--agentforce .oco-overline,
+    .oco-genai-chapter--agentforce .oco-section-title,
+    .oco-genai-chapter--agentforce .oco-section-sub {
+      color: #fff;
+    }
+    .oco-genai-chapter--agentforce .oco-divider {
+      background: rgba(255,255,255,0.18);
+    }
+    .oco-genai-chapter--agentforce .oco-section-sub {
+      opacity: 0.74;
+    }
+    .oco-genai-chapter--agentforce .oco-genai-offer {
+      background: rgba(255,255,255,0.08);
+      border-color: rgba(255,255,255,0.12);
+      box-shadow: 0 18px 40px rgba(3,16,34,0.22);
+    }
+    .oco-genai-chapter--agentforce .oco-genai-offer h3 {
+      color: #fff;
+    }
+    .oco-genai-chapter--agentforce .oco-genai-offer p,
+    .oco-genai-chapter--agentforce .oco-genai-offer__list li {
+      color: rgba(255,255,255,0.74);
+    }
+    .oco-genai-chapter--agentforce .oco-genai-offer__icon {
+      background: rgba(255,255,255,0.10);
+      color: #fff;
+    }
+    .oco-genai-chapter--agentforce .oco-genai-offer__list i {
+      color: var(--brand-accent);
+    }
+    .oco-genai-offer {
+      position: relative;
+      height: 100%;
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      background: var(--surface);
+      padding: 30px 26px;
+      overflow: hidden;
+      box-shadow: var(--shadow-sm);
+      transition: transform 200ms ease, box-shadow 200ms ease, border-color 200ms ease;
+    }
+    .oco-genai-offer::before {
+      content: "";
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 3px;
+      background: linear-gradient(90deg, var(--brand-primary), var(--brand-accent));
+      transform: scaleX(0);
+      transform-origin: left;
+      transition: transform 260ms ease;
+    }
+    .oco-genai-offer:hover::before {
+      transform: scaleX(1);
+    }
+    .oco-genai-offer:hover {
+      transform: translateY(-4px);
+      box-shadow: var(--shadow-md);
+      border-color: rgba(0,78,157,0.16);
+    }
+    .oco-genai-offer__icon {
+      width: 50px;
+      height: 50px;
+      border-radius: 16px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      background: rgba(0,78,157,0.08);
+      color: var(--brand-primary);
+      font-size: 20px;
+      margin-bottom: 18px;
+    }
+    .oco-genai-offer__list {
+      list-style: none;
+      padding: 0;
+      margin: 16px 0 0;
+      display: grid;
+      gap: 8px;
+    }
+    .oco-genai-offer__list li {
+      display: flex;
+      gap: 10px;
+      font-size: 13px;
+      line-height: 1.6;
+      color: var(--ink-70);
+    }
+    .oco-genai-offer__list i {
+      color: var(--brand-primary);
+      margin-top: 3px;
+    }
+    .oco-genai-demo {
+      background: var(--surface-soft);
+      border-radius: var(--radius-lg);
+      padding: clamp(32px, 4vw, 48px);
+      border: 1px solid rgba(11,18,32,0.06);
+    }
+    .oco-genai-demo__grid {
+      display: grid;
+      grid-template-columns: minmax(240px, 0.78fr) minmax(0, 1.22fr);
+      gap: 26px;
+      align-items: stretch;
+    }
+    .oco-genai-demo__nav {
+      display: grid;
+      gap: 12px;
+    }
+    .oco-genai-demo__trigger {
+      width: 100%;
+      text-align: left;
+      padding: 18px 18px 18px 20px;
+      background: #fff;
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow-xs);
+      transition: transform 180ms ease, border-color 180ms ease, box-shadow 180ms ease;
+      color: var(--ink);
+    }
+    .oco-genai-demo__trigger.is-active,
+    .oco-genai-demo__trigger:hover {
+      transform: translateY(-2px);
+      border-color: rgba(0,78,157,0.20);
+      box-shadow: var(--shadow-sm);
+    }
+    .oco-genai-demo__trigger strong {
+      display: block;
+      font-size: 14px;
+      margin-bottom: 4px;
+    }
+    .oco-genai-demo__trigger span {
+      display: block;
+      font-size: 12px;
+      color: var(--ink-50);
+      line-height: 1.55;
+    }
+    .oco-genai-demo__panel {
+      min-height: 420px;
+      background: #fff;
+      border: 1px solid var(--border);
+      border-radius: 22px;
+      box-shadow: var(--shadow-sm);
+      padding: 26px;
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) minmax(250px, 0.88fr);
+      gap: 24px;
+      align-items: center;
+    }
+    .oco-genai-demo__eyebrow {
+      font-size: 11px;
+      font-weight: 800;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      color: var(--brand-primary);
+      margin-bottom: 12px;
+    }
+    .oco-genai-demo__title {
+      font-size: clamp(1.4rem, 1vw + 1rem, 2rem);
+      line-height: 1.08;
+      margin-bottom: 14px;
+      color: var(--ink);
+    }
+    .oco-genai-demo__body {
+      color: var(--ink-70);
+      font-size: 14px;
+      line-height: 1.8;
+      margin-bottom: 22px;
+    }
+    .oco-genai-demo__points {
+      list-style: none;
+      padding: 0;
+      margin: 0;
+      display: grid;
+      gap: 10px;
+    }
+    .oco-genai-demo__points li {
+      display: flex;
+      gap: 10px;
+      font-size: 13px;
+      line-height: 1.65;
+      color: var(--ink-70);
+    }
+    .oco-genai-demo__points i {
+      color: var(--brand-primary);
+      margin-top: 3px;
+    }
+    .oco-genai-artboard {
+      position: relative;
+      min-height: 320px;
+      border-radius: 20px;
+      overflow: hidden;
+      background:
+        radial-gradient(circle at 18% 20%, rgba(32,181,255,0.42), transparent 24%),
+        radial-gradient(circle at 80% 18%, rgba(237,9,119,0.34), transparent 22%),
+        linear-gradient(145deg, #06162d 0%, #0b2f5d 42%, #082247 100%);
+    }
+    .oco-genai-artboard::before {
+      content: "";
+      position: absolute;
+      inset: 0;
+      background:
+        repeating-linear-gradient(0deg, rgba(255,255,255,0.04) 0 1px, transparent 1px 34px),
+        repeating-linear-gradient(90deg, rgba(255,255,255,0.04) 0 1px, transparent 1px 34px);
+      opacity: 0.6;
+    }
+    .oco-genai-artboard__mesh {
+      position: absolute;
+      inset: 18px;
+      border-radius: 18px;
+      border: 1px solid rgba(255,255,255,0.08);
+    }
+    .oco-genai-artboard__node {
+      position: absolute;
+      border-radius: 50%;
+      background: #fff;
+      box-shadow: 0 0 18px rgba(255,255,255,0.30);
+      animation: ocoNodePulse 3.4s ease-in-out infinite;
+    }
+    .oco-genai-artboard__node--a { width: 18px; height: 18px; top: 18%; left: 22%; }
+    .oco-genai-artboard__node--b { width: 12px; height: 12px; top: 32%; left: 64%; animation-delay: 0.5s; }
+    .oco-genai-artboard__node--c { width: 16px; height: 16px; top: 64%; left: 32%; animation-delay: 0.9s; }
+    .oco-genai-artboard__node--d { width: 12px; height: 12px; top: 70%; left: 74%; animation-delay: 1.2s; }
+    .oco-genai-artboard__panel {
+      position: absolute;
+      left: 16px;
+      right: 16px;
+      bottom: 16px;
+      border-radius: 16px;
+      padding: 14px;
+      background: rgba(255,255,255,0.08);
+      border: 1px solid rgba(255,255,255,0.10);
+      backdrop-filter: blur(10px);
+    }
+    .oco-genai-artboard__header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 10px;
+      color: rgba(255,255,255,0.8);
+      font-size: 12px;
+      font-weight: 700;
+      margin-bottom: 12px;
+    }
+    .oco-genai-artboard__metric {
+      display: grid;
+      gap: 10px;
+    }
+    .oco-genai-artboard__metric span {
+      display: block;
+      height: 9px;
+      border-radius: 999px;
+      background: rgba(255,255,255,0.12);
+      overflow: hidden;
+    }
+    .oco-genai-artboard__metric span::after {
+      content: "";
+      display: block;
+      height: 100%;
+      width: var(--metric-width, 68%);
+      border-radius: inherit;
+      background: linear-gradient(90deg, #20b5ff, #ed0977);
+      transition: width 280ms ease;
+    }
+    .oco-genai-artboard[data-mode="segmentation"] {
+      background:
+        radial-gradient(circle at 25% 20%, rgba(32,181,255,0.36), transparent 20%),
+        radial-gradient(circle at 76% 70%, rgba(237,9,119,0.30), transparent 22%),
+        linear-gradient(145deg, #07121f 0%, #0b1220 100%);
+    }
+    .oco-genai-artboard[data-mode="review"] {
+      background:
+        radial-gradient(circle at 80% 18%, rgba(32,181,255,0.22), transparent 25%),
+        radial-gradient(circle at 18% 74%, rgba(237,9,119,0.22), transparent 24%),
+        linear-gradient(145deg, #082247 0%, #0f3e7c 100%);
+    }
+    .oco-genai-data-band {
+      background: var(--ink);
+      border-radius: var(--radius-lg);
+      padding: clamp(34px, 5vw, 56px);
+      position: relative;
+      overflow: hidden;
+    }
+    .oco-genai-data-band::before {
+      content: "";
+      position: absolute;
+      inset: auto -100px -140px auto;
+      width: 360px;
+      height: 360px;
+      border-radius: 50%;
+      background: rgba(255,255,255,0.03);
+    }
+    .oco-genai-data-band__item {
+      position: relative;
+      z-index: 1;
+      padding: 0 24px;
+      text-align: center;
+    }
+    .oco-genai-data-band__item + .oco-genai-data-band__item {
+      border-left: 1px solid rgba(255,255,255,0.10);
+    }
+    .oco-genai-data-band__num {
+      font-size: clamp(2rem, 2.2vw + 0.8rem, 3rem);
+      line-height: 1;
+      font-weight: 800;
+      letter-spacing: -0.04em;
+      color: #fff;
+      margin-bottom: 10px;
+    }
+    .oco-genai-data-band__num span {
+      color: var(--brand-accent);
+    }
+    .oco-genai-data-band__label {
+      color: rgba(255,255,255,0.58);
+      font-size: 13px;
+      line-height: 1.6;
+    }
+    .oco-genai-cta {
+      position: relative;
+      overflow: hidden;
+      background: linear-gradient(135deg, var(--brand-primary) 0%, var(--brand-primary-deep) 100%);
+      border-radius: var(--radius-lg);
+      padding: clamp(40px, 5vw, 68px) clamp(28px, 4vw, 56px);
+      text-align: center;
+    }
+    .oco-genai-cta::after {
+      content: "";
+      position: absolute;
+      right: -90px;
+      top: -100px;
+      width: 320px;
+      height: 320px;
+      border-radius: 50%;
+      background: rgba(255,255,255,0.05);
+    }
+    .oco-genai-cta__title {
+      position: relative;
+      z-index: 1;
+      color: #fff;
+      font-size: clamp(1.7rem, 2vw + 0.8rem, 2.5rem);
+      line-height: 1.08;
+      margin-bottom: 16px;
+    }
+    .oco-genai-cta__sub {
+      position: relative;
+      z-index: 1;
+      color: rgba(255,255,255,0.72);
+      max-width: 620px;
+      margin: 0 auto 28px;
+      font-size: 1rem;
+      line-height: 1.8;
+    }
+    .js-reveal {
+      opacity: 0;
+      transform: translateY(22px);
+      transition: opacity 520ms ease, transform 520ms ease;
+    }
+    .js-reveal.is-visible {
+      opacity: 1;
+      transform: none;
+    }
+    @keyframes ocoNodePulse {
+      0%, 100% { transform: scale(0.92); opacity: 0.88; }
+      50% { transform: scale(1.08); opacity: 1; }
+    }
+    @keyframes ocoLineFlow {
+      0% { stroke-dashoffset: 0; }
+      100% { stroke-dashoffset: -140; }
+    }
+    @keyframes ocoFloat {
+      0%, 100% { transform: translateY(0); }
+      50% { transform: translateY(-8px); }
+    }
+    @keyframes ocoBarPulse {
+      0%, 100% { filter: brightness(1); }
+      50% { filter: brightness(1.14); }
+    }
+    @media (max-width: 991px) {
+      .oco-genai-hero__grid,
+      .oco-genai-overview,
+      .oco-genai-switcher,
+      .oco-genai-story,
+      .oco-genai-demo__grid,
+      .oco-genai-demo__panel {
+        grid-template-columns: 1fr;
+      }
+      .oco-genai-visual {
+        min-height: 460px;
+      }
+      .oco-genai-visual__panel-body {
+        grid-template-columns: 1fr;
+      }
+    }
+    @media (max-width: 767px) {
+      .oco-genai-hero {
+        padding: 48px 0 56px;
+      }
+      .oco-genai-hero__title {
+        font-size: 2.5rem;
+        max-width: 11ch;
+      }
+      .oco-genai-hero__actions {
+        flex-direction: column;
+        align-items: flex-start;
+      }
+      .oco-genai-hero__actions .oco-btn-primary,
+      .oco-genai-hero__actions .oco-btn-secondary-light {
+        width: 100%;
+        justify-content: center;
+      }
+      .oco-genai-visual {
+        min-height: 420px;
+      }
+      .oco-genai-visual__panel {
+        left: 18px;
+        right: 18px;
+        top: 18px;
+      }
+      .oco-genai-data-band__item + .oco-genai-data-band__item {
+        border-left: 0;
+        border-top: 1px solid rgba(255,255,255,0.10);
+        margin-top: 26px;
+        padding-top: 26px;
+      }
+    }
+    @media (max-width: 575px) {
+      .oco-genai-hero__title {
+        font-size: 2.15rem;
+      }
+      .oco-genai-visual {
+        min-height: 360px;
+      }
+      .oco-genai-demo {
+        padding: 24px 18px;
+      }
+      .oco-genai-demo__panel {
+        padding: 20px;
+        min-height: auto;
+      }
+      .oco-genai-story__matrix {
+        grid-template-columns: 1fr;
+      }
+      .oco-genai-artboard {
+        min-height: 280px;
+      }
+    }
+  </style>
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "WebPage",
+    "name": "GenAI Services",
+    "description": "Enterprise-grade Generative AI services for life sciences engagement, content operations, and compliant delivery.",
+    "about": {
+      "@type": "Thing",
+      "name": "Generative AI for life sciences"
+    },
+    "mainEntity": {
+      "@type": "Service",
+      "name": "GenAI Services",
+      "provider": {
+        "@type": "Organization",
+        "name": "Indegene"
+      },
+      "serviceType": "Generative AI consulting and orchestration enablement"
+    }
+  }
+  </script>
+</head>
+<body id="top">
+
+<a class="oco-skiplink" href="#maincontent">Skip to content</a>
+
+<header class="oco-header-sticky">
+
+  <!-- Top Bar -->
+  <div class="oco-topbar">
+    <div class="oco-container">
+      <div class="d-flex align-items-center justify-content-between">
+        <span class="oco-topbar__tag">Omnichannel orchestration for life sciences commercial operations</span>
+        <nav class="oco-topbar__links d-none d-lg-flex align-items-center">
+          <a href="https://www.indegene.com/who-we-are/about-us" class="oco-topbar__link">About Us</a>
+          <a href="https://www.indegene.com/who-we-are/leadership" class="oco-topbar__link">Leadership</a>
+          <a href="services.html" class="oco-topbar__link">Our Services</a>
+          <a href="casestudy.html" class="oco-topbar__link">Case Studies</a>
+        </nav>
+      </div>
+    </div>
+  </div>
+
+  <!-- Main Nav -->
+  <div class="oco-mainnav">
+    <div class="oco-container">
+      <div class="oco-mainnav__inner">
+
+        <a class="oco-mainnav__logo" href="index.html" aria-label="Indegene omnichannel orchestration home">
+          <img src="images/logo.webp" alt="Indegene Omnichannel Orchestration" width="1154" height="205" decoding="async">
+        </a>
+
+        <nav class="oco-mainnav__nav" aria-label="Primary navigation" role="navigation">
+          <div class="oco-mainnav__navitem" id="navitem-1">
+            <a class="oco-mainnav__navlink js-nav-trigger"
+               href="biopharmaceuticals.html"
+               data-menu="megamenu-1"
+               aria-haspopup="menu"
+               aria-expanded="false">
+              Who We Serve <i class="bi bi-chevron-down" aria-hidden="true"></i>
+            </a>
+          </div>
+          <div class="oco-mainnav__navitem" id="navitem-2">
+            <a class="oco-mainnav__navlink js-nav-trigger"
+               href="services.html"
+               data-menu="megamenu-2"
+               aria-haspopup="menu"
+               aria-expanded="false">
+              Capabilities <i class="bi bi-chevron-down" aria-hidden="true"></i>
+            </a>
+          </div>
+          <div class="oco-mainnav__navitem" id="navitem-3">
+            <a class="oco-mainnav__navlink js-nav-trigger"
+               href="by_role.html"
+               data-menu="megamenu-3"
+               aria-haspopup="menu"
+               aria-expanded="false">
+              Why Choose Us <i class="bi bi-chevron-down" aria-hidden="true"></i>
+            </a>
+          </div>
+          <div class="oco-mainnav__navitem" id="navitem-4">
+            <a class="oco-mainnav__navlink" href="casestudy.html">
+              Case Studies
+            </a>
+          </div>
+          <div class="oco-mainnav__navitem" id="navitem-5">
+            <a class="oco-mainnav__navlink" href="genai.html">
+              GenAI
+            </a>
+          </div>
+          <div class="oco-mainnav__navitem" id="navitem-6">
+            <a class="oco-mainnav__navlink" href="https://www.indegene.com/what-we-think/blogs">
+              Insights
+            </a>
+          </div>
+          <div class="oco-mainnav__navitem" id="navitem-7">
+            <a class="oco-mainnav__navlink" href="https://www.indegene.com/who-we-are/about-us">
+              About
+            </a>
+          </div>
+        </nav>
+
+        <div class="oco-mainnav__actions">
+          <button class="oco-mainnav__search-btn js-search-toggle"
+                  aria-label="Open search">
+            <i class="bi bi-search" aria-hidden="true"></i>
+          </button>
+          <a class="oco-mainnav__cta" href="contactus.html">Contact Us</a>
+        </div>
+
+        <button class="oco-mainnav__toggler"
+                data-bs-toggle="modal"
+                data-bs-target="#mobileNavModal"
+                aria-label="Open menu">
+          <i class="bi bi-list" aria-hidden="true"></i>
+        </button>
+      </div>
+    </div>
+
+    <!-- Mega-menus (full content retained) -->
+    <!-- Mega Menu 1: Who We Serve -->
+    <div class="oco-megamenu" id="megamenu-1">
+  <div class="oco-container">
+    <div class="row g-4">
+      <div class="col-12 col-lg-3">
+        <div class="oco-megamenu__sidebar">
+          <div class="oco-megamenu__sidebar-label">Main Pages</div>
+          <a class="oco-megamenu__tab is-active js-mm-tab" href="biopharmaceuticals.html" data-pane="mm1p1">
+            Pharmaceuticals
+          </a>
+          <a class="oco-megamenu__tab js-mm-tab" href="emerging-biotech.html" data-pane="mm1p2">
+            Emerging Biotech
+          </a>
+          <a class="oco-megamenu__tab js-mm-tab" href="medical-devices.html" data-pane="mm1p3">
+            Medical Devices
+          </a>
+          <a class="oco-megamenu__tab js-mm-tab" href="animal-health.html" data-pane="mm1p4">
+            Animal Healthcare
+          </a>
+        </div>
+      </div>
+      <div class="col-12 col-lg-9">
+        <div id="mm1p1" class="oco-megamenu__pane is-active">
+          <p class="oco-megamenu__section-label">Explore operating priorities</p>
+          <div class="row g-3">
+            <div class="col-12 col-md-6">
+              <a href="biopharmaceuticals.html#enterprise" class="oco-megamenu__link">
+                <span class="oco-h6">Sales and Commercial Leaders</span><p>See how pharma leaders align brands, markets, field execution, and commercial visibility.</p>
+              </a>
+              <a href="biopharmaceuticals.html#hcp" class="oco-megamenu__link">
+                <span class="oco-h6">Marketing and Brand Teams</span><p>Go directly to the section on HCP engagement, content operations, and launch activation.</p>
+              </a>
+            </div>
+            <div class="col-12 col-md-6">
+              <a href="biopharmaceuticals.html#patient" class="oco-megamenu__link">
+                <span class="oco-h6">Medical Affairs and Medical Communications</span>
+                <p>Medical affairs groups supporting compliant scientific communication and evidence-led engagement.</p>
+              </a>
+            </div>
+          </div>
+        </div>
+        <div id="mm1p2" class="oco-megamenu__pane">
+          <p class="oco-megamenu__section-label">Explore operating priorities</p>
+          <div class="row g-3">
+            <div class="col-12 col-md-6">
+              <a href="emerging-biotech.html#launch" class="oco-megamenu__link">
+                <span class="oco-h6">Leadership and Business Heads</span><p>See how leadership teams structure launch accountability, readiness, and commercial visibility.</p>
+              </a>
+              <a href="emerging-biotech.html#agile" class="oco-megamenu__link">
+                <span class="oco-h6">Commercial and Brand Teams</span><p>Go directly to the section on launch workflows, partner coordination, and execution control.</p>
+              </a>
+            </div>
+            <div class="col-12 col-md-6">
+              <a href="emerging-biotech.html#kol" class="oco-megamenu__link">
+                <span class="oco-h6">Medical Affairs and Medical Communications</span>
+                <p>Medical and KOL teams building credible specialist engagement in focused markets.</p>
+              </a>
+            </div>
+          </div>
+        </div>
+        <div id="mm1p3" class="oco-megamenu__pane">
+          <p class="oco-megamenu__section-label">Explore operating priorities</p>
+          <div class="row g-3">
+            <div class="col-12 col-md-6">
+              <a href="medical-devices.html#connected-commercialization" class="oco-megamenu__link">
+                <span class="oco-h6">Commercial Leaders</span><p>See how medtech teams coordinate provider, account, and field priorities across longer cycles.</p>
+              </a>
+              <a href="medical-devices.html#provider-education" class="oco-megamenu__link">
+                <span class="oco-h6">Marketing and Education Teams</span><p>Go directly to the section on education-led engagement, launch activation, and message control.</p>
+              </a>
+            </div>
+            <div class="col-12 col-md-6">
+              <a href="medical-devices.html#evidence-analytics" class="oco-megamenu__link">
+                <span class="oco-h6">Analytics and Insights Teams</span><p>Understand how evidence, engagement, and performance signals become faster adoption decisions.</p>
+              </a>
+            </div>
+          </div>
+        </div>
+        <div id="mm1p4" class="oco-megamenu__pane">
+          <p class="oco-megamenu__section-label">Explore operating priorities</p>
+          <div class="row g-3">
+            <div class="col-12 col-md-6">
+              <a href="animal-health.html#brand-growth" class="oco-megamenu__link">
+                <span class="oco-h6">Commercial and Portfolio Leaders</span><p>See how animal health teams align products, territories, and growth priorities in one model.</p>
+              </a>
+              <a href="animal-health.html#vet-engagement" class="oco-megamenu__link">
+                <span class="oco-h6">Marketing and Veterinary Teams</span><p>Go directly to the section on multi-audience journey design and coordinated activation.</p>
+              </a>
+            </div>
+            <div class="col-12 col-md-6">
+              <a href="animal-health.html#performance-insights" class="oco-megamenu__link">
+                <span class="oco-h6">Analytics and Operations Leaders</span><p>Understand how leaders read cross-audience performance and reallocate effort faster.</p>
+              </a>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+        <!-- Mega Menu 2: Capabilities -->
+    <div class="oco-megamenu" id="megamenu-2">
+      <div class="oco-container">
+        <div class="row g-4">
+          <div class="col-12 col-lg-3">
+            <div class="oco-megamenu__sidebar">
+              <div class="oco-megamenu__sidebar-label">Journey Stage</div>
+              <a class="oco-megamenu__tab is-active js-mm-tab" href="strategy.html" data-pane="mm2p1">Strategy</a>
+              <a class="oco-megamenu__tab js-mm-tab" href="planning.html" data-pane="mm2p2">Planning</a>
+              <a class="oco-megamenu__tab js-mm-tab" href="orchestration.html" data-pane="mm2p3">Orchestration</a>
+              <a class="oco-megamenu__tab js-mm-tab" href="execution.html" data-pane="mm2p4">Execution</a>
+              <a class="oco-megamenu__tab js-mm-tab" href="measurement.html" data-pane="mm2p5">Measurement</a>
+              <a class="oco-megamenu__tab js-mm-tab" href="analytics.html" data-pane="mm2p6">Analytics</a>
+            </div>
+          </div>
+          <div class="col-12 col-lg-9">
+            <div id="mm2p1" class="oco-megamenu__pane is-active">
+              <p class="oco-megamenu__section-label">Explore stage priorities</p>
+              <div class="row g-3">
+                <div class="col-12 col-md-6">
+                  <a href="strategy.html#overview-title" class="oco-megamenu__link">
+                    <span class="oco-h6">Operating Brief</span>
+                    <p>Define the commercial brief, decision criteria, and channel role before execution begins.</p>
+                  </a>
+                  <a href="strategy.html#workflow-title" class="oco-megamenu__link">
+                    <span class="oco-h6">Audience Priorities</span>
+                    <p>Focus teams on the audiences, behaviors, and moments that matter most.</p>
+                  </a>
+                </div>
+                <div class="col-12 col-md-6">
+                  <a href="strategy.html#focus-title" class="oco-megamenu__link">
+                    <span class="oco-h6">Investment Focus</span>
+                    <p>Prevent spend and effort from drifting across low-value activity.</p>
+                  </a>
+                </div>
+              </div>
+            </div>
+            <div id="mm2p2" class="oco-megamenu__pane">
+              <p class="oco-megamenu__section-label">Explore stage priorities</p>
+              <div class="row g-3">
+                <div class="col-12 col-md-6">
+                  <a href="planning.html#overview-title" class="oco-megamenu__link">
+                    <span class="oco-h6">Delivery Design</span>
+                    <p>Turn strategy into a delivery-ready plan across channels, markets, and teams.</p>
+                  </a>
+                  <a href="planning.html#workflow-title" class="oco-megamenu__link">
+                    <span class="oco-h6">Workflow Planning</span>
+                    <p>Sequence milestones, approvals, and handoffs before execution risk compounds.</p>
+                  </a>
+                </div>
+                <div class="col-12 col-md-6">
+                  <a href="planning.html#focus-title" class="oco-megamenu__link">
+                    <span class="oco-h6">Launch Readiness</span>
+                    <p>Clarify what must happen first, what can run in parallel, and where risk sits.</p>
+                  </a>
+                </div>
+              </div>
+            </div>
+            <div id="mm2p3" class="oco-megamenu__pane">
+              <p class="oco-megamenu__section-label">Explore stage priorities</p>
+              <div class="row g-3">
+                <div class="col-12 col-md-6">
+                  <a href="orchestration.html#overview-title" class="oco-megamenu__link">
+                    <span class="oco-h6">Operating Rhythm</span>
+                    <p>Set the governance cadence that keeps cross-functional execution aligned.</p>
+                  </a>
+                  <a href="orchestration.html#workflow-title" class="oco-megamenu__link">
+                    <span class="oco-h6">Roles and Routing</span>
+                    <p>Define ownership, decision paths, and escalation logic before delivery slips.</p>
+                  </a>
+                </div>
+                <div class="col-12 col-md-6">
+                  <a href="orchestration.html#focus-title" class="oco-megamenu__link">
+                    <span class="oco-h6">Execution Control</span>
+                    <p>Reduce rescue escalations, side conversations, and spreadsheet-led coordination.</p>
+                  </a>
+                </div>
+              </div>
+            </div>
+            <div id="mm2p4" class="oco-megamenu__pane">
+              <p class="oco-megamenu__section-label">Explore stage priorities</p>
+              <div class="row g-3">
+                <div class="col-12 col-md-6">
+                  <a href="execution.html#overview-title" class="oco-megamenu__link">
+                    <span class="oco-h6">Release Discipline</span>
+                    <p>Move approved work into market with the controls expected in enterprise environments.</p>
+                  </a>
+                  <a href="execution.html#workflow-title" class="oco-megamenu__link">
+                    <span class="oco-h6">Channel Activation</span>
+                    <p>Activate assets and channels without losing campaign intent across markets.</p>
+                  </a>
+                </div>
+                <div class="col-12 col-md-6">
+                  <a href="execution.html#focus-title" class="oco-megamenu__link">
+                    <span class="oco-h6">Launch Assurance</span>
+                    <p>Reduce avoidable defects, rollback risk, and launch-day confusion.</p>
+                  </a>
+                </div>
+              </div>
+            </div>
+            <div id="mm2p5" class="oco-megamenu__pane">
+              <p class="oco-megamenu__section-label">Explore stage priorities</p>
+              <div class="row g-3">
+                <div class="col-12 col-md-6">
+                  <a href="measurement.html#overview-title" class="oco-megamenu__link">
+                    <span class="oco-h6">Performance Reporting</span>
+                    <p>Build reporting that supports omnichannel execution as an enterprise capability.</p>
+                  </a>
+                  <a href="measurement.html#workflow-title" class="oco-megamenu__link">
+                    <span class="oco-h6">Outcome Visibility</span>
+                    <p>Connect delivery, audience response, and commercial performance in one view.</p>
+                  </a>
+                </div>
+                <div class="col-12 col-md-6">
+                  <a href="measurement.html#focus-title" class="oco-megamenu__link">
+                    <span class="oco-h6">Decision Cadence</span>
+                    <p>Help stakeholders spend less time debating data and more time acting on it.</p>
+                  </a>
+                </div>
+              </div>
+            </div>
+            <div id="mm2p6" class="oco-megamenu__pane">
+              <p class="oco-megamenu__section-label">Explore stage priorities</p>
+              <div class="row g-3">
+                <div class="col-12 col-md-6">
+                  <a href="analytics.html#overview-title" class="oco-megamenu__link">
+                    <span class="oco-h6">Performance Analysis</span>
+                    <p>Use analytics to isolate what is changing engagement, response, and business impact.</p>
+                  </a>
+                  <a href="analytics.html#workflow-title" class="oco-megamenu__link">
+                    <span class="oco-h6">Decision Support</span>
+                    <p>Feed insight back into planning, orchestration, and execution with confidence.</p>
+                  </a>
+                </div>
+                <div class="col-12 col-md-6">
+                  <a href="analytics.html#focus-title" class="oco-megamenu__link">
+                    <span class="oco-h6">Optimization Priorities</span>
+                    <p>Focus improvement on the audiences, channels, and moments that matter most.</p>
+                  </a>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Mega Menu 3: Why Choose Us -->
+    <div class="oco-megamenu" id="megamenu-3">
+      <div class="oco-container">
+        <div class="row g-4">
+          <div class="col-12 col-lg-3">
+            <div class="oco-megamenu__sidebar">
+              <div class="oco-megamenu__sidebar-label">Proof Points</div>
+              <a class="oco-megamenu__tab is-active js-mm-tab" href="by_role.html" data-pane="mm3p1">Pharma-Native Expertise</a>
+              <a class="oco-megamenu__tab js-mm-tab" href="by_function.html" data-pane="mm3p2">Compliance-by-Design</a>
+              <a class="oco-megamenu__tab js-mm-tab" href="by_channel.html" data-pane="mm3p3">Omnichannel Execution at Scale</a>
+            </div>
+          </div>
+          <div class="col-12 col-lg-9">
+            <div id="mm3p1" class="oco-megamenu__pane is-active">
+              <p class="oco-megamenu__section-label">Explore the proof</p>
+              <div class="row g-3">
+                <div class="col-12 col-md-6">
+                  <a href="by_role.html#expertise-overview" class="oco-megamenu__link"><span class="oco-h6">Domain Expertise</span><p>Life sciences judgment is built into the operating flow.</p></a>
+                  <a href="by_role.html#expertise-teams" class="oco-megamenu__link"><span class="oco-h6">Delivery Fluency</span><p>See how teams work with brand, launch, HCP, and review fluency from the first session.</p></a>
+                </div>
+                <div class="col-12 col-md-6">
+                  <a href="by_role.html#expertise-impact" class="oco-megamenu__link"><span class="oco-h6">Business Impact</span><p>See how embedded expertise improves ramp-up speed, decision quality, and accountability.</p></a>
+                </div>
+              </div>
+            </div>
+            <div id="mm3p2" class="oco-megamenu__pane">
+              <p class="oco-megamenu__section-label">Explore the proof</p>
+              <div class="row g-3">
+                <div class="col-12 col-md-6">
+                  <a href="by_function.html#compliance-overview" class="oco-megamenu__link"><span class="oco-h6">Built-In Governance</span><p>See how governance becomes part of the operating rhythm instead of a late-stage delay.</p></a>
+                  <a href="by_function.html#compliance-controls" class="oco-megamenu__link"><span class="oco-h6">Embedded Controls</span><p>See how approvals, QA, and validation are structured from brief to release.</p></a>
+                </div>
+                <div class="col-12 col-md-6">
+                  <a href="by_function.html#compliance-impact" class="oco-megamenu__link"><span class="oco-h6">Business Impact</span><p>See how built-in controls reduce rework, improve launch confidence, and strengthen assurance.</p></a>
+                </div>
+              </div>
+            </div>
+            <div id="mm3p3" class="oco-megamenu__pane">
+              <p class="oco-megamenu__section-label">Explore the proof</p>
+              <div class="row g-3">
+                <div class="col-12 col-md-6">
+                  <a href="by_channel.html#execution-overview" class="oco-megamenu__link"><span class="oco-h6">Connected Execution</span><p>See how channel execution stays tied to strategy, workflow control, and performance management.</p></a>
+                  <a href="by_channel.html#execution-orchestration" class="oco-megamenu__link"><span class="oco-h6">One Operating Plan</span><p>See how roles, assets, and activation sequencing work through one coordinated model.</p></a>
+                </div>
+                <div class="col-12 col-md-6">
+                  <a href="by_channel.html#execution-impact" class="oco-megamenu__link"><span class="oco-h6">Business Impact</span><p>See how coordinated execution improves customer consistency, visibility, and efficiency.</p></a>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Search Panel -->
+    <div class="oco-searchpanel" id="searchPanel" role="search" aria-label="Site search">
+      <div class="oco-container">
+        <div class="oco-searchpanel__wrap">
+          <input class="oco-searchpanel__input"
+                 type="search"
+                 placeholder="Search - topics, services, insights..."
+                 aria-label="Search site content"
+                 enterkeyhint="search">
+          <button class="oco-searchpanel__btn" type="button" aria-label="Submit search">
+            <i class="bi bi-search" aria-hidden="true"></i>
+          </button>
+        </div>
+      </div>
+    </div>
+
+  </div><!-- /oco-mainnav -->
+</header>
+
+<!-- Mobile Nav Modal -->
+<div class="modal fade oco-modal" id="mobileNavModal" tabindex="-1" aria-label="Mobile navigation" aria-hidden="true">
+  <div class="modal-dialog modal-fullscreen">
+    <div class="modal-content">
+      <div class="modal-header">
+        <a href="index.html" aria-label="Indegene omnichannel orchestration home"><img src="images/logo.webp" alt="Indegene Omnichannel Orchestration" width="1154" height="205" decoding="async"></a>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body pt-2 px-3">
+        <div class="accordion accordion-flush" id="mobileAccordion">
+          <div class="accordion-item">
+            <h2 class="accordion-header">
+              <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse"
+                      data-bs-target="#mob1">Who We Serve</button>
+            </h2>
+            <div id="mob1" class="accordion-collapse collapse" data-bs-parent="#mobileAccordion">
+  <div class="accordion-body">
+    <a href="biopharmaceuticals.html">Pharmaceuticals</a>
+    <a href="emerging-biotech.html">Emerging Biotech</a>
+    <a href="medical-devices.html">Medical Devices</a>
+    <a href="animal-health.html">Animal Healthcare</a>
+  </div>
+</div>
+          </div>
+          <div class="accordion-item">
+            <h2 class="accordion-header">
+              <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse"
+                      data-bs-target="#mob2">Capabilities</button>
+            </h2>
+            <div id="mob2" class="accordion-collapse collapse" data-bs-parent="#mobileAccordion">
+              <div class="accordion-body">
+                <a href="strategy.html">Strategy</a>
+                <a href="planning.html">Planning</a>
+                <a href="orchestration.html">Orchestration</a>
+                <a href="execution.html">Execution</a>
+                <a href="measurement.html">Measurement</a>
+                <a href="analytics.html">Analytics</a>
+              </div>
+            </div>
+          </div>
+          <div class="accordion-item">
+            <h2 class="accordion-header">
+              <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse"
+                      data-bs-target="#mob3">Why Choose Us</button>
+            </h2>
+            <div id="mob3" class="accordion-collapse collapse" data-bs-parent="#mobileAccordion">
+              <div class="accordion-body">
+                <a href="by_role.html">Pharma-Native Expertise</a>
+                <a href="by_function.html">Compliance-by-Design</a>
+                <a href="by_channel.html">Omnichannel Execution at Scale</a>
+              </div>
+            </div>
+          </div>
+          <div class="accordion-item">
+            <h2 class="accordion-header">
+              <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse"
+                      data-bs-target="#mob4">More</button>
+            </h2>
+            <div id="mob4" class="accordion-collapse collapse" data-bs-parent="#mobileAccordion">
+              <div class="accordion-body">
+                <a href="casestudy.html">Case Studies</a>
+                <a href="genai.html">GenAI</a>
+                <a href="https://www.indegene.com/what-we-think/blogs">Insights</a>
+                <a href="https://www.indegene.com/who-we-are/about-us">About</a>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="mt-4 pb-4">
+          <a href="contactus.html" data-contact-modal="true" class="oco-btn-primary w-100 justify-content-center">
+            Contact Us <i class="bi bi-arrow-right" aria-hidden="true"></i>
+          </a>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- MAIN --><main id="maincontent">
+  <section class="oco-genai-hero">
+    <div class="oco-container">
+      <div class="oco-genai-hero__grid">
+        <div class="oco-genai-hero__copy">
+          <p class="oco-genai-hero__eyebrow">Generative AI Services</p>
+            <h1 class="oco-genai-hero__title">GenAI for <em>enterprise orchestration</em></h1>
+          <p class="oco-genai-hero__sub">Indegene helps life sciences organizations apply GenAI across content operations, insight generation, review readiness, and workflow support without separating AI from governance, measurement, or execution accountability.</p>
+          <div class="oco-genai-hero__actions">
+            <a href="contactus.html" data-contact-modal="true" class="oco-btn-primary">Discuss a GenAI operating model <i class="bi bi-arrow-right" aria-hidden="true"></i></a>
+            <a href="#demo" class="oco-btn-secondary-light">See interactive demo <i class="bi bi-arrow-down" aria-hidden="true"></i></a>
+          </div>
+          <div class="oco-genai-hero__meta">
+            <span class="oco-genai-pill"><i class="bi bi-shield-check"></i> Compliance-aware operating model</span>
+            <span class="oco-genai-pill"><i class="bi bi-diagram-3"></i> Modular content acceleration</span>
+            <span class="oco-genai-pill"><i class="bi bi-bar-chart"></i> Insight-led orchestration</span>
+          </div>
+        </div>
+
+        <div class="oco-genai-visual" aria-hidden="true">
+          <div class="oco-genai-visual__grid"></div>
+          <svg viewBox="0 0 520 520" preserveAspectRatio="none">
+            <line x1="86" y1="124" x2="252" y2="152"></line>
+            <line x1="252" y1="152" x2="386" y2="126"></line>
+            <line x1="252" y1="152" x2="214" y2="328"></line>
+            <line x1="214" y1="328" x2="374" y2="364"></line>
+            <line x1="386" y1="126" x2="374" y2="364"></line>
+            <line x1="86" y1="124" x2="214" y2="328"></line>
+          </svg>
+          <span class="oco-genai-node" style="top: 22%; left: 14%;"></span>
+          <span class="oco-genai-node oco-genai-node--accent" style="top: 27%; left: 47%;"></span>
+          <span class="oco-genai-node" style="top: 21%; left: 74%;"></span>
+          <span class="oco-genai-node oco-genai-node--accent" style="top: 63%; left: 40%;"></span>
+          <span class="oco-genai-node" style="top: 71%; left: 71%;"></span>
+          <div class="oco-genai-visual__panel">
+            <div class="oco-genai-visual__panel-head">
+              <span>Applied orchestration layer</span>
+              <i class="bi bi-stars"></i>
+            </div>
+            <div class="oco-genai-visual__panel-body">
+              <div>
+                <div class="oco-genai-visual__chips">
+                  <span>Content adaptation</span>
+                  <span>Audience variants</span>
+                  <span>Workflow automation</span>
+                  <span>Channel personalisation</span>
+                </div>
+                <div class="oco-genai-visual__bars">
+                  <div class="oco-genai-visual__bar"><span style="width: 88%;"></span></div>
+                  <div class="oco-genai-visual__bar"><span style="width: 72%; animation-delay: 0.5s;"></span></div>
+                  <div class="oco-genai-visual__bar"><span style="width: 61%; animation-delay: 1s;"></span></div>
+                </div>
+                <div class="oco-genai-statline">
+                  <div><strong>Governed</strong><span>content adaptation</span></div>
+                  <div><strong>Reusable</strong><span>workflow prompts</span></div>
+                </div>
+              </div>
+              <div class="oco-genai-visual__insight">
+                <span class="oco-h6">Martech Acceleration</span>
+                <ul>
+                  <li><i class="bi bi-check-circle-fill"></i><span>Create more campaign variants in less time</span></li>
+                  <li><i class="bi bi-check-circle-fill"></i><span>Scale personalised messaging across channels</span></li>
+                  <li><i class="bi bi-check-circle-fill"></i><span>Speed up optimisation and activation cycles</span></li>
+                </ul>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="oco-section js-reveal">
+    <div class="oco-container">
+      <div class="oco-genai-overview">
+        <div>
+          <p class="oco-overline">What Is GenAI</p>
+          <div class="oco-divider"></div>
+          <h2 class="oco-section-title">Where GenAI creates enterprise value in orchestration.</h2>
+          <p class="oco-section-sub">The value of GenAI does not come from isolated content generation. It comes from embedding AI within the operating model that governs prompts, source content, review logic, analytics, and release control.</p>
+          <p class="oco-section-sub mt-3">Our approach centers on the operating layer around GenAI: grounded source use, prompt design, workflow orchestration, human checkpoints, and measurable deployment across omnichannel programs.</p>
+        </div>
+        <div class="oco-genai-stack">
+          <div class="oco-genai-stack-card">
+            <h3>Grounded Generation</h3>
+            <p>Outputs are anchored to approved source material, structured knowledge assets, and reusable components so teams can improve traceability, reuse, and review confidence.</p>
+          </div>
+          <div class="oco-genai-stack-card">
+            <h3>Human-Governed Workflows</h3>
+            <p>Workflows are designed around decision points so brand, medical, operations, and market teams retain authority over release decisions and execution quality.</p>
+          </div>
+          <div class="oco-genai-stack-card">
+            <h3>Production-Ready Deployment</h3>
+            <p>Generated outputs are connected to content operations, campaign calendars, activation workflows, and delivery platforms rather than treated as standalone experiments.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="oco-section oco-section--soft js-reveal">
+    <div class="oco-container">
+      <div class="mb-5">
+        <p class="oco-overline">Explore Capabilities</p>
+        <div class="oco-divider"></div>
+        <h2 class="oco-section-title">Two enterprise deployment patterns.</h2>
+        <p class="oco-section-sub">Each capability addresses a different operating requirement, making it easier to identify where GenAI improves throughput, control, or decision support.</p>
+      </div>
+      <div class="oco-genai-switcher">
+        <a class="oco-genai-switcher__card js-reveal is-d1" href="#prompt-library">
+          <span class="oco-genai-switcher__eyebrow">Capability One</span>
+          <h3>Prompt Library</h3>
+          <p>A centralized prompt layer for standardizing high-frequency campaign tasks across teams, markets, and recurring workflows.</p>
+          <div class="oco-genai-switcher__meta">
+            <span>Reusable prompt frameworks</span>
+            <span>Reusable execution patterns</span>
+          </div>
+        </a>
+        <a class="oco-genai-switcher__card oco-genai-switcher__card--agentforce js-reveal is-d2" href="#agentforce">
+          <span class="oco-genai-switcher__eyebrow">Capability Two</span>
+          <h3>Agentforce</h3>
+          <p>An orchestration-led operating layer for routing work, guiding action, and preserving human control inside complex campaign workflows.</p>
+          <div class="oco-genai-switcher__meta">
+            <span>Workflow-aware coordination</span>
+            <span>Connected execution support</span>
+          </div>
+        </a>
+      </div>
+    </div>
+  </section>
+
+  <section class="oco-section oco-genai-chapter oco-genai-chapter--prompt js-reveal" id="prompt-library">
+    <div class="oco-container">
+      <div class="mb-5">
+        <p class="oco-overline">Prompt Library</p>
+        <div class="oco-divider"></div>
+        <h2 class="oco-section-title">A controlled prompt layer for repeatable campaign execution.</h2>
+        <p class="oco-section-sub">Prompt Library provides reusable, pre-validated prompts that help teams apply GenAI consistently across day-to-day orchestration without reinventing instructions or weakening controls.</p>
+      </div>
+      <div class="oco-genai-story">
+        <div class="oco-genai-story__panel oco-genai-story__panel--accent">
+          <h3>Why it matters</h3>
+          <div class="oco-genai-story__points">
+            <div class="oco-genai-story__point">
+              <strong>Faster execution without fragmented delivery</strong>
+              <p>Reducing prompt creation time and repeat manual effort helps teams improve execution speed while maintaining common standards across markets, campaigns, and functions.</p>
+            </div>
+            <div class="oco-genai-story__point">
+              <strong>Consistency that scales</strong>
+              <p>Reusable prompts support more consistent outputs across teams and campaigns, making AI usage easier to operationalize at enterprise scale.</p>
+            </div>
+            <div class="oco-genai-story__point">
+              <strong>Innovation inside the service model</strong>
+              <p>Beyond efficiency, the model creates a controlled path for introducing AI into existing services through more disciplined workflows.</p>
+            </div>
+          </div>
+          <div class="oco-genai-story__matrix">
+            <div class="oco-genai-story__tile">
+              <strong>Where it applies</strong>
+              <span>Segmentation, content, QA, deployment, analytics, and reporting across the full campaign lifecycle.</span>
+            </div>
+            <div class="oco-genai-story__tile">
+              <strong>Built for impact</strong>
+              <span>Designed for enterprise orchestration, already in use across selected clients, and updated as additional use cases are introduced.</span>
+            </div>
+          </div>
+        </div>
+        <div class="oco-genai-story__panel">
+          <h3>How it creates value</h3>
+          <div class="oco-genai-story__points">
+            <div class="oco-genai-story__point">
+              <strong>Transforms repetitive work into AI-assisted workflows</strong>
+              <p>Prompt patterns can be reused across high-frequency tasks, improving speed without increasing coordination overhead or review ambiguity.</p>
+            </div>
+            <div class="oco-genai-story__point">
+              <strong>Supports a shift from execution to decisions</strong>
+              <p>Teams spend less time recreating instructions and more time evaluating output quality, business implications, and next-best actions.</p>
+            </div>
+            <div class="oco-genai-story__point">
+              <strong>Moves toward AI-augmented orchestration</strong>
+              <p>This supports a more mature operating model in which efficiency, quality, and control improve together.</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="oco-section oco-genai-chapter oco-genai-chapter--agentforce js-reveal" id="agentforce">
+    <div class="oco-container">
+      <div class="mb-5">
+        <p class="oco-overline">Agentforce</p>
+        <div class="oco-divider"></div>
+        <h2 class="oco-section-title">An orchestration layer for workflow-driven AI support.</h2>
+        <p class="oco-section-sub">Agentforce connects workflow logic, routing rules, guided actions, and review checkpoints to support more coordinated execution across complex omnichannel programs.</p>
+      </div>
+      <div class="row g-4">
+        <div class="col-12 col-lg-4 js-reveal is-d1">
+          <div class="oco-genai-offer">
+            <div class="oco-genai-offer__icon"><i class="bi bi-bezier2"></i></div>
+            <h3>Workflow-aware coordination</h3>
+            <p>Connect tasks, dependencies, and operating checkpoints so AI support is embedded in the real flow of campaign work.</p>
+            <ul class="oco-genai-offer__list">
+              <li><i class="bi bi-check-circle-fill"></i><span>Task routing across delivery roles</span></li>
+              <li><i class="bi bi-check-circle-fill"></i><span>Decision support tied to workflow state</span></li>
+              <li><i class="bi bi-check-circle-fill"></i><span>Clear escalation and exception paths</span></li>
+            </ul>
+          </div>
+        </div>
+        <div class="col-12 col-lg-4 js-reveal is-d2">
+          <div class="oco-genai-offer">
+            <div class="oco-genai-offer__icon"><i class="bi bi-people"></i></div>
+            <h3>Human-governed execution</h3>
+            <p>Agentforce is designed to support teams inside operating structures that preserve review control, escalation logic, and release discipline.</p>
+            <ul class="oco-genai-offer__list">
+              <li><i class="bi bi-check-circle-fill"></i><span>Role-based checkpoints before activation</span></li>
+              <li><i class="bi bi-check-circle-fill"></i><span>Operational visibility across handoffs</span></li>
+              <li><i class="bi bi-check-circle-fill"></i><span>Governance aligned to commercial workflows</span></li>
+            </ul>
+          </div>
+        </div>
+        <div class="col-12 col-lg-4 js-reveal is-d3">
+          <div class="oco-genai-offer">
+            <div class="oco-genai-offer__icon"><i class="bi bi-lightning-charge"></i></div>
+            <h3>Connected operating value</h3>
+            <p>By linking signals, prompts, workflow actions, and execution support, Agentforce helps teams move faster while keeping accountability visible.</p>
+            <ul class="oco-genai-offer__list">
+              <li><i class="bi bi-check-circle-fill"></i><span>Faster movement from signal to action</span></li>
+              <li><i class="bi bi-check-circle-fill"></i><span>Less coordination overhead across teams</span></li>
+              <li><i class="bi bi-check-circle-fill"></i><span>Stronger alignment between planning and delivery</span></li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="oco-section js-reveal" id="demo">
+    <div class="oco-container">
+      <div class="mb-5">
+        <p class="oco-overline">Interactive Demo</p>
+        <div class="oco-divider"></div>
+        <h2 class="oco-section-title">Illustrative operating scenarios for enterprise teams.</h2>
+        <p class="oco-section-sub">Use the selector to compare practical deployment patterns. The panel shows how reusable prompts, orchestration logic, and execution support change by objective.</p>
+      </div>
+      <div class="oco-genai-demo">
+        <div class="oco-genai-demo__grid">
+          <div class="oco-genai-demo__nav" role="tablist" aria-label="GenAI demo scenarios">
+            <button type="button" class="oco-genai-demo__trigger is-active" data-demo="content">
+              <strong>Prompt Library</strong>
+              <span>Apply pre-validated prompts to standardise execution across repeatable campaign tasks.</span>
+            </button>
+            <button type="button" class="oco-genai-demo__trigger" data-demo="segmentation">
+              <strong>Agentforce</strong>
+              <span>Coordinate workflow logic, task routing, and guided action across teams and delivery checkpoints.</span>
+            </button>
+            <button type="button" class="oco-genai-demo__trigger" data-demo="review">
+              <strong>Execution Support Layer</strong>
+              <span>Support delivery teams with summaries, content lineage, and exception visibility across campaign workflows.</span>
+            </button>
+          </div>
+          <div class="oco-genai-demo__panel">
+            <div>
+              <p class="oco-genai-demo__eyebrow" id="demoLabel">Use Case</p>
+              <h3 class="oco-genai-demo__title" id="demoTitle">Prompt Library for omnichannel campaign execution</h3>
+              <p class="oco-genai-demo__body" id="demoBody">A centralized prompt layer gives teams reusable, pre-validated instructions for high-frequency campaign tasks, reducing manual effort and improving consistency across distributed execution teams.</p>
+              <ul class="oco-genai-demo__points" id="demoPoints">
+                <li><i class="bi bi-check-circle-fill"></i><span>Standardise segmentation, content, QA, deployment, analytics, and reporting prompts.</span></li>
+                <li><i class="bi bi-check-circle-fill"></i><span>Reduce prompt recreation across teams and campaign cycles.</span></li>
+                <li><i class="bi bi-check-circle-fill"></i><span>Move faster with reusable frameworks that are ready for governed deployment.</span></li>
+              </ul>
+            </div>
+            <div class="oco-genai-artboard" id="demoArtboard" data-mode="content">
+              <div class="oco-genai-artboard__mesh"></div>
+              <span class="oco-genai-artboard__node oco-genai-artboard__node--a"></span>
+              <span class="oco-genai-artboard__node oco-genai-artboard__node--b"></span>
+              <span class="oco-genai-artboard__node oco-genai-artboard__node--c"></span>
+              <span class="oco-genai-artboard__node oco-genai-artboard__node--d"></span>
+              <div class="oco-genai-artboard__panel">
+                <div class="oco-genai-artboard__header">
+                  <span id="demoMetricLabel">Execution acceleration</span>
+                  <span id="demoMetricValue">Ready</span>
+                </div>
+                <div class="oco-genai-artboard__metric">
+                  <span style="--metric-width: 72%;"></span>
+                  <span style="--metric-width: 61%;"></span>
+                  <span style="--metric-width: 54%;"></span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="oco-section oco-section--dark js-reveal">
+    <div class="oco-container">
+      <div class="mb-5">
+        <p class="oco-overline">Operating Priorities</p>
+        <div class="oco-divider"></div>
+        <h2 class="oco-section-title oco-section-title--light">Enterprise priorities for GenAI deployment.</h2>
+        <p class="oco-section-sub oco-section-sub--light">Effective GenAI programs are built around operating guardrails, ownership models, measurable business cases, and explicit release control. Our focus is on the orchestration layer around the model, not the model in isolation.</p>
+      </div>
+      <div class="oco-genai-data-band">
+        <div class="row g-4">
+          <div class="col-12 col-md-4">
+            <div class="oco-genai-data-band__item">
+              <div class="oco-genai-data-band__num">3<span> layers</span></div>
+              <div class="oco-genai-data-band__label">Operating layers for enterprise GenAI adoption: governed prompts, workflow design, and AI-assisted delivery controls.</div>
+            </div>
+          </div>
+          <div class="col-12 col-md-4">
+            <div class="oco-genai-data-band__item">
+              <div class="oco-genai-data-band__num">2</div>
+              <div class="oco-genai-data-band__label">Applied capabilities at the centre of this offer: Prompt Library for reusable prompt assets and Agentforce for orchestrated workflow support.</div>
+            </div>
+          </div>
+          <div class="col-12 col-md-4">
+            <div class="oco-genai-data-band__item">
+              <div class="oco-genai-data-band__num">1</div>
+              <div class="oco-genai-data-band__label">Connected operating layer spanning prompts, review logic, workflow routing, delivery teams, and activation channels.</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="oco-section js-reveal">
+    <div class="oco-container">
+      <div class="oco-genai-cta">
+        <h2 class="oco-genai-cta__title">Ready to design a more controlled GenAI operating model?</h2>
+        <p class="oco-genai-cta__sub">Discuss how GenAI can improve throughput, strengthen control, and support connected customer engagement across life sciences commercial orchestration.</p>
+        <a href="contactus.html" data-contact-modal="true" class="oco-btn-primary">Speak to our GenAI team <i class="bi bi-arrow-right" aria-hidden="true"></i></a>
+      </div>
+    </div>
+  </section>
+</main>
+
+<footer class="oco-footer">
+  <div class="oco-container">
+    <div class="row g-5">
+      <div class="col-12 col-lg-3">
+        <div class="oco-footer__brand">
+          <img src="images/logo.webp" alt="Indegene Omnichannel Orchestration" width="1154" height="205" decoding="async" loading="lazy">
+          <p>Enterprise omnichannel orchestration for life sciences organizations.</p>
+          <a class="oco-footer__cta" href="contactus.html">Contact Us</a>
+        </div>
+      </div>
+      <div class="col-6 col-sm-4 col-lg-2 oco-footer__col">
+        <h2 class="oco-footer__heading">Company</h2>
+        <ul>
+          <li><a href="https://www.indegene.com/who-we-are/about-us">About Us</a></li>
+          <li><a href="contactus.html">Contact</a></li>
+          <li><a href="https://www.indegene.com/careers">Careers</a></li>
+        </ul>
+      </div>
+      <div class="col-6 col-sm-4 col-lg-2 oco-footer__col">
+        <h2 class="oco-footer__heading">Who We Serve</h2>
+        <ul>
+          <li><a href="biopharmaceuticals.html">Pharmaceuticals</a></li>
+          <li><a href="emerging-biotech.html">Emerging Biotech</a></li>
+          <li><a href="medical-devices.html">Medical Devices</a></li>
+          <li><a href="animal-health.html">Animal Healthcare</a></li>
+        </ul>
+      </div>
+      <div class="col-6 col-sm-4 col-lg-2 oco-footer__col">
+        <h2 class="oco-footer__heading">Capabilities</h2>
+        <ul>
+          <li><a href="strategy.html">Strategy</a></li>
+          <li><a href="planning.html">Planning</a></li>
+          <li><a href="execution.html">Execution</a></li>
+          <li><a href="analytics.html">Analytics</a></li>
+        </ul>
+      </div>
+      <div class="col-6 col-sm-4 col-lg-2 oco-footer__col">
+        <h2 class="oco-footer__heading">Resources</h2>
+        <ul>
+          <li><a href="casestudy.html">Case Studies</a></li>
+          <li><a href="https://www.indegene.com/what-we-think/blogs">Insights</a></li>
+          <li><a href="genai.html#demo">GenAI</a></li>
+          <li><a href="contactus.html#privacy-policy">Privacy</a></li>
+        </ul>
+      </div>
+    </div>
+    <div class="oco-footer__bottom">
+      <p>&copy; 2026 Indegene. All rights reserved.</p>
+      <a href="#top" class="oco-footer__backtop js-backtop">Back to top <i class="bi bi-chevron-up"></i></a>
+    </div>
+  </div>
+</footer>
+
+<script src="https://code.jquery.com/jquery-3.7.1.min.js" integrity="sha256-/JqT3SQfawRcv/BIHPThkBvs0OEvtFFmqPF/lYI/Cxo=" crossorigin="anonymous"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js" integrity="sha384-FKyoEForCGlyvwx9Hj09JcYn3nv7wiPVlz7YYwJrWVcXK/BmnVDxM+D2scQbITxI" crossorigin="anonymous"></script>
+<script src="oco-navbar.js"></script>
+<script src="oco-nav-behavior.js"></script>
+<script src="oco-contact-modal.js"></script>
+<script src="oco-cms-shared.js"></script>
+<script src="oco-cms.js"></script>
+<script>
+$(function () {
+  'use strict';
+
+  var prefersReduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  var demoData = {
+    content: {
+      label: 'Use Case',
+      title: 'Prompt Library for omnichannel campaign execution',
+      body: 'A centralized prompt layer gives teams reusable, pre-validated instructions for high-frequency campaign tasks, reducing manual effort while improving consistency across execution teams.',
+      points: [
+        'Standardise segmentation, content, QA, deployment, analytics, and reporting prompts.',
+        'Reduce prompt recreation across teams and campaign cycles.',
+        'Move faster with reusable frameworks that are ready for governed deployment.'
+      ],
+      metricLabel: 'Execution readiness',
+      metricValue: 'Ready',
+      mode: 'content',
+      metrics: ['72%', '61%', '54%']
+    },
+    segmentation: {
+      label: 'Use Case',
+      title: 'Agentforce for workflow-aware campaign coordination',
+      body: 'Agentforce connects workflow logic, task routing, and guided operational actions so teams can move from signal to execution with more clarity and less handoff friction.',
+      points: [
+        'Route actions to the right delivery teams based on workflow state and campaign needs.',
+        'Surface next-best operational actions across planning, deployment, and execution checkpoints.',
+        'Keep human review and release decisions embedded in the flow of work.'
+      ],
+      metricLabel: 'Workflow readiness',
+      metricValue: 'Aligned',
+      mode: 'segmentation',
+      metrics: ['79%', '66%', '58%']
+    },
+    review: {
+      label: 'Use Case',
+      title: 'Execution-support workflow for campaign delivery teams',
+      body: 'Instead of replacing delivery decisions, GenAI can compress the preparation work around them by surfacing source lineage, summarising changes, and highlighting exception patterns before final release.',
+      points: [
+        'Summarise deltas between source content and generated output.',
+        'Expose unsupported phrasing or missing source references before release.',
+        'Create structured delivery packs that improve stakeholder turnaround time.'
+      ],
+      metricLabel: 'Review control',
+      metricValue: 'Governed',
+      mode: 'review',
+      metrics: ['41%', '72%', '64%']
+    }
+  };
+
+  function renderDemo(mode) {
+    var data = demoData[mode];
+    if (!data) {
+      return;
+    }
+
+    $('#demoLabel').text(data.label);
+    $('#demoTitle').text(data.title);
+    $('#demoBody').text(data.body);
+    $('#demoMetricLabel').text(data.metricLabel);
+    $('#demoMetricValue').text(data.metricValue);
+    $('#demoArtboard').attr('data-mode', data.mode);
+
+    $('#demoPoints').html(data.points.map(function (point) {
+      return '<li><i class="bi bi-check-circle-fill" aria-hidden="true"></i><span>' + point + '</span></li>';
+    }).join(''));
+
+    var metrics = $('#demoArtboard .oco-genai-artboard__metric span');
+    metrics.each(function (index) {
+      $(this).css('--metric-width', data.metrics[index] || '50%');
+    });
+  }
+
+  $('.oco-genai-demo__trigger').on('click', function () {
+    var mode = $(this).data('demo');
+    $('.oco-genai-demo__trigger').removeClass('is-active').attr('aria-pressed', 'false');
+    $(this).addClass('is-active').attr('aria-pressed', 'true');
+    renderDemo(mode);
+  });
+
+  $('.js-backtop').on('click', function (e) {
+    e.preventDefault();
+    window.scrollTo({ top: 0, behavior: prefersReduced ? 'auto' : 'smooth' });
+  });
+
+  if (!prefersReduced) {
+    var revealNodes = document.querySelectorAll('.js-reveal');
+    if ('IntersectionObserver' in window) {
+      var io = new IntersectionObserver(function (entries) {
+        entries.forEach(function (entry) {
+          if (entry.isIntersecting) {
+            entry.target.classList.add('is-visible');
+            io.unobserve(entry.target);
+          }
+        });
+      }, { threshold: 0.1 });
+      revealNodes.forEach(function (node) { io.observe(node); });
+    } else {
+      revealNodes.forEach(function (node) { node.classList.add('is-visible'); });
+    }
+  } else {
+    document.querySelectorAll('.js-reveal').forEach(function (node) {
+      node.classList.add('is-visible');
+    });
+  }
+});
+</script>
+</body>
+</html>
+
+
+
+
+
+
+
+

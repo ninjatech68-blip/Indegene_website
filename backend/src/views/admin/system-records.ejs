@@ -1,0 +1,109 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <%- include('partials/head') %>
+</head>
+<body>
+  <div class="admin-shell">
+    <%- include('partials/sidebar', { collections, activeCollectionKey, currentUser }) %>
+
+    <main class="admin-main">
+      <div class="admin-topbar">
+        <div>
+          <p class="admin-eyebrow">Advanced</p>
+          <h1 class="admin-title">Internal/System Records</h1>
+          <p class="admin-subtitle">These records support legacy links, protected pages, or internal website hydration flows. They are intentionally separated from the normal website editing path.</p>
+        </div>
+      </div>
+
+      <%- include('partials/notice', { notice }) %>
+
+      <section class="admin-grid admin-grid--two">
+        <article class="admin-card admin-panel">
+          <div class="admin-page-actions">
+            <div>
+              <h2 class="admin-section-title">Internal CMS page records</h2>
+              <p class="admin-section-copy">Records here are not part of the public website page inventory shown in the normal Website Pages area.</p>
+            </div>
+          </div>
+
+          <div class="admin-list admin-list--spaced">
+            <% if (!internalPages.length) { %>
+              <div class="admin-empty">No internal page records are currently present.</div>
+            <% } %>
+            <% internalPages.forEach((page) => { %>
+              <article class="admin-submission admin-submission--compact">
+                <div class="admin-submission__meta">
+                  <div>
+                    <h3 class="admin-submission__title"><%= page.title %></h3>
+                    <div class="admin-table__small"><%= page.slug %> · <%= page.template %></div>
+                  </div>
+                  <span class="admin-badge admin-badge--draft"><%= page.status %></span>
+                </div>
+                <p class="admin-submission__body"><%= page.heroSubtitle || 'No supporting description stored on this record.' %></p>
+                <div class="admin-actions">
+                  <a class="admin-btn-secondary" href="/admin/pages/<%= page.id %>">Open record</a>
+                </div>
+              </article>
+            <% }) %>
+          </div>
+        </article>
+
+        <article class="admin-card admin-panel">
+          <div class="admin-page-actions">
+            <div>
+              <h2 class="admin-section-title">Support page ownership</h2>
+              <p class="admin-section-copy">These files exist for protected routes, aliases, or internal support flows. They are not standard public website pages.</p>
+            </div>
+          </div>
+
+          <div class="admin-list admin-list--spaced">
+            <% supportPages.forEach((item) => { %>
+              <article class="admin-submission admin-submission--compact">
+                <div class="admin-submission__meta admin-submission__meta--stack">
+                  <div>
+                    <h3 class="admin-submission__title"><%= item.title %></h3>
+                    <div class="admin-table__small"><%= item.file %> · owned by <%= collections[item.owner]?.label || item.owner %></div>
+                  </div>
+                  <span class="admin-badge admin-badge--draft">Support only</span>
+                </div>
+                <p class="admin-submission__body"><%= item.summary %></p>
+              </article>
+            <% }) %>
+          </div>
+        </article>
+      </section>
+
+      <section class="admin-card admin-panel">
+        <div class="admin-page-actions">
+          <div>
+            <h2 class="admin-section-title">Case study support links</h2>
+            <p class="admin-section-copy">These case study records currently point to internal support pages for detail-page rendering or legacy compatibility.</p>
+          </div>
+        </div>
+
+        <div class="admin-list admin-list--spaced">
+          <% if (!linkedCaseStudies.length) { %>
+            <div class="admin-empty">No case study records currently point to support pages.</div>
+          <% } %>
+          <% linkedCaseStudies.forEach((item) => { %>
+            <article class="admin-submission">
+              <div class="admin-submission__meta">
+                <div>
+                  <h3 class="admin-submission__title"><%= item.title %></h3>
+                  <div class="admin-table__small"><%= item.slug %> · <%= item.structuredData?.pageFile || item.sourceUrl || 'No mapped support page' %></div>
+                </div>
+                <span class="admin-badge">Case study</span>
+              </div>
+              <div class="admin-actions">
+                <a class="admin-btn-secondary" href="/admin/caseStudies/<%= item.id %>">Open case study</a>
+              </div>
+            </article>
+          <% }) %>
+        </div>
+      </section>
+    </main>
+  </div>
+  <script src="/admin-assets/admin.js" defer></script>
+</body>
+</html>

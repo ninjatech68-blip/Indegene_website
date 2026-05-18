@@ -1,0 +1,34 @@
+/* ============================================================
+   OCO - TOPBAR HIDE-ON-SCROLL STYLES
+   Append to (or import after) oco-styles.css
+   ============================================================ */
+
+/* The topbar collapses via max-height so it doesn't produce
+   layout jump and animates smoothly.                         */
+.oco-topbar {
+  overflow: hidden;
+  max-height: 50px;          /* enough to show the single-row topbar */
+  /* smooth collapse (150ms in, slightly longer out) */
+  transition: max-height 200ms ease, padding 200ms ease, opacity 150ms ease;
+}
+
+.oco-topbar.is-hidden {
+  max-height: 0 !important;
+  padding-top: 0    !important;
+  padding-bottom: 0 !important;
+  opacity: 0;
+  pointer-events: none;   /* don't capture clicks while hidden */
+}
+
+/* Prevent FOUC - ensure header wrapper clips the collapsing topbar */
+.oco-header-sticky {
+  overflow: visible;  /* keep mega menus visible below nav */
+}
+
+/* When topbar is hidden, the sticky header shrinks naturally -
+   scroll-padding-top should reflect only the mainnav height   */
+.oco-topbar.is-hidden ~ * {
+  /* not needed - scroll-padding-top is set on html in oco-styles.css
+     and the mainnav stays at its own 68px regardless              */
+}
+

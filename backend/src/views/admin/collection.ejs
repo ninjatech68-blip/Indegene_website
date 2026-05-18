@@ -1,0 +1,262 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <%- include('partials/head') %>
+</head>
+<body>
+  <div class="admin-shell">
+    <%- include('partials/sidebar', { collections, activeCollectionKey, currentUser }) %>
+
+    <main class="admin-main">
+      <div class="admin-topbar">
+        <div>
+          <p class="admin-eyebrow"><%= collection.label %></p>
+          <h1 class="admin-title"><%= collection.label %></h1>
+          <p class="admin-subtitle"><%= collection.description %></p>
+        </div>
+        <div class="admin-actions">
+          <% if (collectionKey === 'formSubmissions') { %>
+            <a class="admin-btn-secondary" href="/admin/formSubmissions/export.csv?<%= new URLSearchParams(filters).toString() %>">Export CSV</a>
+          <% } else if (!collection.readOnly && !collection.noCreate) { %>
+            <a class="admin-btn" href="/admin/<%= collectionKey %>/new">Create new</a>
+          <% } %>
+        </div>
+      </div>
+
+      <%- include('partials/notice', { notice }) %>
+
+      <% if (collectionKey === 'pageSections') { %>
+        <div class="admin-notice">
+          Section records are usually managed from the matching website page. Use the page editor first, and only use this library when you need to inspect or troubleshoot section coverage.
+        </div>
+      <% } %>
+
+      <form class="admin-toolbar" method="get" action="/admin/<%= collectionKey %>">
+        <div class="admin-toolbar__filters">
+          <input class="admin-input admin-search" type="search" name="q" value="<%= filters.q || '' %>" placeholder="Search <%= collection.label.toLowerCase() %>">
+
+          <% if (Array.isArray(collection.sortOptions) && collection.sortOptions.length) { %>
+            <select class="admin-select admin-filter" name="sort">
+              <option value="">Default sort</option>
+              <% collection.sortOptions.forEach((option) => { %>
+                <option value="<%= option.value %>" <%= filters.sort === option.value ? 'selected' : '' %>><%= option.label %></option>
+              <% }) %>
+            </select>
+          <% } %>
+
+          <% if (collectionKey === 'formSubmissions') { %>
+            <select class="admin-select admin-filter" name="formType">
+              <option value="">All submission types</option>
+              <option value="CONTACT" <%= filters.formType === 'CONTACT' ? 'selected' : '' %>>Contact</option>
+              <option value="NEWSLETTER" <%= filters.formType === 'NEWSLETTER' ? 'selected' : '' %>>Newsletter</option>
+            </select>
+
+            <select class="admin-select admin-filter" name="readState">
+              <option value="">All statuses</option>
+              <option value="unread" <%= filters.readState === 'unread' ? 'selected' : '' %>>Unread</option>
+              <option value="read" <%= filters.readState === 'read' ? 'selected' : '' %>>Read</option>
+            </select>
+          <% } %>
+
+          <button class="admin-btn-secondary" type="submit">Apply</button>
+          <a class="admin-btn-ghost" href="/admin/<%= collectionKey %>">Reset</a>
+        </div>
+
+        <div class="admin-table__small">
+          <strong><%= total %></strong> records
+        </div>
+      </form>
+
+      <% if (collectionKey === 'mediaAssets') { %>
+        <section class="admin-upload">
+          <div class="admin-page-actions admin-page-actions--upload">
+            <div>
+              <h2 class="admin-section-title admin-section-title--upload">Upload media</h2>
+              <p class="admin-section-copy">Upload approved image assets to the shared media library. Files are converted to WebP automatically.</p>
+            </div>
+            <div class="admin-upload__meta">
+              <span class="admin-badge">Image only</span>
+              <span class="admin-table__small">Max upload size: 5MB</span>
+            </div>
+          </div>
+          <form class="admin-upload__grid" data-media-upload-form>
+            <div>
+              <label for="mediaFile">File</label>
+              <input class="admin-input" id="mediaFile" type="file" name="file" accept="image/*" required>
+            </div>
+            <div>
+              <label for="mediaAlt">Alt text</label>
+              <input class="admin-input" id="mediaAlt" type="text" name="altText" placeholder="Describe the image for accessibility">
+            </div>
+            <div>
+              <button class="admin-btn" type="submit">Upload</button>
+            </div>
+          </form>
+          <div class="admin-upload__result" data-media-upload-result></div>
+        </section>
+      <% } %>
+
+      <div class="admin-table-wrap">
+        <table class="admin-table">
+          <thead>
+            <tr>
+              <% if (collectionKey === 'formSubmissions') { %>
+                <th>Submission</th>
+                <th>Details</th>
+                <th>Status</th>
+                <th>Actions</th>
+              <% } else { %>
+                <% collection.fields.slice(0, 6).forEach((field) => { %>
+                  <th><%= field %></th>
+                <% }) %>
+                <th>Actions</th>
+              <% } %>
+            </tr>
+          </thead>
+          <tbody>
+            <% if (!items.length) { %>
+              <tr>
+                <td colspan="<%= collectionKey === 'formSubmissions' ? 4 : 7 %>">
+                  <div class="admin-empty">No records match the current filters.</div>
+                </td>
+              </tr>
+            <% } %>
+
+            <% items.forEach((item) => { %>
+              <tr>
+                <% if (collectionKey === 'formSubmissions') { %>
+                  <td>
+                    <strong><%= item.fullName || item.email %></strong>
+                    <div class="admin-table__small"><%= item.email %></div>
+                    <div class="admin-table__small"><%= item.createdAt.toLocaleString() %></div>
+                  </td>
+                  <td>
+                    <div><strong><%= item.formType %></strong> · <%= item.sourcePage || 'Unknown source' %></div>
+                    <div class="admin-table__small"><%= item.company || item.phone || 'No company or phone provided' %></div>
+                    <div class="admin-detail-copy"><%= item.message || 'Newsletter signup — no message provided.' %></div>
+                  </td>
+                  <td>
+                    <span class="admin-badge <%= (item.meta?.status === 'READ' || item.meta?.read) ? 'admin-badge--success' : 'admin-badge--warning' %>">
+                      <%= (item.meta?.status === 'READ' || item.meta?.read) ? 'Read' : 'Unread' %>
+                    </span>
+                  </td>
+                  <td>
+                    <div class="admin-table__actions">
+                      <a class="admin-link-btn" href="/admin/formSubmissions/<%= item.id %>">View</a>
+                      <% if (item.meta?.status === 'READ' || item.meta?.read) { %>
+                        <form method="post" action="/admin/formSubmissions/<%= item.id %>/unread">
+                          <input type="hidden" name="_csrf" value="<%= csrfToken %>">
+                          <button class="admin-link-btn" type="submit">Mark unread</button>
+                        </form>
+                      <% } else { %>
+                        <form method="post" action="/admin/formSubmissions/<%= item.id %>/read">
+                          <input type="hidden" name="_csrf" value="<%= csrfToken %>">
+                          <button class="admin-link-btn admin-link-btn--success" type="submit">Mark read</button>
+                        </form>
+                      <% } %>
+                    </div>
+                  </td>
+                <% } else { %>
+                  <% collection.fields.slice(0, 6).forEach((field) => { %>
+                    <td>
+                      <% const cellValue = item[field]; %>
+                      <% if (collectionKey === 'mediaAssets' && field === 'fileName') { %>
+                        <div class="admin-media-preview">
+                          <img class="admin-media-thumb" src="<%= item.publicUrl %>" alt="<%= item.altText || item.fileName %>">
+                          <div>
+                            <div><strong><%= item.fileName %></strong></div>
+                            <div class="admin-table__small"><%= item.mimeType %></div>
+                          </div>
+                        </div>
+                      <% } else if (collectionKey === 'pageSections' && field === 'pageId') { %>
+                        <div><strong><%= item.page?.title || 'Website page' %></strong></div>
+                        <div class="admin-table__small"><%= item.page?.slug || item.pageId %></div>
+                      <% } else if (field === 'status' && cellValue) { %>
+                        <span class="admin-badge <%= cellValue === 'PUBLISHED' ? 'admin-badge--success' : 'admin-badge--draft' %>"><%= cellValue %></span>
+                      <% } else if ((field === 'isVisible' || field === 'visibility' || field === 'isFeatured') && typeof cellValue !== 'undefined') { %>
+                        <span class="admin-badge <%= cellValue ? 'admin-badge--success' : 'admin-badge--draft' %>"><%= cellValue ? 'Yes' : 'No' %></span>
+                      <% } else { %>
+                        <%= formatCellValue(cellValue).slice(0, 120) %>
+                      <% } %>
+                    </td>
+                  <% }) %>
+                  <td>
+                    <div class="admin-table__actions">
+                      <a class="admin-link-btn" href="/admin/<%= collectionKey %>/<%= item.id %>"><%= collection.readOnly ? 'View' : 'Edit' %></a>
+
+                      <% if (collectionKey === 'mediaAssets') { %>
+                        <a class="admin-link-btn" href="<%= item.publicUrl %>" target="_blank" rel="noreferrer">Open</a>
+                      <% } %>
+
+                      <% if (item.status) { %>
+                        <form method="post" action="/admin/<%= collectionKey %>/<%= item.id %>/toggle">
+                          <input type="hidden" name="_csrf" value="<%= csrfToken %>">
+                          <input type="hidden" name="field" value="status">
+                          <button class="admin-link-btn" type="submit"><%= item.status === 'PUBLISHED' ? 'Unpublish' : 'Publish' %></button>
+                        </form>
+                      <% } %>
+
+                      <% if (typeof item.isVisible !== 'undefined') { %>
+                        <form method="post" action="/admin/<%= collectionKey %>/<%= item.id %>/toggle">
+                          <input type="hidden" name="_csrf" value="<%= csrfToken %>">
+                          <input type="hidden" name="field" value="isVisible">
+                          <button class="admin-link-btn" type="submit"><%= item.isVisible ? 'Hide' : 'Show' %></button>
+                        </form>
+                      <% } %>
+
+                      <% if (typeof item.visibility !== 'undefined') { %>
+                        <form method="post" action="/admin/<%= collectionKey %>/<%= item.id %>/toggle">
+                          <input type="hidden" name="_csrf" value="<%= csrfToken %>">
+                          <input type="hidden" name="field" value="visibility">
+                          <button class="admin-link-btn" type="submit"><%= item.visibility ? 'Hide' : 'Show' %></button>
+                        </form>
+                      <% } %>
+
+                      <% if (typeof item.isFeatured !== 'undefined') { %>
+                        <form method="post" action="/admin/<%= collectionKey %>/<%= item.id %>/toggle">
+                          <input type="hidden" name="_csrf" value="<%= csrfToken %>">
+                          <input type="hidden" name="field" value="isFeatured">
+                          <button class="admin-link-btn" type="submit"><%= item.isFeatured ? 'Unfeature' : 'Feature' %></button>
+                        </form>
+                      <% } %>
+
+                      <form method="post" action="/admin/<%= collectionKey %>/<%= item.id %>/delete">
+                        <input type="hidden" name="_csrf" value="<%= csrfToken %>">
+                        <button class="admin-link-btn admin-link-btn--danger" type="submit" data-confirm="Delete this record permanently?">Delete</button>
+                      </form>
+                    </div>
+                  </td>
+                <% } %>
+              </tr>
+            <% }) %>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="admin-pagination">
+        <div class="admin-table__small">Page <strong><%= pagination.page %></strong> of <strong><%= pagination.totalPages %></strong></div>
+        <div class="admin-pagination__links">
+          <% const params = new URLSearchParams(filters); %>
+          <% if (pagination.page > 1) { params.set('page', String(pagination.page - 1)); %>
+            <a href="/admin/<%= collectionKey %>?<%= params.toString() %>">Previous</a>
+          <% } %>
+
+          <% for (let index = 1; index <= pagination.totalPages; index += 1) { 
+              params.set('page', String(index)); %>
+            <% if (index === pagination.page) { %>
+              <span class="is-active"><%= index %></span>
+            <% } else { %>
+              <a href="/admin/<%= collectionKey %>?<%= params.toString() %>"><%= index %></a>
+            <% } %>
+          <% } %>
+
+          <% if (pagination.page < pagination.totalPages) { params.set('page', String(pagination.page + 1)); %>
+            <a href="/admin/<%= collectionKey %>?<%= params.toString() %>">Next</a>
+          <% } %>
+        </div>
+      </div>
+    </main>
+  </div>
+  <script src="/admin-assets/admin.js" defer></script>
+</body>
+</html>

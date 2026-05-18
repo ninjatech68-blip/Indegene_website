@@ -1,0 +1,202 @@
+    /* ============================================================
+   OCO - HEADING SYSTEM
+   Centralized heading hierarchy for all pages.
+   Include AFTER oco-styles.css.
+   ============================================================ */
+
+/* ============================================================
+   BASE HEADING RESET
+   Removes any inherited / Bootstrap default heading margins
+   and re-applies them via our system.
+   ============================================================ */
+h1, h2, h3, h4, h5, h6,
+.oco-h1, .oco-h2, .oco-h3, .oco-h4, .oco-h5, .oco-h6 {
+  font-family: "Nunito Sans", sans-serif;
+  font-weight: 700;
+  line-height: 1.15;
+  letter-spacing: -0.02em;
+  color: var(--ink);
+  margin-top: 0;
+  text-transform: none; /* sentence case throughout */
+}
+
+/* ============================================================
+   H1 - Page title (one per page)
+   Usage: Hero section only
+   ============================================================ */
+h1,
+.oco-h1 {
+  font-size: clamp(2.4rem, 3.2vw + 0.rem, 5rem);
+  font-weight: 800;
+  line-height: 1.06;
+  letter-spacing: -0.03em;
+  margin-bottom: 1.25rem; /* 20px */
+  /* On dark/hero backgrounds, color is overridden by .oco-hero__title */
+}
+
+/* ============================================================
+   H2 - Section titles
+   Usage: Each major page section (What We Do, Services, etc.)
+   ============================================================ */
+h2,
+.oco-h2 {
+  font-size: clamp(1.75rem, 2.4vw + 0.6rem, 2.75rem);
+  font-weight: 700;
+  line-height: 1.12;
+  letter-spacing: -0.02em;
+  margin-bottom: 1rem; /* 16px */
+}
+
+/* ============================================================
+   H3 - Subsection / card titles
+   Usage: Service cards, catalogue panes, stat cards, USP titles
+   ============================================================ */
+h3,
+.oco-h3 {
+  font-size: clamp(1.15rem, 1vw + 0.65rem, 1.35rem);
+  font-weight: 700;
+  line-height: 1.25;
+  letter-spacing: -0.01em;
+  margin-bottom: 0.75rem; /* 12px */
+}
+
+/* ============================================================
+   H4 - Minor labels / stat card labels
+   Usage: Stat cards, small feature labels
+   ============================================================ */
+h4,
+.oco-h4 {
+  font-size: clamp(0.95rem, 0.4vw + 0.75rem, 1.05rem);
+  font-weight: 600;
+  line-height: 1.35;
+  letter-spacing: -0.005em;
+  margin-bottom: 0.5rem; /* 8px */
+}
+
+/* ============================================================
+   H5 - Footer column headers / small section labels
+   Usage: Footer navigation, sidebar labels
+   ============================================================ */
+h5,
+.oco-h5 {
+  font-size: 0.875rem;   /* 14px */
+  font-weight: 700;
+  line-height: 1.4;
+  letter-spacing: 0em;
+  margin-bottom: 0.5rem;
+}
+
+/* ============================================================
+   H6 - Mega-menu item titles
+   Usage: Mega menu link labels only
+   ============================================================ */
+h6,
+.oco-h6 {
+  font-size: 0.8125rem;  /* 13px */
+  font-weight: 600;
+  line-height: 1.4;
+  letter-spacing: 0em;
+  margin-bottom: 0.1875rem; /* 3px */
+}
+
+/* ============================================================
+   CONTEXTUAL OVERRIDES - keep color variants clean
+   ============================================================ */
+
+/* On dark/brand-blue sections */
+.oco-section--dark h2,
+.oco-section--dark .oco-h2,
+.oco-section--brand h2,
+.oco-section--brand .oco-h2 {
+  color: #fff;
+}
+
+.oco-section--dark h3,
+.oco-section--dark h4,
+.oco-section--brand h3,
+.oco-section--brand h4 {
+  color: #fff;
+}
+
+/* Light-modifier utility */
+.oco-heading--light { color: #fff; }
+.oco-heading--muted { color: var(--ink-70); }
+.oco-heading--brand { color: var(--brand-primary); }
+.oco-heading--accent { color: var(--brand-accent); }
+
+/* ============================================================
+   SECTION TITLE - canonical class (already in oco-styles.css,
+   synced here to avoid drift)
+   ============================================================ */
+.oco-section-title {
+  font-size: clamp(1.35rem, 1.5vw + 0.5rem, 1.95rem);
+  font-weight: 700;
+  color: var(--ink);
+  letter-spacing: -0.02em;
+  margin-bottom: 1rem;
+  line-height: 1.12;
+  text-transform: none;
+}
+.oco-section-title--light { color: #fff; }
+
+/* CTA section heading */
+.oco-cta__title {
+  font-size: clamp(1.5rem, 2vw + 0.5rem, 2.1rem);
+  font-weight: 700;
+  color: #fff;
+  line-height: 1.2;
+  letter-spacing: -0.02em;
+  margin-bottom: 0.75rem;
+  text-transform: none;
+}
+
+/* ============================================================
+   SPACING ABOVE HEADINGS (within prose contexts)
+   ============================================================ */
+.oco-prose h2 { margin-top: 2.5rem; }
+.oco-prose h3 { margin-top: 2rem; }
+.oco-prose h4 { margin-top: 1.5rem; }
+
+/* ============================================================
+   GENAI SECTION - migrate inline styles to class
+   ============================================================ */
+.oco-genai-eyebrow {
+  font-size: 13px;
+  letter-spacing: 1.6px;
+  text-transform: uppercase;
+  opacity: 0.75;
+  margin-bottom: 16px;
+  font-weight: 500;
+}
+
+.oco-genai-title {
+  font-size: clamp(1.5rem, 2vw + 0.5rem, 2.25rem);
+  font-weight: 600;
+  line-height: 1.25;
+  margin: 0 0 20px 0;
+  letter-spacing: -0.02em;
+  text-transform: none;
+  color: #fff;
+}
+
+.oco-genai-body {
+  font-size: 15px;
+  line-height: 1.75;
+  opacity: 0.92;
+  margin-bottom: 30px;
+}
+
+/* ============================================================
+   RESPONSIVE ADJUSTMENTS
+   ============================================================ */
+@media (max-width: 767px) {
+  h2, .oco-h2, .oco-section-title { margin-bottom: 0.875rem; }
+  h3, .oco-h3 { margin-bottom: 0.625rem; }
+  .oco-genai-title { font-size: 1.5rem; }
+  .oco-genai-body  { font-size: 15px; }
+}
+
+@media (max-width: 479px) {
+  .oco-genai-title { font-size: 1.25rem; }
+}
+

@@ -1,0 +1,2 @@
+-- Intentionally empty.
+-- The private page tables were already created in the initial migration.

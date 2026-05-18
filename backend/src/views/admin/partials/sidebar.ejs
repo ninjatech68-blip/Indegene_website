@@ -1,0 +1,59 @@
+<aside class="admin-sidebar">
+  <div class="admin-brand">
+    <div class="admin-brand__mark">OCO</div>
+    <div class="admin-brand__text">
+      <strong>Website Admin</strong>
+      <span>Editorial control center</span>
+    </div>
+  </div>
+
+  <div class="admin-user">
+    <div class="admin-user__label">Signed in as</div>
+    <strong><%= currentUser?.fullName || 'Administrator' %></strong>
+    <span><%= currentUser?.email || '' %></span>
+  </div>
+
+  <div class="admin-nav">
+    <div class="admin-nav__group-title">Overview</div>
+    <div class="admin-nav__list">
+      <a class="admin-nav__link <%= activeCollectionKey === 'dashboard' ? 'is-active' : '' %>" href="/admin">
+        <span class="admin-nav__icon"><i class="bi bi-grid"></i></span>
+        <span>Dashboard</span>
+      </a>
+    </div>
+
+    <div class="admin-nav__group-title">Website Pages</div>
+    <div class="admin-nav__list">
+      <% (websitePagesNav || []).forEach((page) => { %>
+        <a class="admin-nav__link <%= activeCollectionKey === 'pages' ? 'is-active' : '' %>" href="<%= page.editorPath %>">
+          <span class="admin-nav__icon"><i class="bi bi-file-earmark-text"></i></span>
+          <span><%= page.title %></span>
+        </a>
+      <% }) %>
+      <a class="admin-nav__link <%= activeCollectionKey === 'pages' ? 'is-active' : '' %>" href="/admin/pages">
+        <span class="admin-nav__icon"><i class="bi bi-stack"></i></span>
+        <span>All Website Pages</span>
+      </a>
+    </div>
+
+    <div class="admin-nav__group-title">Shared Content</div>
+    <div class="admin-nav__list">
+      <% (sharedAdminLinks || []).forEach((entry) => { 
+           const collection = collections[entry.key];
+      %>
+        <a class="admin-nav__link <%= activeCollectionKey === entry.key ? 'is-active' : '' %>" href="/admin/<%= entry.key %>">
+          <span class="admin-nav__icon"><i class="bi <%= collection?.icon || 'bi-circle' %>"></i></span>
+          <span><%= entry.title %></span>
+        </a>
+      <% }) %>
+    </div>
+
+    <div class="admin-nav__group-title">Advanced</div>
+    <div class="admin-nav__list">
+      <a class="admin-nav__link <%= activeCollectionKey === 'system-records' ? 'is-active' : '' %>" href="/admin/system-records">
+        <span class="admin-nav__icon"><i class="bi bi-layers"></i></span>
+        <span>Internal/System Records</span>
+      </a>
+    </div>
+  </div>
+</aside>

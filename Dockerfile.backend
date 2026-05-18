@@ -1,0 +1,20 @@
+FROM node:22-alpine
+
+WORKDIR /app/backend
+
+COPY backend/package.json backend/package-lock.json* ./
+RUN npm ci
+
+COPY backend/prisma ./prisma
+RUN npx prisma generate
+
+COPY backend/src ./src
+COPY backend/scripts ./scripts
+
+COPY *.html *.css *.js *.json /app/public/
+COPY images /app/public/images
+
+EXPOSE 4000
+
+# Migrations are handled by docker-compose (one-shot) to keep container start fast and predictable.
+CMD ["npm", "run", "start"]

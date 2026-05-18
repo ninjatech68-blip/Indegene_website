@@ -1,0 +1,324 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum UserRole {
+  ADMIN
+  EDITOR
+}
+
+enum PublishStatus {
+  DRAFT
+  PUBLISHED
+  ARCHIVED
+}
+
+enum FormType {
+  CONTACT
+  NEWSLETTER
+}
+
+enum PageTemplate {
+  HOME
+  STANDARD
+  SERVICES
+  CASE_STUDY_LIST
+  CASE_STUDY_DETAIL
+  RESOURCE_LIST
+  RESOURCE_DETAIL
+  CONTACT
+}
+
+model User {
+  id           String   @id @default(cuid())
+  email        String   @unique
+  passwordHash String
+  fullName     String
+  role         UserRole @default(EDITOR)
+  isActive     Boolean  @default(true)
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+}
+
+model MediaAsset {
+  id         String   @id @default(cuid())
+  fileName   String
+  mimeType   String
+  path       String
+  publicUrl  String
+  altText    String?
+  width      Int?
+  height     Int?
+  sizeBytes  Int?
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+
+  caseStudies        CaseStudy[]
+  testimonials       Testimonial[]
+  testimonialLogos   Testimonial[] @relation("TestimonialLogo")
+  resources          Resource[]
+  clients            Client[]
+}
+
+model NavigationMenu {
+  id          String           @id @default(cuid())
+  slug        String           @unique
+  title       String
+  location    String
+  items       NavigationItem[]
+  createdAt   DateTime         @default(now())
+  updatedAt   DateTime         @updatedAt
+}
+
+model NavigationItem {
+  id          String           @id @default(cuid())
+  menuId      String
+  parentId    String?
+  label       String
+  url         String
+  sortOrder   Int              @default(0)
+  isVisible   Boolean          @default(true)
+  target      String?
+  description String?
+  menu        NavigationMenu   @relation(fields: [menuId], references: [id], onDelete: Cascade)
+  parent      NavigationItem?  @relation("NavigationItemChildren", fields: [parentId], references: [id], onDelete: SetNull)
+  children    NavigationItem[] @relation("NavigationItemChildren")
+  createdAt   DateTime         @default(now())
+  updatedAt   DateTime         @updatedAt
+}
+
+model Page {
+  id                 String         @id @default(cuid())
+  slug               String         @unique
+  title              String
+  status             PublishStatus  @default(DRAFT)
+  template           PageTemplate
+  seoTitle           String?
+  seoDescription     String?
+  seoCanonicalUrl    String?
+  structuredData     Json?
+  heroKicker         String?
+  heroTitle          String?
+  heroSubtitle       String?
+  heroPrimaryLabel   String?
+  heroPrimaryUrl     String?
+  heroSecondaryLabel String?
+  heroSecondaryUrl   String?
+  sections           PageSection[]
+  createdAt          DateTime       @default(now())
+  updatedAt          DateTime       @updatedAt
+}
+
+model PageSection {
+  id             String   @id @default(cuid())
+  pageId         String
+  sectionKey     String
+  sectionLabel   String
+  eyebrow        String?
+  heading        String?
+  subheading     String?
+  body           Json?
+  ctaLabel       String?
+  ctaUrl         String?
+  visibility     Boolean  @default(true)
+  sortOrder      Int      @default(0)
+  schemaType     String?
+  config         Json?
+  page           Page     @relation(fields: [pageId], references: [id], onDelete: Cascade)
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+
+  @@unique([pageId, sectionKey])
+}
+
+model Tag {
+  id          String            @id @default(cuid())
+  slug        String            @unique
+  label       String
+  caseStudies CaseStudyTag[]
+  resources   ResourceTag[]
+  createdAt   DateTime          @default(now())
+  updatedAt   DateTime          @updatedAt
+}
+
+model CaseStudy {
+  id                String           @id @default(cuid())
+  slug              String           @unique
+  title             String
+  excerpt           String
+  content           String
+  sourceUrl         String?
+  status            PublishStatus    @default(DRAFT)
+  featuredImageId   String?
+  featuredImage     MediaAsset?      @relation(fields: [featuredImageId], references: [id], onDelete: SetNull)
+  seoTitle          String?
+  seoDescription    String?
+  seoCanonicalUrl   String?
+  structuredData    Json?
+  publishedAt       DateTime?
+  isFeatured        Boolean          @default(false)
+  tags              CaseStudyTag[]
+  createdAt         DateTime         @default(now())
+  updatedAt         DateTime         @updatedAt
+}
+
+model CaseStudyTag {
+  caseStudyId String
+  tagId       String
+  caseStudy   CaseStudy @relation(fields: [caseStudyId], references: [id], onDelete: Cascade)
+  tag         Tag       @relation(fields: [tagId], references: [id], onDelete: Cascade)
+
+  @@id([caseStudyId, tagId])
+}
+
+model Resource {
+  id              String          @id @default(cuid())
+  slug            String          @unique
+  title           String
+  excerpt         String
+  content         String
+  sourceUrl       String?
+  authorName      String
+  status          PublishStatus   @default(DRAFT)
+  featuredImageId String?
+  featuredImage   MediaAsset?     @relation(fields: [featuredImageId], references: [id], onDelete: SetNull)
+  seoTitle        String?
+  seoDescription  String?
+  seoCanonicalUrl String?
+  structuredData  Json?
+  publishedAt     DateTime?
+  tags            ResourceTag[]
+  createdAt       DateTime        @default(now())
+  updatedAt       DateTime        @updatedAt
+}
+
+model ResourceTag {
+  resourceId String
+  tagId      String
+  resource   Resource @relation(fields: [resourceId], references: [id], onDelete: Cascade)
+  tag        Tag      @relation(fields: [tagId], references: [id], onDelete: Cascade)
+
+  @@id([resourceId, tagId])
+}
+
+model PrivatePageCredential {
+  id           String   @id @default(cuid())
+  pageKey      String   @default("partner-access")
+  username     String
+  passwordHash String
+  description  String?
+  isActive     Boolean  @default(true)
+  resourceLinks PrivatePageCredentialResource[]
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  @@unique([pageKey, username])
+}
+
+model PrivatePageResource {
+  id           String   @id @default(cuid())
+  pageKey      String   @default("partner-access")
+  title        String
+  resourceType String
+  description  String?
+  url          String
+  ctaLabel     String?
+  isVisible    Boolean  @default(true)
+  sortOrder    Int      @default(0)
+  credentialLinks PrivatePageCredentialResource[]
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+}
+
+model PrivatePageCredentialResource {
+  credentialId String
+  resourceId   String
+  credential   PrivatePageCredential @relation(fields: [credentialId], references: [id], onDelete: Cascade)
+  resource     PrivatePageResource   @relation(fields: [resourceId], references: [id], onDelete: Cascade)
+  createdAt    DateTime              @default(now())
+
+  @@id([credentialId, resourceId])
+}
+
+model Testimonial {
+  id            String         @id @default(cuid())
+  clientName    String
+  role          String
+  company       String?
+  quote         String
+  imageId       String?
+  logoId        String?
+  image         MediaAsset?    @relation(fields: [imageId], references: [id], onDelete: SetNull)
+  logo          MediaAsset?    @relation("TestimonialLogo", fields: [logoId], references: [id], onDelete: SetNull)
+  isVisible     Boolean        @default(true)
+  sortOrder     Int            @default(0)
+  createdAt     DateTime       @default(now())
+  updatedAt     DateTime       @updatedAt
+}
+
+model Client {
+  id          String      @id @default(cuid())
+  slug        String      @unique
+  name        String
+  description String?
+  websiteUrl  String?
+  logoId      String?
+  logo        MediaAsset? @relation(fields: [logoId], references: [id], onDelete: SetNull)
+  isVisible   Boolean     @default(true)
+  sortOrder   Int         @default(0)
+  createdAt   DateTime    @default(now())
+  updatedAt   DateTime    @updatedAt
+}
+
+model Service {
+  id              String        @id @default(cuid())
+  slug            String        @unique
+  name            String
+  category        String
+  summary         String
+  content         String
+  seoTitle        String?
+  seoDescription  String?
+  seoCanonicalUrl String?
+  structuredData  Json?
+  isVisible       Boolean       @default(true)
+  sortOrder       Int           @default(0)
+  createdAt       DateTime      @default(now())
+  updatedAt       DateTime      @updatedAt
+}
+
+model FormSubmission {
+  id          String    @id @default(cuid())
+  formType    FormType
+  fullName    String?
+  email       String
+  phone       String?
+  company     String?
+  message     String?
+  sourcePage  String?
+  meta        Json?
+  createdAt   DateTime  @default(now())
+}
+
+model AnalyticsSetting {
+  id                 String   @id @default(cuid())
+  ga4MeasurementId   String?
+  isTrackingEnabled  Boolean  @default(false)
+  eventConfig        Json?
+  updatedAt          DateTime @updatedAt
+  createdAt          DateTime @default(now())
+}
+
+model SiteSetting {
+  id             String   @id @default(cuid())
+  key            String   @unique
+  value          Json
+  description    String?
+  updatedAt      DateTime @updatedAt
+  createdAt      DateTime @default(now())
+}

@@ -1,0 +1,826 @@
+<!doctype html>
+<!-- Source signature: Piyush Sharma - Capabilities Journey Stage 5 -->
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="robots" content="index,follow">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta name="referrer" content="strict-origin-when-cross-origin">
+  <title>Measurement and Performance Visibility for Omnichannel Orchestration | Indegene</title>
+  <meta name="description"
+        content="Build a trusted performance framework across campaign delivery, HCP engagement, and commercial operations in life sciences.">
+  <meta property="og:title" content="Measurement and Performance Visibility for Omnichannel Orchestration | Indegene">
+  <meta property="og:description"
+        content="Build a trusted performance framework across campaign delivery, HCP engagement, and commercial operations in life sciences.">
+  <meta property="og:type" content="website">
+  <meta property="og:site_name" content="Indegene">
+  <meta property="og:url" content="https://oco.indegene.com/measurement.html">
+  <link rel="canonical" href="https://oco.indegene.com/measurement.html">
+  <link rel="icon" type="image/png" href="images/favicon.png">
+  <link rel="preload" as="image" href="images/logo.webp" type="image/webp">
+  <link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin>
+  <link rel="preconnect" href="https://code.jquery.com" crossorigin>
+
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css"
+        rel="stylesheet"
+        integrity="sha384-sRIl4kxILFvY47J16cr9ZwB07vP4J8+LH7qKQnuqkuIAvNWLzeN8tE5YBujZqJLB"
+        crossorigin="anonymous">
+  <link rel="stylesheet"
+        href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.13.1/font/bootstrap-icons.min.css"
+        integrity="sha384-CK2SzKma4jA5H/MXDUU7i1TqZlCFaD4T01vtyDFvPlD97JQyS+IsSh1nI2EFbpyk"
+        crossorigin="anonymous">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Nunito+Sans:wght@400;600;700;800&display=swap"
+        rel="stylesheet">
+
+  <link rel="stylesheet" href="oco-styles.css">
+  <link rel="stylesheet" href="oco-heading-system.css">
+  <link rel="stylesheet" href="oco-topbar-scroll.css">
+</head>
+
+<body id="top">
+
+<a class="oco-skiplink" href="#maincontent">Skip to content</a>
+
+<!-- HEADER -->
+<header class="oco-header-sticky">
+
+  <!-- Top Bar -->
+  <div class="oco-topbar">
+    <div class="oco-container">
+      <div class="d-flex align-items-center justify-content-between">
+        <span class="oco-topbar__tag">Omnichannel orchestration for life sciences commercial operations</span>
+        <nav class="oco-topbar__links d-none d-lg-flex align-items-center">
+          <a href="https://www.indegene.com/who-we-are/about-us" class="oco-topbar__link">About Us</a>
+          <a href="https://www.indegene.com/who-we-are/leadership" class="oco-topbar__link">Leadership</a>
+          <a href="services.html" class="oco-topbar__link">Our Services</a>
+          <a href="casestudy.html" class="oco-topbar__link">Case Studies</a>
+        </nav>
+      </div>
+    </div>
+  </div>
+
+  <!-- Main Nav -->
+  <div class="oco-mainnav">
+    <div class="oco-container">
+      <div class="oco-mainnav__inner">
+
+        <a class="oco-mainnav__logo" href="index.html" aria-label="Indegene omnichannel orchestration home">
+          <img src="images/logo.webp" alt="Indegene Omnichannel Orchestration" width="1154" height="205" decoding="async">
+        </a>
+
+        <nav class="oco-mainnav__nav" aria-label="Primary navigation" role="navigation">
+          <div class="oco-mainnav__navitem" id="navitem-1">
+            <a class="oco-mainnav__navlink js-nav-trigger"
+               href="biopharmaceuticals.html"
+               data-menu="megamenu-1"
+               aria-haspopup="menu"
+               aria-expanded="false">
+              Who We Serve <i class="bi bi-chevron-down" aria-hidden="true"></i>
+            </a>
+          </div>
+          <div class="oco-mainnav__navitem" id="navitem-2">
+            <a class="oco-mainnav__navlink js-nav-trigger"
+               href="services.html"
+               data-menu="megamenu-2"
+               aria-haspopup="menu"
+               aria-expanded="false">
+              Capabilities <i class="bi bi-chevron-down" aria-hidden="true"></i>
+            </a>
+          </div>
+          <div class="oco-mainnav__navitem" id="navitem-3">
+            <a class="oco-mainnav__navlink js-nav-trigger"
+               href="by_role.html"
+               data-menu="megamenu-3"
+               aria-haspopup="menu"
+               aria-expanded="false">
+              Why Choose Us <i class="bi bi-chevron-down" aria-hidden="true"></i>
+            </a>
+          </div>
+          <div class="oco-mainnav__navitem" id="navitem-4">
+            <a class="oco-mainnav__navlink" href="casestudy.html">
+              Case Studies
+            </a>
+          </div>
+          <div class="oco-mainnav__navitem" id="navitem-5">
+            <a class="oco-mainnav__navlink" href="genai.html">
+              GenAI
+            </a>
+          </div>
+          <div class="oco-mainnav__navitem" id="navitem-6">
+            <a class="oco-mainnav__navlink" href="https://www.indegene.com/what-we-think/blogs">
+              Insights
+            </a>
+          </div>
+          <div class="oco-mainnav__navitem" id="navitem-7">
+            <a class="oco-mainnav__navlink" href="https://www.indegene.com/who-we-are/about-us">
+              About
+            </a>
+          </div>
+        </nav>
+
+        <div class="oco-mainnav__actions">
+          <button class="oco-mainnav__search-btn js-search-toggle"
+                  aria-label="Open search">
+            <i class="bi bi-search" aria-hidden="true"></i>
+          </button>
+          <a class="oco-mainnav__cta" href="contactus.html">Contact Us</a>
+        </div>
+
+        <button class="oco-mainnav__toggler"
+                data-bs-toggle="modal"
+                data-bs-target="#mobileNavModal"
+                aria-label="Open menu">
+          <i class="bi bi-list" aria-hidden="true"></i>
+        </button>
+      </div>
+    </div>
+
+    <!-- Mega-menus (full content retained) -->
+    <!-- Mega Menu 1: Who We Serve -->
+    <div class="oco-megamenu" id="megamenu-1">
+  <div class="oco-container">
+    <div class="row g-4">
+      <div class="col-12 col-lg-3">
+        <div class="oco-megamenu__sidebar">
+          <div class="oco-megamenu__sidebar-label">Main Pages</div>
+          <a class="oco-megamenu__tab is-active js-mm-tab" href="biopharmaceuticals.html" data-pane="mm1p1">
+            Pharmaceuticals
+          </a>
+          <a class="oco-megamenu__tab js-mm-tab" href="emerging-biotech.html" data-pane="mm1p2">
+            Emerging Biotech
+          </a>
+          <a class="oco-megamenu__tab js-mm-tab" href="medical-devices.html" data-pane="mm1p3">
+            Medical Devices
+          </a>
+          <a class="oco-megamenu__tab js-mm-tab" href="animal-health.html" data-pane="mm1p4">
+            Animal Healthcare
+          </a>
+        </div>
+      </div>
+      <div class="col-12 col-lg-9">
+        <div id="mm1p1" class="oco-megamenu__pane is-active">
+          <p class="oco-megamenu__section-label">Explore operating priorities</p>
+          <div class="row g-3">
+            <div class="col-12 col-md-6">
+              <a href="biopharmaceuticals.html#enterprise" class="oco-megamenu__link">
+                <span class="oco-h6">Sales and Commercial Leaders</span><p>See how pharma leaders align brands, markets, field execution, and commercial visibility.</p>
+              </a>
+              <a href="biopharmaceuticals.html#hcp" class="oco-megamenu__link">
+                <span class="oco-h6">Marketing and Brand Teams</span><p>Go directly to the section on HCP engagement, content operations, and launch activation.</p>
+              </a>
+            </div>
+            <div class="col-12 col-md-6">
+              <a href="biopharmaceuticals.html#patient" class="oco-megamenu__link">
+                <span class="oco-h6">Medical Affairs and Medical Communications</span>
+                <p>Medical affairs groups supporting compliant scientific communication and evidence-led engagement.</p>
+              </a>
+            </div>
+          </div>
+        </div>
+        <div id="mm1p2" class="oco-megamenu__pane">
+          <p class="oco-megamenu__section-label">Explore operating priorities</p>
+          <div class="row g-3">
+            <div class="col-12 col-md-6">
+              <a href="emerging-biotech.html#launch" class="oco-megamenu__link">
+                <span class="oco-h6">Leadership and Business Heads</span><p>See how leadership teams structure launch accountability, readiness, and commercial visibility.</p>
+              </a>
+              <a href="emerging-biotech.html#agile" class="oco-megamenu__link">
+                <span class="oco-h6">Commercial and Brand Teams</span><p>Go directly to the section on launch workflows, partner coordination, and execution control.</p>
+              </a>
+            </div>
+            <div class="col-12 col-md-6">
+              <a href="emerging-biotech.html#kol" class="oco-megamenu__link">
+                <span class="oco-h6">Medical Affairs and Medical Communications</span>
+                <p>Medical and KOL teams building credible specialist engagement in focused markets.</p>
+              </a>
+            </div>
+          </div>
+        </div>
+        <div id="mm1p3" class="oco-megamenu__pane">
+          <p class="oco-megamenu__section-label">Explore operating priorities</p>
+          <div class="row g-3">
+            <div class="col-12 col-md-6">
+              <a href="medical-devices.html#connected-commercialization" class="oco-megamenu__link">
+                <span class="oco-h6">Commercial Leaders</span><p>See how medtech teams coordinate provider, account, and field priorities across longer cycles.</p>
+              </a>
+              <a href="medical-devices.html#provider-education" class="oco-megamenu__link">
+                <span class="oco-h6">Marketing and Education Teams</span><p>Go directly to the section on education-led engagement, launch activation, and message control.</p>
+              </a>
+            </div>
+            <div class="col-12 col-md-6">
+              <a href="medical-devices.html#evidence-analytics" class="oco-megamenu__link">
+                <span class="oco-h6">Analytics and Insights Teams</span><p>Understand how evidence, engagement, and performance signals become faster adoption decisions.</p>
+              </a>
+            </div>
+          </div>
+        </div>
+        <div id="mm1p4" class="oco-megamenu__pane">
+          <p class="oco-megamenu__section-label">Explore operating priorities</p>
+          <div class="row g-3">
+            <div class="col-12 col-md-6">
+              <a href="animal-health.html#brand-growth" class="oco-megamenu__link">
+                <span class="oco-h6">Commercial and Portfolio Leaders</span><p>See how animal health teams align products, territories, and growth priorities in one model.</p>
+              </a>
+              <a href="animal-health.html#vet-engagement" class="oco-megamenu__link">
+                <span class="oco-h6">Marketing and Veterinary Teams</span><p>Go directly to the section on multi-audience journey design and coordinated activation.</p>
+              </a>
+            </div>
+            <div class="col-12 col-md-6">
+              <a href="animal-health.html#performance-insights" class="oco-megamenu__link">
+                <span class="oco-h6">Analytics and Operations Leaders</span><p>Understand how leaders read cross-audience performance and reallocate effort faster.</p>
+              </a>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+        <!-- Mega Menu 2: Capabilities -->
+    <div class="oco-megamenu" id="megamenu-2">
+      <div class="oco-container">
+        <div class="row g-4">
+          <div class="col-12 col-lg-3">
+            <div class="oco-megamenu__sidebar">
+              <div class="oco-megamenu__sidebar-label">Journey Stage</div>
+              <a class="oco-megamenu__tab is-active js-mm-tab" href="strategy.html" data-pane="mm2p1">Strategy</a>
+              <a class="oco-megamenu__tab js-mm-tab" href="planning.html" data-pane="mm2p2">Planning</a>
+              <a class="oco-megamenu__tab js-mm-tab" href="orchestration.html" data-pane="mm2p3">Orchestration</a>
+              <a class="oco-megamenu__tab js-mm-tab" href="execution.html" data-pane="mm2p4">Execution</a>
+              <a class="oco-megamenu__tab js-mm-tab" href="measurement.html" data-pane="mm2p5">Measurement</a>
+              <a class="oco-megamenu__tab js-mm-tab" href="analytics.html" data-pane="mm2p6">Analytics</a>
+            </div>
+          </div>
+          <div class="col-12 col-lg-9">
+            <div id="mm2p1" class="oco-megamenu__pane is-active">
+              <p class="oco-megamenu__section-label">Explore stage priorities</p>
+              <div class="row g-3">
+                <div class="col-12 col-md-6">
+                  <a href="strategy.html#overview-title" class="oco-megamenu__link">
+                    <span class="oco-h6">Operating Brief</span>
+                    <p>Define the commercial brief, decision criteria, and channel role before execution begins.</p>
+                  </a>
+                  <a href="strategy.html#workflow-title" class="oco-megamenu__link">
+                    <span class="oco-h6">Audience Priorities</span>
+                    <p>Focus teams on the audiences, behaviors, and moments that matter most.</p>
+                  </a>
+                </div>
+                <div class="col-12 col-md-6">
+                  <a href="strategy.html#focus-title" class="oco-megamenu__link">
+                    <span class="oco-h6">Investment Focus</span>
+                    <p>Prevent spend and effort from drifting across low-value activity.</p>
+                  </a>
+                </div>
+              </div>
+            </div>
+            <div id="mm2p2" class="oco-megamenu__pane">
+              <p class="oco-megamenu__section-label">Explore stage priorities</p>
+              <div class="row g-3">
+                <div class="col-12 col-md-6">
+                  <a href="planning.html#overview-title" class="oco-megamenu__link">
+                    <span class="oco-h6">Delivery Design</span>
+                    <p>Turn strategy into a delivery-ready plan across channels, markets, and teams.</p>
+                  </a>
+                  <a href="planning.html#workflow-title" class="oco-megamenu__link">
+                    <span class="oco-h6">Workflow Planning</span>
+                    <p>Sequence milestones, approvals, and handoffs before execution risk compounds.</p>
+                  </a>
+                </div>
+                <div class="col-12 col-md-6">
+                  <a href="planning.html#focus-title" class="oco-megamenu__link">
+                    <span class="oco-h6">Launch Readiness</span>
+                    <p>Clarify what must happen first, what can run in parallel, and where risk sits.</p>
+                  </a>
+                </div>
+              </div>
+            </div>
+            <div id="mm2p3" class="oco-megamenu__pane">
+              <p class="oco-megamenu__section-label">Explore stage priorities</p>
+              <div class="row g-3">
+                <div class="col-12 col-md-6">
+                  <a href="orchestration.html#overview-title" class="oco-megamenu__link">
+                    <span class="oco-h6">Operating Rhythm</span>
+                    <p>Set the governance cadence that keeps cross-functional execution aligned.</p>
+                  </a>
+                  <a href="orchestration.html#workflow-title" class="oco-megamenu__link">
+                    <span class="oco-h6">Roles and Routing</span>
+                    <p>Define ownership, decision paths, and escalation logic before delivery slips.</p>
+                  </a>
+                </div>
+                <div class="col-12 col-md-6">
+                  <a href="orchestration.html#focus-title" class="oco-megamenu__link">
+                    <span class="oco-h6">Execution Control</span>
+                    <p>Reduce rescue escalations, side conversations, and spreadsheet-led coordination.</p>
+                  </a>
+                </div>
+              </div>
+            </div>
+            <div id="mm2p4" class="oco-megamenu__pane">
+              <p class="oco-megamenu__section-label">Explore stage priorities</p>
+              <div class="row g-3">
+                <div class="col-12 col-md-6">
+                  <a href="execution.html#overview-title" class="oco-megamenu__link">
+                    <span class="oco-h6">Release Discipline</span>
+                    <p>Move approved work into market with the controls expected in enterprise environments.</p>
+                  </a>
+                  <a href="execution.html#workflow-title" class="oco-megamenu__link">
+                    <span class="oco-h6">Channel Activation</span>
+                    <p>Activate assets and channels without losing campaign intent across markets.</p>
+                  </a>
+                </div>
+                <div class="col-12 col-md-6">
+                  <a href="execution.html#focus-title" class="oco-megamenu__link">
+                    <span class="oco-h6">Launch Assurance</span>
+                    <p>Reduce avoidable defects, rollback risk, and launch-day confusion.</p>
+                  </a>
+                </div>
+              </div>
+            </div>
+            <div id="mm2p5" class="oco-megamenu__pane">
+              <p class="oco-megamenu__section-label">Explore stage priorities</p>
+              <div class="row g-3">
+                <div class="col-12 col-md-6">
+                  <a href="measurement.html#overview-title" class="oco-megamenu__link">
+                    <span class="oco-h6">Performance Reporting</span>
+                    <p>Build reporting that supports omnichannel execution as an enterprise capability.</p>
+                  </a>
+                  <a href="measurement.html#workflow-title" class="oco-megamenu__link">
+                    <span class="oco-h6">Outcome Visibility</span>
+                    <p>Connect delivery, audience response, and commercial performance in one view.</p>
+                  </a>
+                </div>
+                <div class="col-12 col-md-6">
+                  <a href="measurement.html#focus-title" class="oco-megamenu__link">
+                    <span class="oco-h6">Decision Cadence</span>
+                    <p>Help stakeholders spend less time debating data and more time acting on it.</p>
+                  </a>
+                </div>
+              </div>
+            </div>
+            <div id="mm2p6" class="oco-megamenu__pane">
+              <p class="oco-megamenu__section-label">Explore stage priorities</p>
+              <div class="row g-3">
+                <div class="col-12 col-md-6">
+                  <a href="analytics.html#overview-title" class="oco-megamenu__link">
+                    <span class="oco-h6">Performance Analysis</span>
+                    <p>Use analytics to isolate what is changing engagement, response, and business impact.</p>
+                  </a>
+                  <a href="analytics.html#workflow-title" class="oco-megamenu__link">
+                    <span class="oco-h6">Decision Support</span>
+                    <p>Feed insight back into planning, orchestration, and execution with confidence.</p>
+                  </a>
+                </div>
+                <div class="col-12 col-md-6">
+                  <a href="analytics.html#focus-title" class="oco-megamenu__link">
+                    <span class="oco-h6">Optimization Priorities</span>
+                    <p>Focus improvement on the audiences, channels, and moments that matter most.</p>
+                  </a>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Mega Menu 3: Why Choose Us -->
+    <div class="oco-megamenu" id="megamenu-3">
+      <div class="oco-container">
+        <div class="row g-4">
+          <div class="col-12 col-lg-3">
+            <div class="oco-megamenu__sidebar">
+              <div class="oco-megamenu__sidebar-label">Proof Points</div>
+              <a class="oco-megamenu__tab is-active js-mm-tab" href="by_role.html" data-pane="mm3p1">Pharma-Native Expertise</a>
+              <a class="oco-megamenu__tab js-mm-tab" href="by_function.html" data-pane="mm3p2">Compliance-by-Design</a>
+              <a class="oco-megamenu__tab js-mm-tab" href="by_channel.html" data-pane="mm3p3">Omnichannel Execution at Scale</a>
+            </div>
+          </div>
+          <div class="col-12 col-lg-9">
+            <div id="mm3p1" class="oco-megamenu__pane is-active">
+              <p class="oco-megamenu__section-label">Explore the proof</p>
+              <div class="row g-3">
+                <div class="col-12 col-md-6">
+                  <a href="by_role.html#expertise-overview" class="oco-megamenu__link"><span class="oco-h6">Domain Expertise</span><p>Life sciences judgment is built into the operating flow.</p></a>
+                  <a href="by_role.html#expertise-teams" class="oco-megamenu__link"><span class="oco-h6">Delivery Fluency</span><p>See how teams work with brand, launch, HCP, and review fluency from the first session.</p></a>
+                </div>
+                <div class="col-12 col-md-6">
+                  <a href="by_role.html#expertise-impact" class="oco-megamenu__link"><span class="oco-h6">Business Impact</span><p>See how embedded expertise improves ramp-up speed, decision quality, and accountability.</p></a>
+                </div>
+              </div>
+            </div>
+            <div id="mm3p2" class="oco-megamenu__pane">
+              <p class="oco-megamenu__section-label">Explore the proof</p>
+              <div class="row g-3">
+                <div class="col-12 col-md-6">
+                  <a href="by_function.html#compliance-overview" class="oco-megamenu__link"><span class="oco-h6">Built-In Governance</span><p>See how governance becomes part of the operating rhythm instead of a late-stage delay.</p></a>
+                  <a href="by_function.html#compliance-controls" class="oco-megamenu__link"><span class="oco-h6">Embedded Controls</span><p>See how approvals, QA, and validation are structured from brief to release.</p></a>
+                </div>
+                <div class="col-12 col-md-6">
+                  <a href="by_function.html#compliance-impact" class="oco-megamenu__link"><span class="oco-h6">Business Impact</span><p>See how built-in controls reduce rework, improve launch confidence, and strengthen assurance.</p></a>
+                </div>
+              </div>
+            </div>
+            <div id="mm3p3" class="oco-megamenu__pane">
+              <p class="oco-megamenu__section-label">Explore the proof</p>
+              <div class="row g-3">
+                <div class="col-12 col-md-6">
+                  <a href="by_channel.html#execution-overview" class="oco-megamenu__link"><span class="oco-h6">Connected Execution</span><p>See how channel execution stays tied to strategy, workflow control, and performance management.</p></a>
+                  <a href="by_channel.html#execution-orchestration" class="oco-megamenu__link"><span class="oco-h6">One Operating Plan</span><p>See how roles, assets, and activation sequencing work through one coordinated model.</p></a>
+                </div>
+                <div class="col-12 col-md-6">
+                  <a href="by_channel.html#execution-impact" class="oco-megamenu__link"><span class="oco-h6">Business Impact</span><p>See how coordinated execution improves customer consistency, visibility, and efficiency.</p></a>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Search Panel -->
+    <div class="oco-searchpanel" id="searchPanel" role="search" aria-label="Site search">
+      <div class="oco-container">
+        <div class="oco-searchpanel__wrap">
+          <input class="oco-searchpanel__input"
+                 type="search"
+                 placeholder="Search - topics, services, insights..."
+                 aria-label="Search site content"
+                 enterkeyhint="search">
+          <button class="oco-searchpanel__btn" type="button" aria-label="Submit search">
+            <i class="bi bi-search" aria-hidden="true"></i>
+          </button>
+        </div>
+      </div>
+    </div>
+
+  </div><!-- /oco-mainnav -->
+</header>
+
+<!-- Mobile Nav Modal -->
+<div class="modal fade oco-modal" id="mobileNavModal" tabindex="-1" aria-label="Mobile navigation" aria-hidden="true">
+  <div class="modal-dialog modal-fullscreen">
+    <div class="modal-content">
+      <div class="modal-header">
+        <a href="index.html" aria-label="Indegene omnichannel orchestration home"><img src="images/logo.webp" alt="Indegene Omnichannel Orchestration" width="1154" height="205" decoding="async"></a>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body pt-2 px-3">
+        <div class="accordion accordion-flush" id="mobileAccordion">
+          <div class="accordion-item">
+            <h2 class="accordion-header">
+              <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse"
+                      data-bs-target="#mob1">Who We Serve</button>
+            </h2>
+            <div id="mob1" class="accordion-collapse collapse" data-bs-parent="#mobileAccordion">
+  <div class="accordion-body">
+    <a href="biopharmaceuticals.html">Pharmaceuticals</a>
+    <a href="emerging-biotech.html">Emerging Biotech</a>
+    <a href="medical-devices.html">Medical Devices</a>
+    <a href="animal-health.html">Animal Healthcare</a>
+  </div>
+</div>
+          </div>
+          <div class="accordion-item">
+            <h2 class="accordion-header">
+              <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse"
+                      data-bs-target="#mob2">Capabilities</button>
+            </h2>
+            <div id="mob2" class="accordion-collapse collapse" data-bs-parent="#mobileAccordion">
+              <div class="accordion-body">
+                <a href="strategy.html">Strategy</a>
+                <a href="planning.html">Planning</a>
+                <a href="orchestration.html">Orchestration</a>
+                <a href="execution.html">Execution</a>
+                <a href="measurement.html">Measurement</a>
+                <a href="analytics.html">Analytics</a>
+              </div>
+            </div>
+          </div>
+          <div class="accordion-item">
+            <h2 class="accordion-header">
+              <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse"
+                      data-bs-target="#mob3">Why Choose Us</button>
+            </h2>
+            <div id="mob3" class="accordion-collapse collapse" data-bs-parent="#mobileAccordion">
+              <div class="accordion-body">
+                <a href="by_role.html">Pharma-Native Expertise</a>
+                <a href="by_function.html">Compliance-by-Design</a>
+                <a href="by_channel.html">Omnichannel Execution at Scale</a>
+              </div>
+            </div>
+          </div>
+          <div class="accordion-item">
+            <h2 class="accordion-header">
+              <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse"
+                      data-bs-target="#mob4">More</button>
+            </h2>
+            <div id="mob4" class="accordion-collapse collapse" data-bs-parent="#mobileAccordion">
+              <div class="accordion-body">
+                <a href="casestudy.html">Case Studies</a>
+                <a href="genai.html">GenAI</a>
+                <a href="https://www.indegene.com/what-we-think/blogs">Insights</a>
+                <a href="https://www.indegene.com/who-we-are/about-us">About</a>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="mt-4 pb-4">
+          <a href="contactus.html" data-contact-modal="true" class="oco-btn-primary w-100 justify-content-center">
+            Contact Us <i class="bi bi-arrow-right" aria-hidden="true"></i>
+          </a>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- MAIN --><main id="maincontent">
+
+  <section class="oco-page-banner oco-page-banner--cap" aria-label="Page banner">
+    <div class="oco-container">
+      <div class="oco-page-banner__shell">
+        <div class="oco-page-banner__inner">
+          <nav class="oco-page-banner__breadcrumb" aria-label="Breadcrumb">
+            <a href="index.html">Home</a>
+            <i class="bi bi-chevron-right" aria-hidden="true"></i>
+            <a href="services.html">Capabilities</a>
+            <i class="bi bi-chevron-right" aria-hidden="true"></i>
+            <span>Measurement and Performance Visibility</span>
+          </nav>
+          <div class="oco-page-banner__meta-row">
+            <p class="oco-page-banner__eyebrow">Capability overview</p>
+          </div>
+          <h1 class="oco-page-banner__title">Measurement and Performance Visibility</h1>
+          <p class="oco-page-banner__desc">Build enterprise measurement capability across campaign performance, channel effectiveness, operating health, and leadership visibility.</p>
+        </div>
+        <aside class="oco-page-banner__panel" aria-label="Capability summary">
+          <p class="oco-page-banner__panel-kicker">This capability</p>
+          <div class="oco-page-banner__panel-list">
+            <div class="oco-page-banner__panel-item">
+              <span>Enterprise problem</span>
+              <strong>Leaders see activity but not a dependable operating picture</strong>
+              <p>Reporting is often fragmented across channel dashboards, vendor views, and disconnected business metrics.</p>
+            </div>
+            <div class="oco-page-banner__panel-item">
+              <span>Capability response</span>
+              <strong>One enterprise measurement framework</strong>
+              <p>We define the signals, reporting logic, and governance needed to track both campaign performance and execution quality.</p>
+            </div>
+            <div class="oco-page-banner__panel-item">
+              <span>Business result</span>
+              <strong>Decision-ready visibility</strong>
+              <p>Teams can review outcomes with more confidence and less time spent reconciling data sources.</p>
+            </div>
+          </div>
+        </aside>
+      </div>
+    </div>
+  </section>
+
+  <section class="oco-stage-strip oco-stage-strip--measurement oco-stage-strip--capability-led">
+    <div class="oco-container">
+      <div class="oco-stage-strip__panel">
+        <div>
+          <p class="oco-stage-strip__eyebrow">Capability thesis</p>
+            <h2 class="oco-stage-strip__title">Enterprise measurement capability for decision-ready performance visibility.</h2>
+          <p class="oco-stage-strip__copy">We combine KPI architecture, reporting governance, dashboard design, and operating-health visibility into one trusted measurement layer.</p>
+        </div>
+        <div class="oco-stage-strip__grid">
+          <article class="oco-stage-strip__card">
+            <span>KPI architecture</span>
+            <strong>Decide what counts</strong>
+            <p>Define the indicators teams should trust across engagement, execution health, and business performance.</p>
+          </article>
+          <article class="oco-stage-strip__card">
+            <span>Reporting governance</span>
+            <strong>Connect KPI views</strong>
+            <p>Bring channel, audience, and operating metrics into one decision-ready measurement structure.</p>
+          </article>
+          <article class="oco-stage-strip__card">
+            <span>Leadership visibility</span>
+            <strong>See variance sooner</strong>
+            <p>Highlight where intervention is needed before underperformance becomes normalized.</p>
+          </article>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="oco-cap-stage oco-cap-stage--proof oco-cap-stage--proof-compact oco-cap-stage--capability-proof">
+    <div class="oco-container">
+      <div class="row g-3 align-items-start">
+        <div class="col-12">
+          <section class="oco-cap-stage__section oco-cap-stage__core oco-proof-flow js-reveal" id="overview-title">
+            <div class="oco-cap-stage__section-head">
+              <div>
+                <span class="oco-cap-stage__section-kicker">What this capability is</span>
+                <h2 class="oco-cap-stage__section-title">A measurement capability that makes omnichannel performance visible in enterprise terms</h2>
+              </div>
+            </div>
+            <p class="oco-cap-stage__section-copy">This capability turns fragmented reporting into one performance model that helps leaders understand what the operating system is producing and where intervention is warranted.</p>
+            <div class="oco-proof-columns">
+              <article class="oco-proof-column">
+                <span class="oco-cap-stage__card-label">Signal design</span>
+                <h3>Performance measures tied to business decisions</h3>
+                <p>We define the engagement, campaign, and operating signals that matter most for review, optimization, and governance.</p>
+              </article>
+            </div>
+            <a href="#workflow-title" class="oco-cap-stage__text-link">Explore Capability Strengths <i class="bi bi-arrow-right" aria-hidden="true"></i></a>
+          </section>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="oco-cap-stage oco-cap-stage--proof oco-cap-stage--proof-compact oco-cap-stage--capability-proof">
+    <div class="oco-container">
+      <div class="row g-3 align-items-start">
+        <div class="col-12">
+          <section class="oco-cap-stage__section oco-cap-stage__core oco-proof-flow js-reveal" id="workflow-title">
+            <div class="oco-cap-stage__section-head">
+              <div>
+                <span class="oco-cap-stage__section-kicker">Organizational strengths</span>
+              </div>
+            </div>
+            <div class="oco-proof-columns">
+              <article class="oco-proof-column">
+                <span class="oco-cap-stage__card-label">Core strength</span>
+                <h3>Views that reconcile execution, outcomes, and operating health</h3>
+                <p>We create reporting structures that connect campaign delivery, audience response, and program performance across channels and markets.</p>
+              </article>
+            </div>
+            <a href="#focus-title" class="oco-cap-stage__text-link">Explore Enterprise Outcomes <i class="bi bi-arrow-right" aria-hidden="true"></i></a>
+          </section>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="oco-cap-stage oco-cap-stage--proof oco-cap-stage--proof-compact oco-cap-stage--capability-proof">
+    <div class="oco-container">
+      <div class="row g-3 align-items-start">
+        <div class="col-12">
+          <section class="oco-cap-stage__section oco-cap-stage__core oco-proof-flow js-reveal" id="focus-title">
+            <div class="oco-cap-stage__section-head">
+              <div>
+                <span class="oco-cap-stage__section-kicker">Business impact</span>
+              </div>
+            </div>
+            <div class="oco-proof-value">
+              <h3 class="oco-cap-stage__compact-title">Business impact</h3>
+              <div class="oco-proof-list">
+                <div class="oco-proof-list__item">
+                  <strong>Trusted reviews</strong>
+                  <span>Stakeholders spend less time debating data quality and more time deciding what to do next.</span>
+                </div>
+                <div class="oco-proof-list__item">
+                  <strong>Clearer operating insight</strong>
+                  <span>Teams can see whether problems sit in audience strategy, channel performance, or workflow execution.</span>
+                </div>
+                <div class="oco-proof-list__item">
+                  <strong>Stronger accountability</strong>
+                  <span>Measurement supports governance because owners can see where results are being created or eroded.</span>
+                </div>
+                <div class="oco-proof-list__item">
+                  <strong>Best suited to organizations that need one version of performance truth across channels and stakeholders</strong>
+                  <span>Better decision speed, stronger cross-functional reviews, and clearer visibility into what is actually driving outcomes.</span>
+                </div>
+              </div>
+            </div>
+            <a href="analytics.html" class="oco-cap-stage__text-link">Explore Analytics Capability <i class="bi bi-arrow-right" aria-hidden="true"></i></a>
+          </section>
+        </div>
+      </div>
+    </div>
+  </section>
+
+</main>
+
+<!-- FOOTER -->
+<footer class="oco-footer">
+  <div class="oco-container">
+    <div class="row g-5">
+      <div class="col-12 col-lg-3">
+        <div class="oco-footer__brand">
+          <img src="images/logo.webp" alt="Indegene Omnichannel Orchestration" width="1154" height="205" decoding="async" loading="lazy">
+          <p>Enterprise omnichannel orchestration for life sciences organizations.</p>
+          <a class="oco-footer__cta" href="contactus.html">Contact Us</a>
+        </div>
+      </div>
+      <div class="col-6 col-sm-4 col-lg-2 oco-footer__col">
+        <h2 class="oco-footer__heading">Company</h2>
+        <ul>
+          <li><a href="https://www.indegene.com/who-we-are/about-us">About Us</a></li>
+          <li><a href="contactus.html">Contact</a></li>
+          <li><a href="https://www.indegene.com/careers">Careers</a></li>
+        </ul>
+      </div>
+      <div class="col-6 col-sm-4 col-lg-2 oco-footer__col">
+        <h2 class="oco-footer__heading">Who We Serve</h2>
+        <ul>
+          <li><a href="biopharmaceuticals.html">Pharmaceuticals</a></li>
+          <li><a href="emerging-biotech.html">Emerging Biotech</a></li>
+          <li><a href="medical-devices.html">Medical Devices</a></li>
+          <li><a href="animal-health.html">Animal Healthcare</a></li>
+        </ul>
+      </div>
+      <div class="col-6 col-sm-4 col-lg-2 oco-footer__col">
+        <h2 class="oco-footer__heading">Capabilities</h2>
+        <ul>
+          <li><a href="strategy.html">Strategy</a></li>
+          <li><a href="planning.html">Planning</a></li>
+          <li><a href="execution.html">Execution</a></li>
+          <li><a href="analytics.html">Analytics</a></li>
+        </ul>
+      </div>
+      <div class="col-6 col-sm-4 col-lg-2 oco-footer__col">
+        <h2 class="oco-footer__heading">Resources</h2>
+        <ul>
+          <li><a href="casestudy.html">Case Studies</a></li>
+          <li><a href="https://www.indegene.com/what-we-think/blogs">Insights</a></li>
+          <li><a href="genai.html#demo">GenAI</a></li>
+          <li><a href="contactus.html#privacy-policy">Privacy</a></li>
+        </ul>
+      </div>
+    </div>
+    <div class="oco-footer__bottom">
+      <p>&copy; 2026 Indegene. All rights reserved.</p>
+      <a href="#top" class="oco-footer__backtop js-backtop">Back to top <i class="bi bi-chevron-up"></i></a>
+    </div>
+  </div>
+</footer>
+
+<!-- SCRIPTS -->
+<script src="https://code.jquery.com/jquery-3.7.1.min.js"
+        integrity="sha256-/JqT3SQfawRcv/BIHPThkBvs0OEvtFFmqPF/lYI/Cxo="
+        crossorigin="anonymous"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js"
+        integrity="sha384-FKyoEForCGlyvwx9Hj09JcYn3nv7wiPVlz7YYwJrWVcXK/BmnVDxM+D2scQbITxI"
+        crossorigin="anonymous"></script>
+<script src="oco-navbar.js"></script>
+<script src="oco-nav-behavior.js"></script>
+<script src="oco-contact-modal.js"></script>
+<script src="oco-cms-shared.js"></script>
+<script src="oco-cms.js"></script>
+
+<script>
+$(function () {
+  (async function () {
+  const prefersReduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+  document.querySelectorAll('img[data-fallback]').forEach(function (img) {
+    img.addEventListener('error', function handleImageError() {
+      const fallbackSrc = img.getAttribute('data-fallback');
+      if (fallbackSrc && img.src !== fallbackSrc) {
+        img.src = fallbackSrc;
+      }
+    }, { once: true });
+  });
+
+  $('.js-backtop').on('click', function (e) {
+    e.preventDefault();
+    window.scrollTo({ top: 0, behavior: prefersReduced ? 'auto' : 'smooth' });
+  });
+
+  if (!prefersReduced) {
+    const revealNodes = document.querySelectorAll('.js-reveal');
+    if ('IntersectionObserver' in window) {
+      const io = new IntersectionObserver(function (entries) {
+        entries.forEach(function (entry) {
+          if (entry.isIntersecting) {
+            entry.target.classList.add('is-visible');
+            io.unobserve(entry.target);
+          }
+        });
+      }, { threshold: 0.1 });
+
+      revealNodes.forEach(function (node) { io.observe(node); });
+    } else {
+      revealNodes.forEach(function (node) { node.classList.add('is-visible'); });
+    }
+  } else {
+    document.querySelectorAll('.js-reveal').forEach(function (node) {
+      node.classList.add('is-visible');
+    });
+  }
+
+  $('a[href^="http"]').not('[href^="https://resources.indegene.com"]').each(function () {
+    $(this).attr('rel', 'noopener noreferrer');
+  });
+  }());
+});
+</script>
+</body>
+</html>
+
+
+
+
+
+
+
+
+
