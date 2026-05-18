@@ -185,6 +185,24 @@
     setText('#homeTrust .oco-overline', alliances.eyebrow);
     setText('#homeTrust .oco-section-title', alliances.heading);
     setText('#homeTrust .oco-section-sub', alliances.subheading);
+    if (Array.isArray(alliances?.body?.signals)) {
+      setHtml('#homeTrust .oco-home-trust__signals', alliances.body.signals.map(function (signal) {
+        return '<span>' + escapeHtml(signal) + '</span>';
+      }).join(''));
+    }
+    if (Array.isArray(alliances?.config?.cards)) {
+      setHtml('#homeTrust .oco-home-trust__cards', alliances.config.cards.map(function (card) {
+        return [
+          '<article class="oco-home-trust__card">',
+          '  <strong>' + escapeHtml(card.title || '') + '</strong>',
+          '  <span>' + escapeHtml(card.body || '') + '</span>',
+          '</article>'
+        ].join('');
+      }).join(''));
+    }
+    if (alliances?.config?.logosLabel) {
+      setText('#homeTrust .oco-home-trust__logos-label', alliances.config.logosLabel);
+    }
 
     if (Array.isArray(payload?.clients) && payload.clients.length) {
       renderHomeTrustLogos(payload.clients);
@@ -193,9 +211,15 @@
     }
 
     setText('#homePurpose .oco-overline', purpose.eyebrow);
-    setText('#homePurpose .oco-wwd__lead', purpose.heading);
+    setText('#homePurpose .oco-section-title', purpose.heading);
+    setText('#homePurpose .oco-section-sub', purpose.subheading);
     renderChips(document.querySelector('#homePurpose .oco-chips'), purpose?.body?.chips);
-    renderParagraphs(document.querySelector('#homePurpose .oco-wwd__body'), purpose?.body?.paragraphs);
+    setText('#homePurpose .oco-home-reality__card--risk span', purpose?.body?.riskLabel);
+    setText('#homePurpose .oco-home-reality__card--risk h3', purpose?.body?.riskTitle);
+    setText('#homePurpose .oco-home-reality__card--risk p', purpose?.body?.riskBody || purpose?.body?.paragraphs?.[0]);
+    setText('#homePurpose .oco-home-reality__card--answer span', purpose?.body?.answerLabel);
+    setText('#homePurpose .oco-home-reality__card--answer h3', purpose?.body?.answerTitle);
+    setText('#homePurpose .oco-home-reality__card--answer p', purpose?.body?.answerBody || purpose?.body?.paragraphs?.[1]);
 
     setText('#ourservices .oco-overline', services.eyebrow);
     setText('#ourservices .oco-section-title', services.heading);
@@ -204,7 +228,7 @@
       setHtml('#ourservices .row.g-4', services.config.cards.map(function (card, index) {
         return [
           '<div class="col-12 col-lg-4 js-reveal is-d' + (index + 1) + '">',
-          '  <div class="oco-service-card">',
+          '  <div class="oco-service-card oco-home-path-card">',
           '    <div class="oco-service-card__icon"><i class="bi ' + escapeHtml(card.icon || '') + '"></i></div>',
           '    <h3>' + escapeHtml(card.title) + '</h3>',
           '    <p>' + escapeHtml(card.body) + '</p>',
@@ -257,7 +281,7 @@
         var item = trackRecord.config.items[index];
         if (!item) return;
         var valueNode = cardNode.querySelector('.oco-stat-card__num');
-        var titleNode = cardNode.querySelector('h4');
+        var titleNode = cardNode.querySelector('h3');
         var bodyNode = cardNode.querySelector('p');
         if (valueNode) {
           valueNode.innerHTML = escapeHtml(item.value || '') + (item.suffix ? '<span>' + escapeHtml(item.suffix) + '</span>' : '');
@@ -274,15 +298,11 @@
       renderTestimonials(payload.testimonials);
     }
 
-    setText('#homeNewsletter .oco-signup-strip__title', newsletter.heading);
-    if (newsletter?.config?.placeholder) {
-      var homeNewsletterInput = document.querySelector('#homeNewsletter .oco-signup-strip__input');
-      if (homeNewsletterInput) {
-        homeNewsletterInput.setAttribute('placeholder', newsletter.config.placeholder);
-      }
-    }
+    setText('#homeNewsletter .oco-overline', newsletter.eyebrow);
+    setText('#homeNewsletter .oco-cta__title', newsletter.heading);
+    setText('#homeNewsletter .oco-cta__sub', newsletter.subheading);
     if (newsletter?.config?.successMessage) {
-      setText('#homeNewsletter .oco-feedback-note', newsletter.config.successMessage);
+      setText('#ctaEmailNote', newsletter.config.successMessage);
     }
   }
 

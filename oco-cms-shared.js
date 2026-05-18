@@ -252,15 +252,13 @@
       return;
     }
 
-    track.innerHTML = items.map(function (item) {
+    track.innerHTML = items.map(function (item, index) {
       var meta = [item.role, item.company].filter(Boolean).join(', ');
       return [
-        '<article class="oco-testimonial-card" data-testimonial-card>',
-        '  <span class="oco-testimonial-card__mark" aria-hidden="true">"</span>',
-        '  <p class="oco-testimonial-card__body">' + escapeHtml(item.quote) + '</p>',
-        '  <div class="oco-testimonial-card__meta">',
-        '    <strong>' + escapeHtml(item.clientName) + '</strong>',
-        '    <span>' + escapeHtml(meta) + '</span>',
+        '<article class="oco-testimonial-card oco-home-proof-card' + (index === 0 ? ' is-active' : '') + '" data-testimonial-card' + (index === 0 ? '' : ' aria-hidden="true"') + '>',
+        '  <div class="oco-quote oco-quote--carousel">',
+        '    <p>"' + escapeHtml(item.quote) + '"</p>',
+        '    <cite>- ' + escapeHtml(meta || item.clientName || '') + '</cite>',
         '  </div>',
         '</article>'
       ].join('');

@@ -1,7 +1,11 @@
 import { prisma } from '../lib/prisma.js';
 import { buildSeoPayload, withMeta } from '../utils/seo.js';
+import { getWebsitePages } from './frontend-map.js';
 
 const DEFAULT_PRIVATE_PAGE_KEY = 'partner-access';
+const PAGE_SECTION_KEYS_BY_SLUG = new Map(
+  getWebsitePages().map((page) => [page.slug, new Set(Array.isArray(page.sections) ? page.sections : [])])
+);
 
 export function normalizeCmsValue(value) {
   if (Array.isArray(value)) {
@@ -99,13 +103,21 @@ export async function getPageBySlug(slug) {
     return null;
   }
 
-  return {
-    ...page,
-    sections: (page.sections || []).map((section) => ({
+  const allowedKeys = PAGE_SECTION_KEYS_BY_SLUG.get(page.slug) || null;
+  const normalizedSections = (page.sections || [])
+    .filter((section) => {
+      if (!allowedKeys || allowedKeys.size === 0) return true;
+      return allowedKeys.has(section.sectionKey);
+    })
+    .map((section) => ({
       ...section,
       body: normalizeCmsValue(section.body),
       config: normalizeCmsValue(section.config)
-    })),
+    }));
+
+  return {
+    ...page,
+    sections: normalizedSections,
     structuredData: normalizeCmsValue(page.structuredData)
   };
 }

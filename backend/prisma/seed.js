@@ -84,13 +84,13 @@ async function upsertPages() {
       title: 'Homepage',
       template: PageTemplate.HOME,
       status: PublishStatus.PUBLISHED,
-      heroKicker: 'FutureReadyHealthcare',
-      heroTitle: 'Governed omnichannel orchestration for life sciences commercial operations',
-      heroSubtitle: 'Indegene helps enterprise life sciences teams replace fragmented campaign delivery with one accountable operating model across strategy, planning, activation, measurement, and optimization.',
-      heroPrimaryLabel: 'Assess your operating model',
+      heroKicker: 'Life Sciences Commercial Operations',
+      heroTitle: 'Make commercial execution easier to scale, govern, and prove',
+      heroSubtitle: 'Indegene helps life sciences organizations improve launch readiness, content flow, approval discipline, channel activation, and performance visibility through one accountable delivery model.',
+      heroPrimaryLabel: 'Start an execution assessment',
       heroPrimaryUrl: 'contactus.html',
-      heroSecondaryLabel: 'Review capabilities',
-      heroSecondaryUrl: 'services.html',
+      heroSecondaryLabel: 'Review outcome stories',
+      heroSecondaryUrl: 'casestudy.html',
       sections: [
         {
           sectionKey: 'hero',
@@ -125,108 +125,86 @@ async function upsertPages() {
         },
         {
           sectionKey: 'strategic-alliances',
-          sectionLabel: 'Strategic Alliances',
-          eyebrow: 'Strategic Alliances',
-          heading: 'Technology ecosystem for governed commercial execution',
-          subheading: 'Our partner ecosystem supports enterprise-grade delivery across regulated healthcare environments, with platform, workflow, and data capabilities connected to the operating model.',
-          visibility: true
-        },
-        {
-          sectionKey: 'purpose',
-          sectionLabel: 'Our Purpose',
-          eyebrow: 'Our Purpose',
-          heading: 'Turning fragmented delivery into a governed commercial operating model',
+          sectionLabel: 'Enterprise Proof at a Glance',
+          eyebrow: 'Enterprise proof at a glance',
+          heading: 'Trusted by enterprise teams that need delivery control, not more delivery noise.',
+          subheading: 'The value is not another channel program. It is a clearer commercial system for governed execution across launches, mature brands, analytics, and omnichannel activation.',
           body: {
-            chips: ['Omnichannel Orchestration', 'HCP Engagement', 'Patient Programs', 'Compliance-Ready', 'Enterprise Scale'],
-            paragraphs: [
-              '<strong>We help life sciences organizations translate strategic intent into governed execution.</strong> As the operating layer connecting strategy, content, data, approvals, and delivery, we enable omnichannel programs to move with clearer ownership and stronger execution discipline.',
-              'Built for regulated healthcare environments, our approach strengthens the commercial operating flow across teams, platforms, and markets. By aligning data, content, channel activation, and measurement, organizations can improve launch readiness and reduce operational friction.',
-              'Healthcare engagement is inherently complex. We make it easier to manage by connecting the work, embedding governance, and making performance signals usable for decision-making.'
+            signals: [
+              'Global delivery footprint',
+              'Regulated-market execution',
+              'Launch and lifecycle support',
+              'Embedded medical and review context'
             ]
           },
-          visibility: true
-        },
-        {
-          sectionKey: 'services',
-          sectionLabel: 'Homepage Services',
-          eyebrow: 'What We Do',
-          heading: 'Capabilities aligned to one operating model',
-          subheading: 'Each capability is structured to improve launch readiness, execution control, governance discipline, and decision-ready performance visibility across commercial, medical, and operations teams.',
           config: {
+            logosLabel: 'Selected platform and delivery ecosystem',
             cards: [
               {
-                title: 'By Channel',
-                icon: 'bi-reception-4',
-                body: 'Channel execution across email, CRM, media, search, social, SMS, and messaging, connected to one audience strategy and performance view.',
-                ctaLabel: 'View all channels',
-                ctaUrl: 'by_channel.html'
+                title: 'Delivery scale',
+                body: 'Campaign experience across complex omnichannel programs, brands, and market models'
               },
               {
-                title: 'By Function',
-                icon: 'bi-diagram-3',
-                body: 'Functional delivery across planning, automation, QA, project management, analytics, and account leadership to reduce handoff friction.',
-                ctaLabel: 'Explore functions',
-                ctaUrl: 'by_function.html'
+                title: 'Enterprise depth',
+                body: 'Life sciences support across launch, engagement, analytics, and governed execution'
               },
               {
-                title: 'By Role',
-                icon: 'bi-person-workspace',
-                body: 'Healthcare-native specialists embedded into enterprise teams where execution scale, platform fluency, or operating discipline is needed.',
-                ctaLabel: 'View by role',
-                ctaUrl: 'by_role.html'
+                title: 'Market coverage',
+                body: 'Coordinated market activation, localization, and release control for multi-market teams'
+              },
+              {
+                title: 'Localization support',
+                body: 'Content flow and audience-ready deployment for multilingual engagement programs'
               }
             ]
           },
           visibility: true
         },
         {
-          sectionKey: 'genai',
-          sectionLabel: 'Homepage GenAI',
-          eyebrow: 'GenAI-powered orchestration',
-          heading: 'Apply GenAI where governance, speed, and repeatability matter.',
-          subheading: 'Use Generative AI to support modular content, insight generation, review readiness, and workflow orchestration without weakening compliance or commercial control.',
-          ctaLabel: 'Explore GenAI services',
-          ctaUrl: 'genai.html',
-          config: {
-            secondaryCtaLabel: 'View use cases',
-            secondaryCtaUrl: 'casestudy.html',
-            bullets: [
-              'AI-assisted content production',
-              'Intelligent campaign workflows',
-              'Modular asset automation',
-              'Faster time-to-market'
-            ]
+          sectionKey: 'purpose',
+          sectionLabel: 'Operating Reality',
+          eyebrow: 'Operating reality',
+          heading: 'The growth constraint is usually execution drag, not strategy shortage.',
+          subheading: 'When strategy, content, approvals, activation, and measurement move on separate timelines, enterprise teams lose launch speed, operating confidence, and decision clarity.',
+          body: {
+            riskLabel: 'Where value breaks down',
+            riskTitle: 'Handoffs, approvals, and reporting loops absorb the momentum leaders expect to reach the market.',
+            riskBody: 'Brands, agencies, review teams, channel operators, and market stakeholders often execute against different readiness signals.',
+            answerLabel: 'What changes with Indegene',
+            answerTitle: 'One accountable delivery model makes execution more visible, more disciplined, and easier to optimize.',
+            answerBody: 'Indegene connects operating design, campaign management, content flow, channel delivery, and performance intelligence around one commercial system.',
+            chips: ['Launch readiness', 'MLR coordination', 'Modular content flow', 'Channel activation', 'Performance governance']
           },
           visibility: true
         },
         {
-          sectionKey: 'cloud-services-catalogue',
-          sectionLabel: 'Home Cloud Services Catalogue',
-          eyebrow: 'Cloud Services Catalogue',
-          heading: 'Unlock the power of our modular stack',
-          subheading: 'A modular, integrated omnichannel stack that can be activated end to end or in parts, tailored to your needs.',
+          sectionKey: 'services',
+          sectionLabel: 'Why Choose Us',
+          eyebrow: 'Why choose us',
+          heading: 'Why enterprise teams trust Indegene with execution that has to hold.',
+          subheading: 'Each proof path explains a different part of the enterprise value equation: domain judgment, embedded control, and coordinated activation at scale.',
           config: {
-            tabs: [
+            cards: [
               {
-                tabLabel: 'Campaign Management',
-                title: 'Campaign Management',
-                body: 'Full-funnel campaign delivery for life sciences organisations, from briefing and modular content development to activation, monitoring, and transparent reporting across digital channels. Designed to support product launches and therapeutic campaigns through coordinated omnichannel execution.',
-                ctaLabel: 'Explore Campaign Management',
-                ctaUrl: 'by_function.html#fn1'
+                title: 'Pharma-Native Expertise',
+                icon: 'bi-heart-pulse',
+                body: 'Bring healthcare-native commercial, medical, launch, and review judgment into everyday execution decisions so teams ramp faster and escalate less.',
+                ctaLabel: 'See executive value',
+                ctaUrl: 'by_role.html'
               },
               {
-                tabLabel: 'Analytics & Automation',
-                title: 'Analytics & Automation',
-                body: 'Through advanced segmentation, predictive analytics, and intelligent automation, we transform engagement signals into actionable insights. Real-time tracking, testing, and performance dashboards enable continuous optimisation across campaigns and channels.',
-                ctaLabel: 'Explore Analytics',
-                ctaUrl: 'by_function.html#fn3'
+                title: 'Compliance-by-Design',
+                icon: 'bi-shield-check',
+                body: 'Engineer review logic, release readiness, QA discipline, and auditability into the workflow early enough to protect both pace and control.',
+                ctaLabel: 'See control model',
+                ctaUrl: 'by_function.html'
               },
               {
-                tabLabel: 'Platform Integration',
-                title: 'Platform Integration',
-                body: 'Marketing automation platforms, customer data platforms, customer relationship management systems, and cloud workflows are connected end-to-end within a governed ecosystem that removes data silos and enables seamless integration across the healthcare marketing technology landscape.',
-                ctaLabel: 'Explore Platform Integration',
-                ctaUrl: 'services.html#by-functionality'
+                title: 'Omnichannel Execution at Scale',
+                icon: 'bi-broadcast-pin',
+                body: 'Run coordinated activation across email, CRM, paid media, search, events, mobile, and field-connected engagement without fragmenting ownership.',
+                ctaLabel: 'See activation model',
+                ctaUrl: 'by_channel.html'
               }
             ]
           },
@@ -234,35 +212,35 @@ async function upsertPages() {
         },
         {
           sectionKey: 'track-record',
-          sectionLabel: 'Homepage Track Record',
-          eyebrow: 'Track Record',
-          heading: 'Enterprise proof at operating scale',
-          subheading: 'The scale and discipline senior teams need to manage complex life sciences omnichannel programs.',
+          sectionLabel: 'Enterprise Proof',
+          eyebrow: 'Enterprise proof',
+          heading: 'Proof that the model improves readiness, control, and commercial pace.',
+          subheading: 'Built for global life sciences programs where launch speed, quality control, localization, and commercial performance have to improve together.',
           config: {
             items: [
               {
-                value: '100M',
+                value: '20K',
                 suffix: '+',
-                title: 'Website Footfalls Generated',
-                body: 'Performance-driven omnichannel execution enabling enterprise-scale digital reach and measurable outcomes.'
+                title: 'Campaigns delivered',
+                body: 'Execution depth across regulated omnichannel programs with complex content, approval, and deployment needs.'
               },
               {
-                value: '10M',
+                value: '35',
                 suffix: '+',
-                title: 'Impressions Served',
-                body: 'Scaled media activation delivering consistent visibility and engagement across priority markets and audiences.'
+                title: 'Life sciences organizations',
+                body: 'Supported across launches, mature brands, specialty portfolios, and enterprise modernization agendas.'
               },
               {
-                value: '1M',
+                value: '80',
                 suffix: '+',
-                title: 'Patients Engaged',
-                body: 'Global patient engagement enabled through structured support models and experience-led programme delivery.'
+                title: 'Countries supported',
+                body: 'Operational coverage for local-market adaptation, release discipline, and coordinated activation.'
               },
               {
                 value: '40',
                 suffix: '+',
                 title: 'Languages Supported',
-                body: 'Localisation-ready delivery enabling compliant, consistent execution across diverse markets and audiences.'
+                body: 'Localization-ready content and channel execution for enterprise engagement programs.'
               }
             ]
           },
@@ -270,19 +248,20 @@ async function upsertPages() {
         },
         {
           sectionKey: 'testimonials',
-          sectionLabel: 'Client Testimonials',
-          eyebrow: 'Client Portfolio',
-          heading: 'What clients say about the way we deliver',
-          subheading: 'Perspectives from client teams on execution discipline, strategic thinking, and the operating value created through long-term collaboration.',
+          sectionLabel: 'Client Proof',
+          eyebrow: 'Client proof',
+          heading: 'Curated outcome stories that show what changed in the operating system.',
+          subheading: 'These summaries are designed for executive review: what pressure existed, what changed in delivery, and what business outcome improved.',
           visibility: true
         },
         {
           sectionKey: 'newsletter',
-          sectionLabel: 'Homepage Newsletter',
-          heading: 'Receive operating-model perspectives for senior omnichannel leaders.',
+          sectionLabel: 'Next Step CTA',
+          eyebrow: 'Next step',
+          heading: 'Focus the first conversation on the execution issues that matter most.',
+          subheading: 'We use the initial assessment to map where readiness, approvals, content flow, activation, and performance governance are constraining commercial results.',
           config: {
-            placeholder: 'Enter your email address',
-            successMessage: 'Thanks for subscribing!'
+            successMessage: 'Best for commercial, medical, launch, analytics, and operations leaders assessing where execution quality is leaking value.'
           },
           visibility: true
         }

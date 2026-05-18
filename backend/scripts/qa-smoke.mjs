@@ -83,6 +83,10 @@ async function run() {
     const { response, json } = await request(API_BASE, '/api/public/bootstrap/home');
     assert(response.status === 200, `Expected 200, got ${response.status}`);
     assert(json?.data?.page?.slug === 'home', 'Expected home page payload');
+    const sectionKeys = (json?.data?.page?.sections || []).map((section) => section.sectionKey);
+    const expectedKeys = ['hero', 'strategic-alliances', 'purpose', 'services', 'track-record', 'testimonials', 'newsletter'];
+    assert(sectionKeys.length === expectedKeys.length, `Expected ${expectedKeys.length} home sections, got ${sectionKeys.length}`);
+    assert(sectionKeys.every((key, index) => key === expectedKeys[index]), `Home section mapping mismatch: got ${sectionKeys.join(', ')}`);
   });
 
   await test('missing bootstrap page returns 404', async () => {

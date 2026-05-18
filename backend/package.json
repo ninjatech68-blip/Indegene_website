@@ -11,6 +11,8 @@
     "test:smoke": "node scripts/qa-smoke.mjs",
     "check:integrity": "node scripts/check-content-integrity.mjs",
     "check": "npm run test && npm run check:integrity",
+    "clean:home-sections": "node scripts/clean-homepage-sections.mjs",
+    "sync:home-content": "node scripts/sync-homepage-cms.mjs",
     "sync:pages": "node scripts/sync-cms-pages.mjs",
     "sync:case-studies": "node scripts/sync-case-study-details.mjs",
     "prisma:generate": "prisma generate",

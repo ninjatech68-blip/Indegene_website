@@ -16,10 +16,15 @@ test('website pages have unique slugs and files', () => {
 });
 
 test('primary website pages include home/contact/resources', () => {
-  const pages = getPrimaryWebsitePages().map((page) => page.slug);
+  const primaryPages = getPrimaryWebsitePages();
+  const pages = primaryPages.map((page) => page.slug);
   assert.ok(pages.includes('home'));
   assert.ok(pages.includes('contact'));
   assert.ok(pages.includes('resources'));
+  const home = primaryPages.find((page) => page.slug === 'home');
+  assert.ok(home);
+  assert.ok(!home.sections.includes('genai'));
+  assert.ok(!home.sections.includes('cloud-services-catalogue'));
 });
 
 test('hidden/private pages explicitly include partner and briefing ownership', () => {

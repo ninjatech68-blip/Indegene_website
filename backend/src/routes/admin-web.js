@@ -41,6 +41,9 @@ const PRIMARY_WEBSITE_PAGES = getPrimaryWebsitePages();
 const SHARED_ADMIN_LINKS = getSharedAdminCollections();
 const HIDDEN_PRIVATE_PAGES = getHiddenOrPrivatePages();
 const WEBSITE_PAGE_SLUGS = new Set(WEBSITE_PAGES.map((page) => page.slug));
+const PAGE_SECTION_KEYS_BY_SLUG = new Map(
+  WEBSITE_PAGES.map((page) => [page.slug, new Set(Array.isArray(page.sections) ? page.sections : [])])
+);
 
 function resolveWebsiteRoot() {
   const cwd = process.cwd();
@@ -61,6 +64,14 @@ function humanizeField(field) {
 function getSectionDisplayLabel(section) {
   const sectionKey = String(section?.sectionKey || '').trim();
   const sectionLabel = String(section?.sectionLabel || '').trim();
+
+  if (sectionKey === 'hero') return 'Hero Banner';
+  if (sectionKey === 'strategic-alliances') return 'Enterprise Proof at a Glance';
+  if (sectionKey === 'purpose') return 'Operating Reality';
+  if (sectionKey === 'services') return 'Why Choose Us';
+  if (sectionKey === 'track-record') return 'Enterprise Proof';
+  if (sectionKey === 'testimonials') return 'Client Proof';
+  if (sectionKey === 'newsletter') return 'Next Step CTA';
 
   if (sectionKey === 'overview-title') return 'Capability Overview';
   if (sectionKey === 'workflow-title') return 'Organizational Strengths';
@@ -351,6 +362,28 @@ function buildPageSectionEditorState(item = {}, fieldOptions = {}) {
 
     case 'strategic-alliances':
       pushHeaderGroup();
+      groups.push({
+        title: 'Signals and proof cards',
+        copy: 'These fields map to the chips and four proof cards in the "Enterprise proof at a glance" section.',
+        fields: [
+          buildSectionField('alliancesSignal1', 'Signal 1', body.signals?.[0] || ''),
+          buildSectionField('alliancesSignal2', 'Signal 2', body.signals?.[1] || ''),
+          buildSectionField('alliancesSignal3', 'Signal 3', body.signals?.[2] || ''),
+          buildSectionField('alliancesSignal4', 'Signal 4', body.signals?.[3] || ''),
+          ...[1, 2, 3, 4].flatMap((index) => {
+            const card = config.cards?.[index - 1] || {};
+            return [
+              buildSectionField(`alliancesCard${index}Title`, `Card ${index} Title`, card.title || ''),
+              buildSectionField(`alliancesCard${index}Body`, `Card ${index} Description`, card.body || '', { type: 'textarea', full: true })
+            ];
+          }),
+          buildSectionField('alliancesLogosLabel', 'Logo wall label', config.logosLabel || '')
+        ]
+      });
+      groups.push({
+        title: 'Logo wall ownership',
+        copy: 'The platform/client logo strip in this section is managed from the "Trust & Platform Logos" collection, not from this page section editor.'
+      });
       break;
 
     case 'service-architecture':
@@ -377,17 +410,20 @@ function buildPageSectionEditorState(item = {}, fieldOptions = {}) {
     case 'purpose':
       pushHeaderGroup();
       groups.push({
-        title: 'Purpose content',
-        copy: 'Use concise chips and keep each paragraph self-contained for scannability.',
+        title: 'Operating reality cards',
+        copy: 'These fields map directly to the two cards in the Operating Reality section.',
         fields: [
+          buildSectionField('purposeRiskLabel', 'Risk card label', body.riskLabel || ''),
+          buildSectionField('purposeRiskTitle', 'Risk card title', body.riskTitle || ''),
+          buildSectionField('purposeRiskBody', 'Risk card body', body.riskBody || body.paragraphs?.[0] || '', { type: 'textarea', full: true }),
+          buildSectionField('purposeAnswerLabel', 'Answer card label', body.answerLabel || ''),
+          buildSectionField('purposeAnswerTitle', 'Answer card title', body.answerTitle || ''),
+          buildSectionField('purposeAnswerBody', 'Answer card body', body.answerBody || body.paragraphs?.[1] || '', { type: 'textarea', full: true }),
           buildSectionField('purposeChips', 'Chips', (body.chips || []).join('\n'), {
             type: 'textarea',
             full: true,
             help: 'One chip per line.'
-          }),
-          buildSectionField('purposeParagraph1', 'Paragraph 1', body.paragraphs?.[0] || '', { type: 'textarea', full: true }),
-          buildSectionField('purposeParagraph2', 'Paragraph 2', body.paragraphs?.[1] || '', { type: 'textarea', full: true }),
-          buildSectionField('purposeParagraph3', 'Paragraph 3', body.paragraphs?.[2] || '', { type: 'textarea', full: true })
+          })
         ]
       });
       break;
@@ -834,7 +870,22 @@ function buildPageSectionEditorState(item = {}, fieldOptions = {}) {
 }
 
 function buildPageEditorState(item = {}, fieldOptions = {}) {
-  const sections = Array.isArray(item.sections) ? item.sections : [];
+  const mappedSectionKeys = PAGE_SECTION_KEYS_BY_SLUG.get(item.slug) || null;
+  const sectionOrder = mappedSectionKeys ? Array.from(mappedSectionKeys) : [];
+  const sections = Array.isArray(item.sections)
+    ? item.sections.filter((section) => {
+        if (!mappedSectionKeys || mappedSectionKeys.size === 0) return true;
+        return mappedSectionKeys.has(section.sectionKey);
+      }).sort((left, right) => {
+        if (!sectionOrder.length) return (left.sortOrder || 0) - (right.sortOrder || 0);
+        const leftIndex = sectionOrder.indexOf(left.sectionKey);
+        const rightIndex = sectionOrder.indexOf(right.sectionKey);
+        const normalizedLeft = leftIndex === -1 ? Number.MAX_SAFE_INTEGER : leftIndex;
+        const normalizedRight = rightIndex === -1 ? Number.MAX_SAFE_INTEGER : rightIndex;
+        if (normalizedLeft !== normalizedRight) return normalizedLeft - normalizedRight;
+        return (left.sortOrder || 0) - (right.sortOrder || 0);
+      })
+    : [];
 
   return {
     pageGroups: [
@@ -918,8 +969,26 @@ function buildPageSectionAdminData(rawData, existingItem = {}) {
 
     case 'purpose':
       return withBody({
+        riskLabel: String(rawData.purposeRiskLabel || '').trim(),
+        riskTitle: String(rawData.purposeRiskTitle || '').trim(),
+        riskBody: String(rawData.purposeRiskBody || '').trim(),
+        answerLabel: String(rawData.purposeAnswerLabel || '').trim(),
+        answerTitle: String(rawData.purposeAnswerTitle || '').trim(),
+        answerBody: String(rawData.purposeAnswerBody || '').trim(),
         chips: parseLineList(rawData.purposeChips),
-        paragraphs: [1, 2, 3].map((index) => String(rawData[`purposeParagraph${index}`] || '').trim()).filter(Boolean)
+        paragraphs: [1, 2].map((index) => String(rawData[`purposeParagraph${index}`] || '').trim()).filter(Boolean)
+      });
+
+    case 'strategic-alliances':
+      return withBody({
+        signals: [1, 2, 3, 4].map((index) => String(rawData[`alliancesSignal${index}`] || '').trim()).filter(Boolean)
+      }, {
+        ...existingConfig,
+        logosLabel: String(rawData.alliancesLogosLabel || '').trim(),
+        cards: [1, 2, 3, 4].map((index) => ({
+          title: String(rawData[`alliancesCard${index}Title`] || '').trim(),
+          body: String(rawData[`alliancesCard${index}Body`] || '').trim()
+        }))
       });
 
     case 'service-architecture':

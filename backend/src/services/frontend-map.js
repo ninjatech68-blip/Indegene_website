@@ -10,7 +10,7 @@ const WEBSITE_PAGE_GROUPS = [
         file: 'index.html',
         editorCollection: 'pages',
         summary: 'Hero banner, proof, services overview, testimonials, and newsletter strip.',
-        sections: ['hero', 'strategic-alliances', 'purpose', 'services', 'genai', 'cloud-services-catalogue', 'track-record', 'testimonials', 'newsletter']
+        sections: ['hero', 'strategic-alliances', 'purpose', 'services', 'track-record', 'testimonials', 'newsletter']
       },
       {
         slug: 'services',
