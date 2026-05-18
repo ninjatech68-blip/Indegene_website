@@ -62,9 +62,22 @@ async function run() {
     assert(json?.status === 'ok', 'Expected health status ok');
   });
 
-  await test('backend root is not a public renderer anymore', async () => {
+  await test('backend root is health JSON (not public renderer)', async () => {
+    const { response, json } = await request(API_BASE, '/');
+    assert(response.status === 200, `Expected 200, got ${response.status}`);
+    assert(json?.status === 'ok', 'Expected root health JSON payload');
+  });
+
+  await test('api health alias endpoint', async () => {
+    const { response, json } = await request(API_BASE, '/api/health');
+    assert(response.status === 200, `Expected 200, got ${response.status}`);
+    assert(json?.status === 'ok', 'Expected api health status ok');
+  });
+
+  await test('backend root is not serving html shell', async () => {
     const { response } = await request(API_BASE, '/');
-    assert(response.status === 404, `Expected 404, got ${response.status}`);
+    const contentType = response.headers.get('content-type') || '';
+    assert(contentType.includes('application/json'), `Expected json response, got ${contentType}`);
   });
 
   await test('frontend home serves static shell', async () => {

@@ -84,7 +84,7 @@ app.use(session({
   cookie: {
     httpOnly: true,
     secure: secureCookies,
-    sameSite: 'lax',
+    sameSite: 'strict',
     domain: env.COOKIE_DOMAIN === 'localhost' ? undefined : env.COOKIE_DOMAIN,
     maxAge: 1000 * 60 * 60 * 8
   }
@@ -97,8 +97,15 @@ app.use(rateLimit({
   legacyHeaders: false
 }));
 
+const healthResponse = Object.freeze({ status: 'ok' });
+app.get('/', (req, res) => {
+  res.json(healthResponse);
+});
 app.get('/health', (req, res) => {
-  res.json({ status: 'ok' });
+  res.json(healthResponse);
+});
+app.get('/api/health', (req, res) => {
+  res.json(healthResponse);
 });
 
 app.use('/admin', adminCsrfProtection, adminWebRoutes);
