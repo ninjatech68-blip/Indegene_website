@@ -69,6 +69,78 @@
   $searchPanel.hide();
   $searchResults.attr('hidden', true);
 
+  function normalizeMobileNav() {
+    var accordion = document.getElementById('mobileAccordion');
+    if (!accordion) {
+      return;
+    }
+
+    var sections = [
+      {
+        key: 'serve',
+        label: 'Who We Serve',
+        links: [
+          { label: 'Biopharmaceuticals', href: 'biopharmaceuticals.html' },
+          { label: 'Emerging Biotech', href: 'emerging-biotech.html' },
+          { label: 'Medical Devices', href: 'medical-devices.html' },
+          { label: 'Animal Healthcare', href: 'animal-health.html' }
+        ]
+      },
+      {
+        key: 'capabilities',
+        label: 'Capabilities',
+        links: [
+          { label: 'Services', href: 'services.html' },
+          { label: 'By Role', href: 'by_role.html' },
+          { label: 'By Channel', href: 'by_channel.html' },
+          { label: 'By Function', href: 'by_function.html' }
+        ]
+      },
+      {
+        key: 'why',
+        label: 'Why Choose Us',
+        links: [
+          { label: 'Case Studies', href: 'casestudy.html' },
+          { label: 'GenAI', href: 'genai.html' }
+        ]
+      },
+      {
+        key: 'more',
+        label: 'About & Insights',
+        links: [
+          { label: 'Insights', href: 'https://www.indegene.com/what-we-think/blogs' },
+          { label: 'About', href: 'https://www.indegene.com/who-we-are/about-us' },
+          { label: 'Contact Us', href: 'contactus.html' }
+        ]
+      }
+    ];
+
+    accordion.innerHTML = sections.map(function (section, index) {
+      var collapseId = 'mobileSection-' + section.key;
+      var headingId = 'mobileHeading-' + section.key;
+      var expanded = index === 0;
+      return [
+        '<div class="accordion-item">',
+        '  <h2 class="accordion-header" id="' + headingId + '">',
+        '    <button class="accordion-button' + (expanded ? '' : ' collapsed') + '" type="button" data-bs-toggle="collapse" data-bs-target="#' + collapseId + '" aria-expanded="' + (expanded ? 'true' : 'false') + '" aria-controls="' + collapseId + '">',
+        section.label,
+        '    </button>',
+        '  </h2>',
+        '  <div id="' + collapseId + '" class="accordion-collapse collapse' + (expanded ? ' show' : '') + '" aria-labelledby="' + headingId + '" data-bs-parent="#mobileAccordion">',
+        '    <div class="accordion-body">' +
+          section.links.map(function (link) {
+            var target = /^https?:\/\//i.test(link.href) ? ' target="_blank" rel="noopener noreferrer"' : '';
+            return '<a href="' + link.href + '"' + target + '>' + link.label + '</a>';
+          }).join('') +
+        '</div>',
+        '  </div>',
+        '</div>'
+      ].join('');
+    }).join('');
+  }
+
+  normalizeMobileNav();
+
   function isDesktopHoverMode() {
     return desktopHoverQuery.matches;
   }

@@ -51,8 +51,9 @@
 
   tickPhase();
 
+  cycleId = window.setInterval(tickPhase, reducedMotion ? 3200 : 2200);
+
   if (!reducedMotion) {
-    cycleId = window.setInterval(tickPhase, 2200);
     root.classList.add("is-interactive");
 
     const pointer = { x: 0, y: 0 };
@@ -89,6 +90,12 @@
       }
       if (rafId) {
         window.cancelAnimationFrame(rafId);
+      }
+    });
+  } else {
+    window.addEventListener("beforeunload", () => {
+      if (cycleId) {
+        window.clearInterval(cycleId);
       }
     });
   }
