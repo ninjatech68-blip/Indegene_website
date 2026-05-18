@@ -29,6 +29,7 @@ const envSchema = z.object({
   GA4_MEASUREMENT_ID: z.string().optional().default(''),
   RECAPTCHA_SITE_KEY: z.string().optional().default(''),
   RECAPTCHA_SECRET: z.string().optional().default(''),
+  RECAPTCHA_BYPASS: z.coerce.boolean().default(false),
   SMTP_HOST: z.string().optional().default(''),
   SMTP_PORT: z.coerce.number().default(587),
   SMTP_USER: z.string().optional().default(''),

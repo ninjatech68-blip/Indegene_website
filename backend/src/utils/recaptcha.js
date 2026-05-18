@@ -15,6 +15,10 @@ function isLocalRuntime() {
 }
 
 export async function verifyRecaptcha(token, remoteIp) {
+  if (env.RECAPTCHA_BYPASS) {
+    return { success: true, skipped: true, bypassed: true };
+  }
+
   const localRuntime = isLocalRuntime();
   const recaptchaConfigured = Boolean(env.RECAPTCHA_SECRET && env.RECAPTCHA_SITE_KEY);
 
