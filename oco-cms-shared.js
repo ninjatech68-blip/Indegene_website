@@ -183,8 +183,65 @@
     });
   }
 
+  function getCanonicalMobileNavGroups() {
+    return [
+      {
+        label: 'Who We Serve',
+        items: [
+          { label: 'Biopharmaceuticals', url: 'biopharmaceuticals.html' },
+          { label: 'Emerging Biotech', url: 'emerging-biotech.html' },
+          { label: 'Medical Devices', url: 'medical-devices.html' },
+          { label: 'Animal Healthcare', url: 'animal-health.html' }
+        ]
+      },
+      {
+        label: 'Capabilities',
+        items: [
+          { label: 'Services', url: 'services.html' },
+          { label: 'By Role', url: 'by_role.html' },
+          { label: 'By Channel', url: 'by_channel.html' },
+          { label: 'By Function', url: 'by_function.html' }
+        ]
+      },
+      {
+        label: 'Why Choose Us',
+        items: [
+          { label: 'Case Studies', url: 'casestudy.html' },
+          { label: 'GenAI', url: 'genai.html' }
+        ]
+      },
+      {
+        label: 'About & Insights',
+        items: [
+          { label: 'Insights', url: 'https://www.indegene.com/what-we-think/blogs' },
+          { label: 'About', url: 'https://www.indegene.com/who-we-are/about-us' },
+          { label: 'Contact Us', url: 'contactus.html' }
+        ]
+      }
+    ];
+  }
+
+  function normalizeMobileNavGroups(groups) {
+    if (!Array.isArray(groups) || !groups.length) {
+      return getCanonicalMobileNavGroups();
+    }
+
+    var legacyLabels = groups.map(function (group) {
+      return String(group?.label || '').trim().toLowerCase();
+    });
+    var hasLegacyStructure = legacyLabels.indexOf('what we do') !== -1
+      || legacyLabels.indexOf('how we deliver') !== -1
+      || legacyLabels.indexOf('what we think') !== -1;
+
+    if (hasLegacyStructure) {
+      return getCanonicalMobileNavGroups();
+    }
+
+    return groups;
+  }
+
   function renderMobileNav(groups) {
-    if (!Array.isArray(groups)) return;
+    groups = normalizeMobileNavGroups(groups);
     var accordion = document.getElementById('mobileAccordion');
     if (!accordion) return;
     accordion.innerHTML = groups.map(function (group, index) {

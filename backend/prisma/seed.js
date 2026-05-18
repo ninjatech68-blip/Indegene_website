@@ -1011,32 +1011,33 @@ async function upsertSiteSettings() {
           label: 'Who We Serve',
           items: [
             { label: 'Biopharmaceuticals', url: 'biopharmaceuticals.html' },
-            { label: 'Emerging Biotech', url: 'emerging-biotech.html' }
+            { label: 'Emerging Biotech', url: 'emerging-biotech.html' },
+            { label: 'Medical Devices', url: 'medical-devices.html' },
+            { label: 'Animal Healthcare', url: 'animal-health.html' }
           ]
         },
         {
-          label: 'What We Do',
+          label: 'Capabilities',
           items: [
             { label: 'Services', url: 'services.html' },
             { label: 'By Role', url: 'by_role.html' },
             { label: 'By Channel', url: 'by_channel.html' },
-            { label: 'By Function', url: 'by_function.html' },
-            { label: 'GenAI Services', url: 'genai.html' }
+            { label: 'By Function', url: 'by_function.html' }
           ]
         },
         {
-          label: 'How We Deliver',
-          items: [
-            { label: 'Enterprise Proof', url: 'index.html#cpt3' },
-            { label: 'Tool Partners', url: 'index.html#cpt1' },
-            { label: 'Global Delivery Model', url: 'services.html#service-model-title' }
-          ]
-        },
-        {
-          label: 'What We Think',
+          label: 'Why Choose Us',
           items: [
             { label: 'Case Studies', url: 'casestudy.html' },
-            { label: 'GenAI Services', url: 'genai.html' }
+            { label: 'GenAI', url: 'genai.html' }
+          ]
+        },
+        {
+          label: 'About & Insights',
+          items: [
+            { label: 'Insights', url: 'https://www.indegene.com/what-we-think/blogs' },
+            { label: 'About', url: 'https://www.indegene.com/who-we-are/about-us' },
+            { label: 'Contact Us', url: 'contactus.html' }
           ]
         }
       ],
