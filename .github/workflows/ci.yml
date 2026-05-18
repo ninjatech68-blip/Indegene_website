@@ -1,0 +1,56 @@
+name: CI
+
+on:
+  push:
+    branches: ['**']
+  pull_request:
+
+jobs:
+  quality-and-smoke:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: npm
+          cache-dependency-path: backend/package-lock.json
+
+      - name: Install backend deps
+        run: npm ci
+        working-directory: backend
+
+      - name: Static checks
+        run: npm run check
+        working-directory: backend
+
+      - name: Start docker stack
+        run: docker compose up -d --build
+
+      - name: Wait for backend health
+        run: |
+          for i in {1..30}; do
+            if curl -fsS http://localhost:4000/health >/dev/null; then
+              exit 0
+            fi
+            sleep 2
+          done
+          echo "Backend did not become healthy in time" >&2
+          exit 1
+
+      - name: Smoke tests
+        run: npm run test:smoke
+        working-directory: backend
+
+      - name: Docker logs on failure
+        if: failure()
+        run: docker compose logs --no-color
+
+      - name: Stop docker stack
+        if: always()
+        run: docker compose down -v

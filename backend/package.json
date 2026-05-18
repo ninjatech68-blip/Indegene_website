@@ -7,7 +7,10 @@
   "scripts": {
     "dev": "nodemon src/server.js",
     "start": "node src/server.js",
+    "test": "node --test test/**/*.test.mjs",
     "test:smoke": "node scripts/qa-smoke.mjs",
+    "check:integrity": "node scripts/check-content-integrity.mjs",
+    "check": "npm run test && npm run check:integrity",
     "sync:pages": "node scripts/sync-cms-pages.mjs",
     "sync:case-studies": "node scripts/sync-case-study-details.mjs",
     "prisma:generate": "prisma generate",

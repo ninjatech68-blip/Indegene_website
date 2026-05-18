@@ -9,6 +9,7 @@ import { getDashboardData, getSystemRecordsData } from '../services/admin-dashbo
 import { buildSettingAdminData, buildSettingEditorState } from '../services/admin-settings.js';
 import { registerAdminWebAuthRoutes } from './admin-web-auth-routes.js';
 import { registerAdminWebDashboardRoutes } from './admin-web-dashboard-routes.js';
+import { registerAdminWebSubmissionRoutes } from './admin-web-submission-routes.js';
 import {
   getHiddenOrPrivatePages,
   getPrimaryWebsitePages,
@@ -1419,11 +1420,6 @@ function isReadSubmission(item) {
   return Boolean(item?.meta?.status === 'READ' || item?.meta?.read === true || item?.meta?.readAt);
 }
 
-function escapeCsv(value) {
-  const stringValue = String(value ?? '');
-  return `"${stringValue.replace(/"/g, '""')}"`;
-}
-
 function buildSearchWhere(collection, queryText) {
   const q = String(queryText || '').trim();
   if (!q || !Array.isArray(collection.searchableFields) || !collection.searchableFields.length) {
@@ -1795,6 +1791,13 @@ registerAdminWebDashboardRoutes(router, {
   isReadSubmission,
   cmsCollections
 });
+registerAdminWebSubmissionRoutes(router, {
+  prisma,
+  requireAuth,
+  requireRole,
+  filterFormSubmissions,
+  isReadSubmission
+});
 
 router.get('/:collection', requireAuth, requireRole('ADMIN', 'EDITOR'), async (req, res, next) => {
   try {
@@ -1865,42 +1868,6 @@ router.get('/:collection/new', requireAuth, requireRole('ADMIN', 'EDITOR'), asyn
       notice: getNotice(req),
       readOnly: false
     });
-  } catch (error) {
-    next(error);
-  }
-});
-
-router.get('/formSubmissions/export.csv', requireAuth, requireRole('ADMIN', 'EDITOR'), async (req, res, next) => {
-  try {
-    const allItems = await prisma.formSubmission.findMany({
-      orderBy: { createdAt: 'desc' }
-    });
-    const filters = {
-      q: String(req.query.q || '').trim(),
-      formType: String(req.query.formType || ''),
-      readState: String(req.query.readState || '')
-    };
-    const items = filterFormSubmissions(allItems, filters);
-    const rows = [
-      ['Type', 'Name', 'Email', 'Company', 'Message', 'Source Page', 'Status', 'Created At']
-    ];
-
-    items.forEach((item) => {
-      rows.push([
-        item.formType,
-        item.fullName || '',
-        item.email || '',
-        item.company || '',
-        item.message || '',
-        item.sourcePage || '',
-        isReadSubmission(item) ? 'Read' : 'Unread',
-        item.createdAt.toISOString()
-      ]);
-    });
-
-    res.setHeader('Content-Type', 'text/csv; charset=utf-8');
-    res.setHeader('Content-Disposition', 'attachment; filename="form-submissions.csv"');
-    res.send(rows.map((row) => row.map(escapeCsv).join(',')).join('\n'));
   } catch (error) {
     next(error);
   }
@@ -1981,54 +1948,6 @@ router.get('/:collection/:id', requireAuth, requireRole('ADMIN', 'EDITOR'), asyn
       notice: getNotice(req),
       readOnly: Boolean(collection.readOnly)
     });
-  } catch (error) {
-    next(error);
-  }
-});
-
-router.post('/formSubmissions/:id/read', requireAuth, requireRole('ADMIN', 'EDITOR'), async (req, res, next) => {
-  try {
-    const item = await prisma.formSubmission.findUnique({ where: { id: req.params.id } });
-    if (!item) {
-      return res.redirect('/admin/formSubmissions?notice=' + encodeURIComponent('Submission not found.'));
-    }
-
-    await prisma.formSubmission.update({
-      where: { id: req.params.id },
-      data: {
-        meta: {
-          ...(item.meta || {}),
-          status: 'READ',
-          read: true,
-          readAt: new Date().toISOString()
-        }
-      }
-    });
-
-    res.redirect('/admin/formSubmissions?notice=' + encodeURIComponent('Submission marked as read.'));
-  } catch (error) {
-    next(error);
-  }
-});
-
-router.post('/formSubmissions/:id/unread', requireAuth, requireRole('ADMIN', 'EDITOR'), async (req, res, next) => {
-  try {
-    const item = await prisma.formSubmission.findUnique({ where: { id: req.params.id } });
-    if (!item) {
-      return res.redirect('/admin/formSubmissions?notice=' + encodeURIComponent('Submission not found.'));
-    }
-
-    const meta = { ...(item.meta || {}) };
-    delete meta.readAt;
-    meta.status = 'UNREAD';
-    meta.read = false;
-
-    await prisma.formSubmission.update({
-      where: { id: req.params.id },
-      data: { meta }
-    });
-
-    res.redirect('/admin/formSubmissions?notice=' + encodeURIComponent('Submission marked as unread.'));
   } catch (error) {
     next(error);
   }
