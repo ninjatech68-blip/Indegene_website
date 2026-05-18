@@ -10,6 +10,10 @@
     "test": "node --test test/**/*.test.mjs",
     "test:smoke": "node scripts/qa-smoke.mjs",
     "test:e2e:smoke": "playwright test tests/e2e/smoke.spec.mjs --config=playwright.config.mjs",
+    "test:e2e:links": "playwright test tests/e2e/link-audit.spec.mjs --config=playwright.config.mjs",
+    "test:e2e:critical": "playwright test tests/e2e/critical-conversion.spec.mjs --config=playwright.config.mjs",
+    "test:e2e:a11y": "playwright test tests/e2e/a11y.spec.mjs --config=playwright.config.mjs",
+    "test:ci:lighthouse": "lhci autorun --config=.lighthouserc.json",
     "check:integrity": "node scripts/check-content-integrity.mjs",
     "check": "npm run test && npm run check:integrity",
     "clean:home-sections": "node scripts/clean-homepage-sections.mjs",
@@ -46,6 +50,8 @@
     "zod": "^3.24.2"
   },
   "devDependencies": {
+    "@axe-core/playwright": "^4.11.0",
+    "@lhci/cli": "^0.15.1",
     "@playwright/test": "^1.54.2",
     "nodemon": "^3.1.9"
   }

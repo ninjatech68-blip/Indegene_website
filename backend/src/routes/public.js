@@ -1,5 +1,6 @@
 import { Router } from 'express';
 import bcrypt from 'bcryptjs';
+import rateLimit from 'express-rate-limit';
 import { prisma } from '../lib/prisma.js';
 import {
   getAnalyticsSettings,
@@ -20,6 +21,12 @@ import { buildSeoPayload, withMeta } from '../utils/seo.js';
 
 const router = Router();
 const CMS_RENDERING_ENABLED = process.env.CMS_RENDERING_ENABLED !== 'false';
+const privateAuthLimiter = rateLimit({
+  windowMs: 15 * 60 * 1000,
+  max: 10,
+  standardHeaders: true,
+  legacyHeaders: false
+});
 
 router.use((req, res, next) => {
   if (CMS_RENDERING_ENABLED) {
@@ -160,7 +167,7 @@ router.get('/private-pages/:pageKey/session', (req, res) => {
   }));
 });
 
-router.post('/private-pages/:pageKey/login', async (req, res, next) => {
+router.post('/private-pages/:pageKey/login', privateAuthLimiter, async (req, res, next) => {
   try {
     const pageKey = normalizePrivatePageKey(req.params.pageKey);
     const username = String(req.body.username || '').trim();

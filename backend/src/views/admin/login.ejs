@@ -19,13 +19,13 @@
       <div class="admin-form admin-form--spaced">
         <div>
           <label for="email">Email</label>
-          <input class="admin-input" id="email" type="email" name="email" required autocomplete="username">
+          <input class="admin-input" id="email" data-testid="admin-email" type="email" name="email" required autocomplete="username">
         </div>
         <div>
           <label for="password">Password</label>
-          <input class="admin-input" id="password" type="password" name="password" required autocomplete="current-password">
+          <input class="admin-input" id="password" data-testid="admin-password" type="password" name="password" required autocomplete="current-password">
         </div>
-        <button class="admin-btn" type="submit">Sign in <i class="bi bi-arrow-right"></i></button>
+        <button class="admin-btn" data-testid="admin-signin" type="submit">Sign in <i class="bi bi-arrow-right"></i></button>
       </div>
     </form>
   </main>

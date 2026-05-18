@@ -486,6 +486,7 @@
     setupContactForm($fullForm, {
       submitSelector: '#cf-submit',
       successSelector: '#formSuccess',
+      errorSelector: '#formError',
       getPayload: function ($form) {
         return {
           fullName: $form.find('#cf-fname').val(),

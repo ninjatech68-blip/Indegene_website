@@ -78,7 +78,7 @@ export function buildSettingEditorState(item = {}, buildSectionField) {
             copy: `Control the shared ${key === 'header.cta' ? 'header' : 'footer'} button label and destination.`,
             fields: [
               buildSectionField('settingLabel', 'Button label', value?.label || ''),
-              buildSectionField('settingUrl', 'Button destination', value?.url || '', { type: 'url' })
+              buildSectionField('settingUrl', 'Button destination', value?.url || '', { type: 'text' })
             ]
           }
         ]

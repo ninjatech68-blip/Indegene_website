@@ -321,7 +321,7 @@
                   aria-label="Open search">
             <i class="bi bi-search" aria-hidden="true"></i>
           </button>
-          <a class="oco-mainnav__cta" href="contactus.html">Contact Us</a>
+          <a class="oco-mainnav__cta" href="contactus.html" data-testid="nav-contact-link">Contact Us</a>
         </div>
 
         <button class="oco-mainnav__toggler"
@@ -902,23 +902,23 @@
 
         <div class="col-12 col-lg-8">
           <div class="oco-form-card">
-            <form id="contactForm" novalidate>
+            <form id="contactForm" data-testid="contact-form" novalidate>
               <div class="row g-4">
                 <div class="col-12 col-md-6">
                   <label class="oco-form-label" for="cf-fname">Full Name <span class="oco-required oco-required--inline">*</span></label>
-                  <input type="text" class="oco-form-control" id="cf-fname" placeholder="Your full name" autocomplete="name" aria-describedby="err-fname" minlength="2" maxlength="80">
+                  <input type="text" class="oco-form-control" id="cf-fname" data-testid="contact-full-name" placeholder="Your full name" autocomplete="name" aria-describedby="err-fname" minlength="2" maxlength="80">
                   <span class="oco-field-error" id="err-fname">Please enter your full name using at least 2 characters.</span>
                 </div>
 
                 <div class="col-12 col-md-6">
                   <label class="oco-form-label" for="cf-email">Work Email <span class="oco-required oco-required--inline">*</span></label>
-                  <input type="email" class="oco-form-control" id="cf-email" placeholder="name@company.com" autocomplete="email" inputmode="email" aria-describedby="err-email" maxlength="120">
+                  <input type="email" class="oco-form-control" id="cf-email" data-testid="contact-email" placeholder="name@company.com" autocomplete="email" inputmode="email" aria-describedby="err-email" maxlength="120">
                   <span class="oco-field-error" id="err-email">Please enter a valid email address.</span>
                 </div>
 
                 <div class="col-12 col-md-6">
                   <label class="oco-form-label" for="cf-company">Organization <span class="oco-required oco-required--inline">*</span></label>
-                  <input type="text" class="oco-form-control" id="cf-company" placeholder="Your organization" autocomplete="organization" aria-describedby="err-company" minlength="2" maxlength="120">
+                  <input type="text" class="oco-form-control" id="cf-company" data-testid="contact-company" placeholder="Your organization" autocomplete="organization" aria-describedby="err-company" minlength="2" maxlength="120">
                   <span class="oco-field-error" id="err-company">Please enter your organization name using at least 2 characters.</span>
                 </div>
 
@@ -930,7 +930,7 @@
 
                 <div class="col-12">
                   <label class="oco-form-label" for="cf-message">What would you like to discuss? <span class="oco-required oco-required--inline">*</span></label>
-                  <textarea class="oco-form-control" id="cf-message" rows="4" placeholder="Describe the business objective, execution challenge, launch situation, or capability area you want to address." aria-describedby="err-message" minlength="10" maxlength="2000"></textarea>
+                  <textarea class="oco-form-control" id="cf-message" data-testid="contact-message" rows="4" placeholder="Describe the business objective, execution challenge, launch situation, or capability area you want to address." aria-describedby="err-message" minlength="10" maxlength="2000"></textarea>
                   <span class="oco-field-error" id="err-message">Please enter at least 10 characters so we can route your inquiry correctly.</span>
                 </div>
 
@@ -962,10 +962,11 @@
                 </div>
 
                 <div class="col-12">
-                  <button type="submit" class="oco-btn-primary" id="cf-submit">
+                  <button type="submit" class="oco-btn-primary" id="cf-submit" data-testid="contact-submit">
                     Request Assessment <i class="bi bi-arrow-right"></i>
                   </button>
-                  <div class="oco-form-success" id="formSuccess" role="alert" aria-live="polite">
+                  <div class="oco-field-error mt-2" id="formError" data-testid="contact-error" role="alert" aria-live="polite"></div>
+                  <div class="oco-form-success" id="formSuccess" data-testid="contact-success" role="alert" aria-live="polite">
                     <i class="bi bi-check-circle-fill oco-inline-icon"></i>
                     Thank you. Your request has been received and will be routed to the appropriate team.
                   </div>
@@ -1101,8 +1102,6 @@ $(function () {
 </script>
 </body>
 </html>
-
-
 
 
 

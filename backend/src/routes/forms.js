@@ -37,7 +37,7 @@ router.post('/contact', validate(contactSchema), async (req, res, next) => {
     const payload = sanitizePayload(req.body);
     const captcha = await verifyRecaptcha(req.body.recaptchaToken, req.ip);
     if (!captcha.success) {
-      return res.status(400).json({ error: 'ValidationError', message: 'reCAPTCHA validation failed', details: captcha });
+      return res.status(400).json({ error: 'ValidationError', message: 'reCAPTCHA validation failed' });
     }
     const submission = await prisma.formSubmission.create({
       data: {
@@ -70,7 +70,7 @@ router.post('/newsletter', validate(newsletterSchema), async (req, res, next) =>
     const payload = sanitizePayload(req.body);
     const captcha = await verifyRecaptcha(req.body.recaptchaToken, req.ip);
     if (!captcha.success) {
-      return res.status(400).json({ error: 'ValidationError', message: 'reCAPTCHA validation failed', details: captcha });
+      return res.status(400).json({ error: 'ValidationError', message: 'reCAPTCHA validation failed' });
     }
     const submission = await prisma.formSubmission.create({
       data: {

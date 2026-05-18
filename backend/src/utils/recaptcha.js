@@ -1,10 +1,25 @@
 import { env, isProduction } from '../config/env.js';
 
+function isLocalHostname(hostname) {
+  return hostname === 'localhost' || hostname === '127.0.0.1' || hostname === '::1';
+}
+
+function isLocalRuntime() {
+  try {
+    const appHost = new URL(env.APP_URL).hostname;
+    const frontendHost = new URL(env.FRONTEND_URL).hostname;
+    return isLocalHostname(appHost) && isLocalHostname(frontendHost);
+  } catch (error) {
+    return false;
+  }
+}
+
 export async function verifyRecaptcha(token, remoteIp) {
+  const localRuntime = isLocalRuntime();
   const recaptchaConfigured = Boolean(env.RECAPTCHA_SECRET && env.RECAPTCHA_SITE_KEY);
 
   if (!recaptchaConfigured) {
-    if (isProduction) {
+    if (isProduction && !localRuntime) {
       return {
         success: false,
         message: 'reCAPTCHA is not configured for production runtime'
@@ -39,7 +54,7 @@ export async function verifyRecaptcha(token, remoteIp) {
       errors: result['error-codes'] || []
     };
   } catch (error) {
-    if (isProduction) {
+    if (isProduction && !localRuntime) {
       return {
         success: false,
         message: 'reCAPTCHA verification failed',

@@ -1,17 +1,24 @@
 import bcrypt from 'bcryptjs';
 import { Router } from 'express';
 import { z } from 'zod';
+import rateLimit from 'express-rate-limit';
 import { prisma } from '../lib/prisma.js';
 import { validate } from '../middleware/validate.js';
 
 const router = Router();
+const authLimiter = rateLimit({
+  windowMs: 15 * 60 * 1000,
+  max: 10,
+  standardHeaders: true,
+  legacyHeaders: false
+});
 
 const loginSchema = z.object({
   email: z.string().email(),
   password: z.string().min(8)
 });
 
-router.post('/login', validate(loginSchema), async (req, res, next) => {
+router.post('/login', authLimiter, validate(loginSchema), async (req, res, next) => {
   try {
     const user = await prisma.user.findUnique({
       where: { email: req.body.email }
@@ -26,17 +33,29 @@ router.post('/login', validate(loginSchema), async (req, res, next) => {
       return res.status(401).json({ error: 'Unauthorized', message: 'Invalid credentials' });
     }
 
-    req.session.user = {
-      id: user.id,
-      email: user.email,
-      fullName: user.fullName,
-      role: user.role
-    };
-
-    res.json({
-      data: {
-        user: req.session.user
+    req.session.regenerate((regenerateError) => {
+      if (regenerateError) {
+        return next(regenerateError);
       }
+
+      req.session.user = {
+        id: user.id,
+        email: user.email,
+        fullName: user.fullName,
+        role: user.role
+      };
+
+      req.session.save((saveError) => {
+        if (saveError) {
+          return next(saveError);
+        }
+
+        return res.json({
+          data: {
+            user: req.session.user
+          }
+        });
+      });
     });
   } catch (error) {
     next(error);

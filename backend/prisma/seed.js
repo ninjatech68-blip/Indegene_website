@@ -834,40 +834,42 @@ async function upsertPages() {
     });
 
     for (const [index, section] of page.sections.entries()) {
-      await prisma.pageSection.upsert({
-        where: {
-          pageId_sectionKey: {
-            pageId: createdPage.id,
-            sectionKey: section.sectionKey
-          }
-        },
-        update: {
-          sectionLabel: section.sectionLabel,
-          eyebrow: section.eyebrow || null,
-          heading: section.heading,
-          subheading: section.subheading || null,
-          body: section.body || null,
-          ctaLabel: section.ctaLabel || null,
-          ctaUrl: section.ctaUrl || null,
-          config: section.config || null,
-          visibility: section.visibility,
-          sortOrder: index
-        },
-        create: {
+      const key = {
+        pageId_sectionKey: {
           pageId: createdPage.id,
-          sectionKey: section.sectionKey,
-          sectionLabel: section.sectionLabel,
-          eyebrow: section.eyebrow || null,
-          heading: section.heading,
-          subheading: section.subheading || null,
-          body: section.body || null,
-          ctaLabel: section.ctaLabel || null,
-          ctaUrl: section.ctaUrl || null,
-          config: section.config || null,
-          visibility: section.visibility,
-          sortOrder: index
+          sectionKey: section.sectionKey
         }
-      });
+      };
+      const existing = await prisma.pageSection.findUnique({ where: key });
+
+      if (existing) {
+        // Preserve existing editorial content; only keep ordering/visibility/label aligned.
+        await prisma.pageSection.update({
+          where: key,
+          data: {
+            sectionLabel: section.sectionLabel,
+            visibility: section.visibility,
+            sortOrder: index
+          }
+        });
+      } else {
+        await prisma.pageSection.create({
+          data: {
+            pageId: createdPage.id,
+            sectionKey: section.sectionKey,
+            sectionLabel: section.sectionLabel,
+            eyebrow: section.eyebrow || null,
+            heading: section.heading,
+            subheading: section.subheading || null,
+            body: section.body || null,
+            ctaLabel: section.ctaLabel || null,
+            ctaUrl: section.ctaUrl || null,
+            config: section.config || null,
+            visibility: section.visibility,
+            sortOrder: index
+          }
+        });
+      }
     }
   }
 

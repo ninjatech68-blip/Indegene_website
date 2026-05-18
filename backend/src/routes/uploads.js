@@ -12,6 +12,16 @@ const allowedMimeTypes = new Set(['image/jpeg', 'image/png', 'image/webp', 'imag
 const upload = multer({ storage: multer.memoryStorage(), limits: { fileSize: 5 * 1024 * 1024 } });
 const uploadsDir = path.resolve(process.cwd(), 'uploads');
 
+function sanitizeOriginalFilename(input) {
+  const base = path.basename(String(input || 'file'));
+  const normalized = base
+    .replace(/[^a-zA-Z0-9._-]/g, '-')
+    .replace(/-+/g, '-')
+    .replace(/^-|-$/g, '')
+    .slice(0, 80);
+  return normalized || 'file';
+}
+
 router.post('/', requireAuth, requireRole('ADMIN', 'EDITOR'), upload.single('file'), async (req, res, next) => {
   try {
     if (!req.file) {
@@ -24,7 +34,8 @@ router.post('/', requireAuth, requireRole('ADMIN', 'EDITOR'), upload.single('fil
 
     await fs.mkdir(uploadsDir, { recursive: true });
 
-    const fileName = `${Date.now()}-${req.file.originalname.replace(/\s+/g, '-')}.webp`;
+    const safeName = sanitizeOriginalFilename(req.file.originalname);
+    const fileName = `${Date.now()}-${safeName}.webp`;
     const outputPath = path.join(uploadsDir, fileName);
     const image = sharp(req.file.buffer);
     const metadata = await image.metadata();

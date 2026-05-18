@@ -1590,7 +1590,8 @@ function getFieldType(field) {
   if (['sortOrder'].includes(field)) return 'number';
   if (['email'].includes(field)) return 'email';
   if (field === 'password') return 'password';
-  if (['sourceUrl', 'seoCanonicalUrl', 'websiteUrl', 'ctaUrl', 'heroPrimaryUrl', 'heroSecondaryUrl', 'url'].includes(field)) return 'url';
+  if (['sourceUrl', 'seoCanonicalUrl', 'websiteUrl'].includes(field)) return 'url';
+  if (['ctaUrl', 'heroPrimaryUrl', 'heroSecondaryUrl', 'url'].includes(field)) return 'text';
   return 'text';
 }
 
