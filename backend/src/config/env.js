@@ -5,6 +5,16 @@ import { z } from 'zod';
 dotenv.config();
 
 const defaultPublicRoot = path.resolve(process.cwd(), '..');
+const normalizedEnv = {
+  ...process.env,
+  DEFAULT_ADMIN_EMAIL: process.env.DEFAULT_ADMIN_EMAIL ?? process.env.ADMIN_EMAIL,
+  DEFAULT_ADMIN_PASSWORD: process.env.DEFAULT_ADMIN_PASSWORD ?? process.env.ADMIN_PASSWORD,
+  PRIVATE_PAGE_DEFAULT_USERNAME:
+    process.env.PRIVATE_PAGE_DEFAULT_USERNAME ?? process.env.PRIVATE_PAGE_USERNAME,
+  PRIVATE_PAGE_DEFAULT_PASSWORD:
+    process.env.PRIVATE_PAGE_DEFAULT_PASSWORD ?? process.env.PRIVATE_PAGE_PASSWORD,
+  RECAPTCHA_SECRET: process.env.RECAPTCHA_SECRET ?? process.env.RECAPTCHA_SECRET_KEY
+};
 
 const envSchema = z.object({
   NODE_ENV: z.enum(['development', 'test', 'production']).default('development'),
@@ -30,5 +40,5 @@ const envSchema = z.object({
   PRIVATE_PAGE_DEFAULT_PASSWORD: z.string().min(12)
 });
 
-export const env = envSchema.parse(process.env);
+export const env = envSchema.parse(normalizedEnv);
 export const isProduction = env.NODE_ENV === 'production';
