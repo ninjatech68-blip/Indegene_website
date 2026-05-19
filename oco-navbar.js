@@ -141,42 +141,6 @@
 
   normalizeMobileNav();
 
-  var mobileNavObserver = null;
-  var mobileNavReconcileTimer = null;
-
-  function scheduleMobileNavNormalization() {
-    if (mobileNavReconcileTimer) {
-      window.clearTimeout(mobileNavReconcileTimer);
-    }
-
-    mobileNavReconcileTimer = window.setTimeout(function () {
-      normalizeMobileNav();
-      mobileNavReconcileTimer = null;
-    }, 0);
-  }
-
-  if (window.MutationObserver) {
-    mobileNavObserver = new MutationObserver(function (mutations) {
-      for (var i = 0; i < mutations.length; i += 1) {
-        if (mutations[i].target && mutations[i].target.id === 'mobileAccordion') {
-          scheduleMobileNavNormalization();
-          break;
-        }
-      }
-    });
-
-    var observeMobileAccordion = function () {
-      var accordion = document.getElementById('mobileAccordion');
-      if (accordion) {
-        mobileNavObserver.observe(accordion, { childList: true, subtree: true });
-      }
-    };
-
-    observeMobileAccordion();
-    window.addEventListener('DOMContentLoaded', observeMobileAccordion);
-    window.addEventListener('load', scheduleMobileNavNormalization);
-  }
-
   function isDesktopHoverMode() {
     return desktopHoverQuery.matches;
   }

@@ -290,10 +290,7 @@
       var logo = [
         '<img loading="lazy" decoding="async" src="' + escapeHtml(imageSrc) + '" alt="' + escapeHtml(item.name || 'Portfolio logo') + '">'
       ].join('');
-      var content = item.websiteUrl
-        ? '<a class="oco-home-trust__logo-item oco-partner-item--' + escapeHtml(item.slug || 'partner') + '" href="' + escapeHtml(item.websiteUrl) + '" target="_blank" rel="noreferrer">' + logo + '</a>'
-        : '<div class="oco-home-trust__logo-item oco-partner-item--' + escapeHtml(item.slug || 'partner') + '">' + logo + '</div>';
-      return content;
+      return '<div class="oco-home-trust__logo-item oco-partner-item--' + escapeHtml(item.slug || 'partner') + '">' + logo + '</div>';
     }).join('');
 
     if (wall.innerHTML.trim()) {
