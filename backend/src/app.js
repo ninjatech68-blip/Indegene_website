@@ -129,6 +129,14 @@ app.get('/api/health', (req, res) => {
   res.json(healthResponse);
 });
 
+// Compatibility redirect: backend no longer serves public HTML pages.
+// Redirect legacy direct backend .html links to the frontend host.
+app.get('*.html', (req, res) => {
+  const safePath = String(req.path || '').startsWith('/') ? req.path : `/${req.path || ''}`;
+  const target = `${env.FRONTEND_URL.replace(/\/$/, '')}${safePath}${req.url.includes('?') ? req.url.slice(req.url.indexOf('?')) : ''}`;
+  res.redirect(302, target);
+});
+
 app.use('/admin', adminCsrfProtection, adminWebRoutes);
 app.use('/api', apiRoutes);
 

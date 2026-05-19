@@ -181,7 +181,7 @@
                 </div>
                 <% if (editorState?.previewUrl) { %>
                   <div class="admin-actions">
-                    <a class="admin-btn-secondary" href="/<%= editorState.previewUrl %>" target="_blank" rel="noreferrer">Open live page</a>
+                    <a class="admin-btn-secondary" href="<%= (frontendBaseUrl || '') + '/' + String(editorState.previewUrl || '').replace(/^\/+/, '') %>" target="_blank" rel="noreferrer">Open live page</a>
                   </div>
                 <% } %>
               </div>

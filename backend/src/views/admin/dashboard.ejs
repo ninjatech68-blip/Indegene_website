@@ -26,7 +26,7 @@
 
       <%- include('partials/notice', { notice }) %>
 
-      <section class="admin-grid admin-grid--stats">
+      <section class="admin-grid admin-grid--stats admin-grid--stats-compact">
         <article class="admin-card admin-stat">
           <div class="admin-stat__label">Website coverage</div>
           <div class="admin-stat__value"><%= syncSummary.syncedPages || 0 %>/<%= syncSummary.totalMappedPages || 0 %></div>
@@ -49,134 +49,149 @@
         </article>
       </section>
 
-      <section class="admin-grid admin-grid--two">
-        <article class="admin-card admin-panel">
-          <div class="admin-page-actions">
-            <div>
-              <h2 class="admin-section-title">Website page coverage</h2>
-              <p class="admin-section-copy">Each live page should have a matching website record and the expected section count. Use these cards as the primary editing route instead of hunting through collections.</p>
-            </div>
-            <a class="admin-btn-secondary" href="/admin/pages">View all pages</a>
-          </div>
-
-          <div class="admin-grid admin-grid--page-cards">
-            <% websitePageCards.forEach((page) => { %>
-              <article class="admin-page-card admin-page-card--<%= page.syncTone %>">
-                <div class="admin-page-card__top">
-                  <div>
-                    <p class="admin-page-card__group"><%= page.groupLabel %></p>
-                    <h3><%= page.title %></h3>
-                  </div>
-                  <span class="admin-badge <%= page.syncTone === 'success' ? 'admin-badge--success' : page.syncTone === 'draft' ? 'admin-badge--draft' : page.syncTone === 'danger' ? 'admin-badge--danger' : 'admin-badge--warning' %>"><%= page.syncLabel %></span>
-                </div>
-                <p><%= page.summary %></p>
-                <div class="admin-page-card__meta">
-                  <span><strong>File</strong> <%= page.file %></span>
-                  <span><strong>Sections</strong> <%= page.meta %></span>
-                </div>
-                <a class="admin-btn-secondary" href="<%= page.editPath %>">Edit page</a>
-              </article>
-            <% }) %>
-          </div>
-        </article>
-
-        <article class="admin-card admin-panel">
-          <h2 class="admin-section-title">Shared content ownership</h2>
-          <p class="admin-section-copy">These records power proof content, logos, shared copy, inbox activity, and protected partner content across the site.</p>
-
-          <div class="admin-kpi-list">
-            <% sharedContentCards.forEach((entry) => { %>
-              <a class="admin-kpi admin-kpi--link" href="<%= entry.href %>">
-                <div>
-                  <strong><%= entry.count %></strong>
-                  <div class="admin-stat__meta"><%= entry.title %></div>
-                </div>
-                <span class="admin-badge"><%= entry.key === 'formSubmissions' ? 'Inbox' : 'Open' %></span>
-              </a>
-            <% }) %>
-          </div>
-        </article>
-      </section>
-
-      <section class="admin-grid admin-grid--two">
-        <article class="admin-card admin-panel">
-          <div class="admin-page-actions">
-            <div>
-              <h2 class="admin-section-title">Submission activity</h2>
-              <p class="admin-section-copy">A seven-day view of contact enquiries and newsletter signups to help teams spot volume shifts without leaving the dashboard.</p>
-            </div>
-          </div>
-
-          <div class="admin-chart" aria-label="Seven day submission chart">
-            <% trend.forEach((day) => { 
-              const maxValue = Math.max(...trend.map((item) => Math.max(item.contact, item.newsletter, 1)));
-              const contactHeight = Math.max(12, Math.round((day.contact / maxValue) * 150));
-              const newsletterHeight = Math.max(12, Math.round((day.newsletter / maxValue) * 150));
-            %>
-              <div class="admin-chart__col">
-                <div class="admin-chart__bars">
-                  <span class="admin-chart__bar" style="--bar-height:<%= contactHeight %>px;" title="<%= day.contact %> contact submissions"></span>
-                  <span class="admin-chart__bar admin-chart__bar--secondary" style="--bar-height:<%= newsletterHeight %>px;" title="<%= day.newsletter %> newsletter signups"></span>
-                </div>
-                <span class="admin-chart__label"><%= day.label %></span>
-              </div>
-            <% }) %>
-          </div>
-        </article>
-
-        <article class="admin-card admin-panel">
-          <div class="admin-page-actions">
-            <div>
-              <h2 class="admin-section-title">Private and hidden pages</h2>
-              <p class="admin-section-copy">These URLs exist in the package but are not part of the standard public website flow. Their content is owned through protected records, not public page editing.</p>
-            </div>
-          </div>
-
-          <div class="admin-list admin-list--spaced">
-            <% hiddenPrivatePages.forEach((item) => { %>
-              <article class="admin-submission admin-submission--compact">
-                <div class="admin-submission__meta admin-submission__meta--stack">
-                  <div>
-                    <h3 class="admin-submission__title"><%= item.title %></h3>
-                    <div class="admin-table__small"><%= item.file %> · owned by <%= collections[item.owner]?.label || item.owner %></div>
-                  </div>
-                  <span class="admin-badge admin-badge--draft">Protected</span>
-                </div>
-                <p class="admin-submission__body"><%= item.summary %></p>
-              </article>
-            <% }) %>
-          </div>
-        </article>
-      </section>
-
-      <section class="admin-card admin-panel">
-        <div class="admin-page-actions">
-          <div>
-            <h2 class="admin-section-title">Recent submissions</h2>
-            <p class="admin-section-copy">Latest inbound form activity, with source page and read state visible at a glance.</p>
-          </div>
-          <a class="admin-btn-secondary" href="/admin/formSubmissions">Open inbox</a>
+      <section class="admin-card admin-panel admin-tabs-shell" data-admin-tabs>
+        <div class="admin-tabs" role="tablist" aria-label="Dashboard sections">
+          <button class="admin-tab is-active" role="tab" type="button" data-tab-target="overview" aria-selected="true">Overview</button>
+          <button class="admin-tab" role="tab" type="button" data-tab-target="pages" aria-selected="false">Pages</button>
+          <button class="admin-tab" role="tab" type="button" data-tab-target="content" aria-selected="false">Content</button>
+          <button class="admin-tab" role="tab" type="button" data-tab-target="inbox" aria-selected="false">Inbox</button>
         </div>
 
-        <div class="admin-list admin-list--spaced">
-          <% recentSubmissions.forEach((item) => { %>
-            <article class="admin-submission">
-              <div class="admin-submission__meta">
+        <section class="admin-tabpanel is-active" role="tabpanel" data-tab-panel="overview">
+          <div class="admin-grid admin-grid--two">
+            <article class="admin-card admin-panel">
+              <div class="admin-page-actions">
                 <div>
-                  <h3 class="admin-submission__title"><%= item.fullName || item.email %></h3>
-                  <div class="admin-table__small"><%= item.email %> · <%= item.sourcePage || 'Unknown source' %></div>
-                </div>
-                <div class="admin-badge-row">
-                  <span class="admin-badge <%= item.formType === 'CONTACT' ? '' : 'admin-badge--success' %>"><%= item.formType %></span>
-                  <span class="admin-badge <%= (item.meta?.status === 'READ' || item.meta?.read) ? 'admin-badge--success' : 'admin-badge--warning' %>">
-                    <%= (item.meta?.status === 'READ' || item.meta?.read) ? 'Read' : 'Unread' %>
-                  </span>
+                  <h2 class="admin-section-title">Submission activity</h2>
+                  <p class="admin-section-copy">A seven-day view of contact enquiries and newsletter signups to help teams spot volume shifts without leaving the dashboard.</p>
                 </div>
               </div>
-              <p class="admin-submission__body"><%= item.message || item.company || 'Newsletter signup — no message provided.' %></p>
+
+              <div class="admin-chart" aria-label="Seven day submission chart">
+                <% trend.forEach((day) => { 
+                  const maxValue = Math.max(...trend.map((item) => Math.max(item.contact, item.newsletter, 1)));
+                  const contactHeight = Math.max(12, Math.round((day.contact / maxValue) * 150));
+                  const newsletterHeight = Math.max(12, Math.round((day.newsletter / maxValue) * 150));
+                %>
+                  <div class="admin-chart__col">
+                    <div class="admin-chart__bars">
+                      <span class="admin-chart__bar" style="--bar-height:<%= contactHeight %>px;" title="<%= day.contact %> contact submissions"></span>
+                      <span class="admin-chart__bar admin-chart__bar--secondary" style="--bar-height:<%= newsletterHeight %>px;" title="<%= day.newsletter %> newsletter signups"></span>
+                    </div>
+                    <span class="admin-chart__label"><%= day.label %></span>
+                  </div>
+                <% }) %>
+              </div>
             </article>
-          <% }) %>
-        </div>
+
+            <article class="admin-card admin-panel">
+              <div class="admin-page-actions">
+                <div>
+                  <h2 class="admin-section-title">Private and hidden pages</h2>
+                  <p class="admin-section-copy">URLs that exist in the package but are intentionally outside the default public navigation.</p>
+                </div>
+              </div>
+
+              <div class="admin-list admin-list--spaced">
+                <% hiddenPrivatePages.forEach((item) => { %>
+                  <article class="admin-submission admin-submission--compact">
+                    <div class="admin-submission__meta admin-submission__meta--stack">
+                      <div>
+                        <h3 class="admin-submission__title"><%= item.title %></h3>
+                        <div class="admin-table__small"><%= item.file %> · owned by <%= collections[item.owner]?.label || item.owner %></div>
+                      </div>
+                      <span class="admin-badge admin-badge--draft">Protected</span>
+                    </div>
+                    <p class="admin-submission__body"><%= item.summary %></p>
+                  </article>
+                <% }) %>
+              </div>
+            </article>
+          </div>
+        </section>
+
+        <section class="admin-tabpanel" role="tabpanel" data-tab-panel="pages">
+          <article class="admin-card admin-panel">
+            <div class="admin-page-actions">
+              <div>
+                <h2 class="admin-section-title">Website page coverage</h2>
+                <p class="admin-section-copy">Each live page should have a matching page record and expected section count.</p>
+              </div>
+              <a class="admin-btn-secondary" href="/admin/pages">View all pages</a>
+            </div>
+
+            <div class="admin-grid admin-grid--page-cards">
+              <% websitePageCards.forEach((page) => { %>
+                <article class="admin-page-card admin-page-card--<%= page.syncTone %>">
+                  <div class="admin-page-card__top">
+                    <div>
+                      <p class="admin-page-card__group"><%= page.groupLabel %></p>
+                      <h3><%= page.title %></h3>
+                    </div>
+                    <span class="admin-badge <%= page.syncTone === 'success' ? 'admin-badge--success' : page.syncTone === 'draft' ? 'admin-badge--draft' : page.syncTone === 'danger' ? 'admin-badge--danger' : 'admin-badge--warning' %>"><%= page.syncLabel %></span>
+                  </div>
+                  <p><%= page.summary %></p>
+                  <div class="admin-page-card__meta">
+                    <span><strong>File</strong> <%= page.file %></span>
+                    <span><strong>Sections</strong> <%= page.meta %></span>
+                  </div>
+                  <a class="admin-btn-secondary" href="<%= page.editPath %>">Edit page</a>
+                </article>
+              <% }) %>
+            </div>
+          </article>
+        </section>
+
+        <section class="admin-tabpanel" role="tabpanel" data-tab-panel="content">
+          <article class="admin-card admin-panel">
+            <h2 class="admin-section-title">Shared content ownership</h2>
+            <p class="admin-section-copy">Proof content, logos, shared copy, inbox activity, and protected partner content.</p>
+
+            <div class="admin-kpi-list">
+              <% sharedContentCards.forEach((entry) => { %>
+                <a class="admin-kpi admin-kpi--link" href="<%= entry.href %>">
+                  <div>
+                    <strong><%= entry.count %></strong>
+                    <div class="admin-stat__meta"><%= entry.title %></div>
+                  </div>
+                  <span class="admin-badge"><%= entry.key === 'formSubmissions' ? 'Inbox' : 'Open' %></span>
+                </a>
+              <% }) %>
+            </div>
+          </article>
+        </section>
+
+        <section class="admin-tabpanel" role="tabpanel" data-tab-panel="inbox">
+          <article class="admin-card admin-panel">
+            <div class="admin-page-actions">
+              <div>
+                <h2 class="admin-section-title">Recent submissions</h2>
+                <p class="admin-section-copy">Latest inbound form activity with source page and read state.</p>
+              </div>
+              <a class="admin-btn-secondary" href="/admin/formSubmissions">Open inbox</a>
+            </div>
+
+            <div class="admin-list admin-list--spaced">
+              <% recentSubmissions.forEach((item) => { %>
+                <article class="admin-submission">
+                  <div class="admin-submission__meta">
+                    <div>
+                      <h3 class="admin-submission__title"><%= item.fullName || item.email %></h3>
+                      <div class="admin-table__small"><%= item.email %> · <%= item.sourcePage || 'Unknown source' %></div>
+                    </div>
+                    <div class="admin-badge-row">
+                      <span class="admin-badge <%= item.formType === 'CONTACT' ? '' : 'admin-badge--success' %>"><%= item.formType %></span>
+                      <span class="admin-badge <%= (item.meta?.status === 'READ' || item.meta?.read) ? 'admin-badge--success' : 'admin-badge--warning' %>">
+                        <%= (item.meta?.status === 'READ' || item.meta?.read) ? 'Read' : 'Unread' %>
+                      </span>
+                    </div>
+                  </div>
+                  <p class="admin-submission__body"><%= item.message || item.company || 'Newsletter signup — no message provided.' %></p>
+                </article>
+              <% }) %>
+            </div>
+          </article>
+        </section>
       </section>
     </main>
   </div>

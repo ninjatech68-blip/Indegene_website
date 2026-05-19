@@ -330,6 +330,14 @@ select {
   margin-bottom: 20px;
 }
 
+.admin-grid--stats-compact .admin-stat {
+  padding: 16px 18px;
+}
+
+.admin-grid--stats-compact .admin-stat__value {
+  font-size: 28px;
+}
+
 .admin-grid--two {
   grid-template-columns: minmax(0, 1.25fr) minmax(320px, 0.75fr);
   margin-bottom: 20px;
@@ -376,6 +384,62 @@ select {
   margin: 0;
   color: var(--admin-text-soft);
   line-height: 1.65;
+}
+
+.admin-tabs-shell {
+  padding: 16px;
+}
+
+.admin-tabs {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 4px;
+  border: 1px solid var(--admin-border);
+  border-radius: 14px;
+  background: var(--admin-surface-soft);
+  margin-bottom: 16px;
+  overflow-x: auto;
+}
+
+.admin-tab {
+  border: 1px solid transparent;
+  background: transparent;
+  color: var(--admin-text-soft);
+  font-size: 13px;
+  font-weight: 700;
+  letter-spacing: 0.02em;
+  border-radius: 10px;
+  padding: 9px 12px;
+  white-space: nowrap;
+  cursor: pointer;
+  transition: all 0.16s ease;
+}
+
+.admin-tab:hover,
+.admin-tab:focus-visible {
+  background: rgba(0, 78, 157, 0.08);
+  color: var(--admin-primary-deep);
+  outline: none;
+}
+
+.admin-tab.is-active {
+  background: #fff;
+  color: var(--admin-primary-deep);
+  border-color: rgba(0, 78, 157, 0.16);
+  box-shadow: var(--admin-shadow-soft);
+}
+
+.admin-tabpanel {
+  display: none;
+}
+
+.admin-tabpanel.is-active {
+  display: block;
+}
+
+.admin-tabpanel .admin-card.admin-panel {
+  box-shadow: none;
 }
 
 .admin-chart {

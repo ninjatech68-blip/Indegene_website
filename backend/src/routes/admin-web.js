@@ -7,6 +7,7 @@ import { attachCurrentUser, requireAuth, requireRole } from '../middleware/auth.
 import { cmsCollections, getCollectionConfig } from '../services/cms-models.js';
 import { getDashboardData, getSystemRecordsData } from '../services/admin-dashboard.js';
 import { buildSettingAdminData, buildSettingEditorState } from '../services/admin-settings.js';
+import { env } from '../config/env.js';
 import { registerAdminWebAuthRoutes } from './admin-web-auth-routes.js';
 import { registerAdminWebDashboardRoutes } from './admin-web-dashboard-routes.js';
 import { registerAdminWebSubmissionRoutes } from './admin-web-submission-routes.js';
@@ -128,6 +129,7 @@ router.use((req, res, next) => {
   res.locals.currentPath = req.path;
   res.locals.websitePagesNav = PRIMARY_WEBSITE_PAGES;
   res.locals.sharedAdminLinks = SHARED_ADMIN_LINKS;
+  res.locals.frontendBaseUrl = String(env.FRONTEND_URL || '').replace(/\/$/, '');
   next();
 });
 
@@ -1678,13 +1680,51 @@ function buildSearchWhere(collection, queryText) {
     return {};
   }
 
+  const runtimeModelName = resolvePrismaRuntimeModelName(collection.model);
+  const runtimeModel = runtimeModelName ? prisma._runtimeDataModel?.models?.[runtimeModelName] : null;
+  const fieldMetaByName = new Map(
+    Array.isArray(runtimeModel?.fields)
+      ? runtimeModel.fields.map((field) => [field.name, field])
+      : []
+  );
+
+  const filters = collection.searchableFields.flatMap((field) => {
+    const meta = fieldMetaByName.get(field);
+    const fieldType = String(meta?.type || '').toLowerCase();
+    const scalarType = String(meta?.kind || '').toLowerCase();
+
+    if (!meta) {
+      return [{
+        [field]: {
+          contains: q,
+          mode: 'insensitive'
+        }
+      }];
+    }
+
+    if (scalarType === 'scalar' && fieldType === 'string') {
+      return [{
+        [field]: {
+          contains: q,
+          mode: 'insensitive'
+        }
+      }];
+    }
+
+    if (scalarType === 'enum') {
+      const normalized = q.replace(/[\s-]+/g, '_').toUpperCase();
+      return normalized ? [{ [field]: { equals: normalized } }] : [];
+    }
+
+    return [];
+  });
+
+  if (!filters.length) {
+    return {};
+  }
+
   return {
-    OR: collection.searchableFields.map((field) => ({
-      [field]: {
-        contains: q,
-        mode: 'insensitive'
-      }
-    }))
+    OR: filters
   };
 }
 
@@ -2367,10 +2407,35 @@ router.post('/:collection/:id', requireAuth, requireRole('ADMIN', 'EDITOR'), asy
 
     if (req.params.collection === 'pages') {
       for (const sectionUpdate of pagePayload.sectionUpdates) {
-        await prisma.pageSection.update({
-          where: { id: sectionUpdate.id },
-          data: shapeCollectionWriteData('pageSections', sectionUpdate.data)
+        const sectionData = shapeCollectionWriteData('pageSections', sectionUpdate.data);
+        const updateResult = await prisma.pageSection.updateMany({
+          where: {
+            id: sectionUpdate.id,
+            pageId: req.params.id
+          },
+          data: sectionData
         });
+
+        if (!updateResult.count) {
+          const sectionKey = String(sectionData.sectionKey || '').trim();
+          if (!sectionKey) {
+            continue;
+          }
+
+          await prisma.pageSection.upsert({
+            where: {
+              pageId_sectionKey: {
+                pageId: req.params.id,
+                sectionKey
+              }
+            },
+            update: sectionData,
+            create: {
+              ...sectionData,
+              page: { connect: { id: req.params.id } }
+            }
+          });
+        }
       }
     }
 

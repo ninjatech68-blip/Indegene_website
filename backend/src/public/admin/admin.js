@@ -1,4 +1,34 @@
 document.addEventListener('DOMContentLoaded', () => {
+  document.querySelectorAll('[data-admin-tabs]').forEach((tabsRoot) => {
+    const tabs = Array.from(tabsRoot.querySelectorAll('[data-tab-target]'));
+    const panels = Array.from(tabsRoot.querySelectorAll('[data-tab-panel]'));
+    if (!tabs.length || !panels.length) {
+      return;
+    }
+
+    const activate = (target) => {
+      tabs.forEach((tab) => {
+        const isActive = tab.getAttribute('data-tab-target') === target;
+        tab.classList.toggle('is-active', isActive);
+        tab.setAttribute('aria-selected', isActive ? 'true' : 'false');
+      });
+
+      panels.forEach((panel) => {
+        const isActive = panel.getAttribute('data-tab-panel') === target;
+        panel.classList.toggle('is-active', isActive);
+      });
+    };
+
+    tabs.forEach((tab) => {
+      tab.addEventListener('click', () => {
+        activate(tab.getAttribute('data-tab-target'));
+      });
+    });
+
+    const defaultTab = tabs.find((tab) => tab.classList.contains('is-active')) || tabs[0];
+    activate(defaultTab.getAttribute('data-tab-target'));
+  });
+
   document.querySelectorAll('[data-confirm]').forEach((node) => {
     node.addEventListener('click', (event) => {
       const message = node.getAttribute('data-confirm') || 'Are you sure?';
