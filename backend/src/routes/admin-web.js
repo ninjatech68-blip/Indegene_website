@@ -1239,6 +1239,37 @@ function buildPageSectionAdminData(rawData, existingItem = {}) {
 function shapeCollectionWriteData(collectionKey, data) {
   const next = { ...data };
 
+  if (collectionKey === 'pages') {
+    const allowedKeys = new Set([
+      'slug',
+      'title',
+      'status',
+      'template',
+      'seoTitle',
+      'seoDescription',
+      'seoCanonicalUrl',
+      'structuredData',
+      'heroKicker',
+      'heroTitle',
+      'heroSubtitle',
+      'heroPrimaryLabel',
+      'heroPrimaryUrl',
+      'heroSecondaryLabel',
+      'heroSecondaryUrl'
+    ]);
+
+    Object.keys(next).forEach((key) => {
+      if (!allowedKeys.has(key)) {
+        delete next[key];
+      }
+    });
+
+    next.title = String(next.title || '').trim();
+    next.slug = String(next.slug || '').trim() || toSlug(next.title);
+    next.template = String(next.template || '').trim() || 'STANDARD';
+    next.status = String(next.status || '').trim() || 'DRAFT';
+  }
+
   if (collectionKey === 'caseStudies') {
     const allowedKeys = new Set([
       'slug',
@@ -1289,6 +1320,10 @@ function shapeCollectionWriteData(collectionKey, data) {
     if (!next.publishedAt || Number.isNaN(new Date(next.publishedAt).getTime())) {
       next.publishedAt = null;
     }
+  }
+
+  if (collectionKey === 'privatePageResources' && Object.prototype.hasOwnProperty.call(next, 'slug')) {
+    delete next.slug;
   }
 
   if (collectionKey === 'pageSections' && Object.prototype.hasOwnProperty.call(next, 'pageId')) {

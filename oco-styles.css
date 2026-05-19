@@ -599,6 +599,14 @@ html {
 /* ============================================================
    9. MOBILE NAV MODAL overrides
    ============================================================ */
+.modal-backdrop {
+  z-index: 1190;
+}
+
+.oco-modal.modal {
+  z-index: 1200;
+}
+
 .oco-modal .modal-content  { background: var(--surface); }
 .oco-modal .modal-header   { padding: 24px; border-bottom: 1px solid var(--border); }
 .oco-modal .modal-header img { height: 36px; }
