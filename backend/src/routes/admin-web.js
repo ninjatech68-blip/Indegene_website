@@ -1495,6 +1495,7 @@ async function buildCaseStudyAdminData(rawData, existingItem = {}) {
 
   const selectedTagIds = []
     .concat(rawData.editorSelectedTagIds || [])
+    .flatMap((value) => String(value || '').split(','))
     .map((value) => String(value || '').trim())
     .filter(Boolean);
   const newTagLabels = parseDelimitedList(rawData.editorNewTags || '');
@@ -1559,7 +1560,7 @@ function buildPageAdminData(rawData, existingItem = {}) {
 async function syncCaseStudyRelations(caseStudyId, relations) {
   if (!relations) return;
 
-  const tagIds = new Set(relations.selectedTagIds || []);
+  const tagIds = new Set((relations.selectedTagIds || []).map((value) => String(value || '').trim()).filter(Boolean));
 
   for (const label of relations.newTagLabels || []) {
     const trimmed = String(label || '').trim();
@@ -1572,15 +1573,33 @@ async function syncCaseStudyRelations(caseStudyId, relations) {
     tagIds.add(tag.id);
   }
 
+  let featuredImageRelation = { disconnect: true };
+  const featuredImageId = String(relations.featuredImageId || '').trim();
+  if (featuredImageId) {
+    const hasImage = await prisma.mediaAsset.findUnique({
+      where: { id: featuredImageId },
+      select: { id: true }
+    });
+    if (hasImage) {
+      featuredImageRelation = { connect: { id: featuredImageId } };
+    }
+  }
+
+  const existingTagRows = tagIds.size
+    ? await prisma.tag.findMany({
+        where: { id: { in: Array.from(tagIds) } },
+        select: { id: true }
+      })
+    : [];
+  const existingTagIds = new Set(existingTagRows.map((row) => row.id));
+
   await prisma.caseStudy.update({
     where: { id: caseStudyId },
     data: {
-      featuredImage: relations.featuredImageId
-        ? { connect: { id: relations.featuredImageId } }
-        : { disconnect: true },
+      featuredImage: featuredImageRelation,
       tags: {
         deleteMany: {},
-        create: Array.from(tagIds).map((tagId) => ({
+        create: Array.from(existingTagIds).map((tagId) => ({
           tag: { connect: { id: tagId } }
         }))
       }
