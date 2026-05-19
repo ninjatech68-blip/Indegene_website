@@ -1239,6 +1239,58 @@ function buildPageSectionAdminData(rawData, existingItem = {}) {
 function shapeCollectionWriteData(collectionKey, data) {
   const next = { ...data };
 
+  if (collectionKey === 'caseStudies') {
+    const allowedKeys = new Set([
+      'slug',
+      'title',
+      'excerpt',
+      'content',
+      'sourceUrl',
+      'status',
+      'featuredImageId',
+      'seoTitle',
+      'seoDescription',
+      'seoCanonicalUrl',
+      'structuredData',
+      'publishedAt',
+      'isFeatured'
+    ]);
+
+    Object.keys(next).forEach((key) => {
+      if (!allowedKeys.has(key)) {
+        delete next[key];
+      }
+    });
+
+    next.slug = String(next.slug || '').trim();
+    next.title = String(next.title || '').trim();
+    next.excerpt = String(next.excerpt || '').trim();
+    next.content = String(next.content || '').trim();
+
+    if (!next.slug && next.title) {
+      next.slug = toSlug(next.title);
+    }
+
+    if (!next.sourceUrl) {
+      next.sourceUrl = null;
+    }
+    if (!next.featuredImageId) {
+      next.featuredImageId = null;
+    }
+    if (!next.seoTitle) {
+      next.seoTitle = null;
+    }
+    if (!next.seoDescription) {
+      next.seoDescription = null;
+    }
+    if (!next.seoCanonicalUrl) {
+      next.seoCanonicalUrl = null;
+    }
+    if (!next.publishedAt || Number.isNaN(new Date(next.publishedAt).getTime())) {
+      next.publishedAt = null;
+    }
+  }
+
   if (collectionKey === 'pageSections' && Object.prototype.hasOwnProperty.call(next, 'pageId')) {
     const pageId = String(next.pageId || '').trim();
     delete next.pageId;
