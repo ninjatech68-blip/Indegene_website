@@ -1337,6 +1337,26 @@ function shapeCollectionWriteData(collectionKey, data) {
   return next;
 }
 
+function resolvePrismaRuntimeModelName(clientModelKey) {
+  const key = String(clientModelKey || '').trim();
+  if (!key) return null;
+  return key.charAt(0).toUpperCase() + key.slice(1);
+}
+
+function filterDataToPrismaModelFields(clientModelKey, data) {
+  if (!data || typeof data !== 'object') return {};
+  const runtimeModelName = resolvePrismaRuntimeModelName(clientModelKey);
+  const model = prisma._runtimeDataModel?.models?.[runtimeModelName];
+  if (!model || !Array.isArray(model.fields)) {
+    return data;
+  }
+
+  const allowed = new Set(model.fields.map((field) => field.name));
+  return Object.fromEntries(
+    Object.entries(data).filter(([field]) => allowed.has(field))
+  );
+}
+
 function extractCaseStudyEditorState(item = {}) {
   const content = String(item.content || '').trim();
   const cleaned = content.replace(/^<!-- Outcomes Stats -->\s*/i, '');
@@ -2135,7 +2155,8 @@ router.post('/:collection', requireAuth, requireRole('ADMIN', 'EDITOR'), async (
       : normalizeAdminData(req.body);
 
     const shapedData = shapeCollectionWriteData(req.params.collection, data);
-    const createdItem = await prisma[collection.model].create({ data: shapedData });
+    const prismaData = filterDataToPrismaModelFields(collection.model, shapedData);
+    const createdItem = await prisma[collection.model].create({ data: prismaData });
 
     if (req.params.collection === 'caseStudies') {
       await syncCaseStudyRelations(createdItem.id, caseStudyPayload.relations);
@@ -2243,10 +2264,11 @@ router.post('/:collection/:id', requireAuth, requireRole('ADMIN', 'EDITOR'), asy
       : normalizeAdminData(req.body);
 
     const shapedData = shapeCollectionWriteData(req.params.collection, data);
+    const prismaData = filterDataToPrismaModelFields(collection.model, shapedData);
 
     await prisma[collection.model].update({
       where: { id: req.params.id },
-      data: shapedData
+      data: prismaData
     });
 
     if (req.params.collection === 'caseStudies') {
