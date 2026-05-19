@@ -80,7 +80,7 @@
         key: 'serve',
         label: 'Who We Serve',
         links: [
-          { label: 'Biopharmaceuticals', href: 'biopharmaceuticals.html' },
+          { label: 'Pharmaceuticals', href: 'biopharmaceuticals.html' },
           { label: 'Emerging Biotech', href: 'emerging-biotech.html' },
           { label: 'Medical Devices', href: 'medical-devices.html' },
           { label: 'Animal Healthcare', href: 'animal-health.html' }
@@ -90,24 +90,29 @@
         key: 'capabilities',
         label: 'Capabilities',
         links: [
-          { label: 'Services', href: 'services.html' },
-          { label: 'By Role', href: 'by_role.html' },
-          { label: 'By Channel', href: 'by_channel.html' },
-          { label: 'By Function', href: 'by_function.html' }
+          { label: 'Strategy', href: 'strategy.html' },
+          { label: 'Planning', href: 'planning.html' },
+          { label: 'Orchestration', href: 'orchestration.html' },
+          { label: 'Execution', href: 'execution.html' },
+          { label: 'Measurement', href: 'measurement.html' },
+          { label: 'Analytics', href: 'analytics.html' }
         ]
       },
       {
         key: 'why',
         label: 'Why Choose Us',
         links: [
-          { label: 'Case Studies', href: 'casestudy.html' },
-          { label: 'GenAI', href: 'genai.html' }
+          { label: 'Pharma-Native Expertise', href: 'by_role.html' },
+          { label: 'Compliance-by-Design', href: 'by_function.html' },
+          { label: 'Omnichannel Execution at Scale', href: 'by_channel.html' }
         ]
       },
       {
         key: 'more',
         label: 'About & Insights',
         links: [
+          { label: 'Case Studies', href: 'casestudy.html' },
+          { label: 'GenAI', href: 'genai.html' },
           { label: 'Insights', href: 'https://www.indegene.com/what-we-think/blogs' },
           { label: 'About', href: 'https://www.indegene.com/who-we-are/about-us' },
           { label: 'Contact Us', href: 'contactus.html' }

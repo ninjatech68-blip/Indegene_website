@@ -188,7 +188,7 @@
       {
         label: 'Who We Serve',
         items: [
-          { label: 'Biopharmaceuticals', url: 'biopharmaceuticals.html' },
+          { label: 'Pharmaceuticals', url: 'biopharmaceuticals.html' },
           { label: 'Emerging Biotech', url: 'emerging-biotech.html' },
           { label: 'Medical Devices', url: 'medical-devices.html' },
           { label: 'Animal Healthcare', url: 'animal-health.html' }
@@ -197,22 +197,27 @@
       {
         label: 'Capabilities',
         items: [
-          { label: 'Services', url: 'services.html' },
-          { label: 'By Role', url: 'by_role.html' },
-          { label: 'By Channel', url: 'by_channel.html' },
-          { label: 'By Function', url: 'by_function.html' }
+          { label: 'Strategy', url: 'strategy.html' },
+          { label: 'Planning', url: 'planning.html' },
+          { label: 'Orchestration', url: 'orchestration.html' },
+          { label: 'Execution', url: 'execution.html' },
+          { label: 'Measurement', url: 'measurement.html' },
+          { label: 'Analytics', url: 'analytics.html' }
         ]
       },
       {
         label: 'Why Choose Us',
         items: [
-          { label: 'Case Studies', url: 'casestudy.html' },
-          { label: 'GenAI', url: 'genai.html' }
+          { label: 'Pharma-Native Expertise', url: 'by_role.html' },
+          { label: 'Compliance-by-Design', url: 'by_function.html' },
+          { label: 'Omnichannel Execution at Scale', url: 'by_channel.html' }
         ]
       },
       {
         label: 'About & Insights',
         items: [
+          { label: 'Case Studies', url: 'casestudy.html' },
+          { label: 'GenAI', url: 'genai.html' },
           { label: 'Insights', url: 'https://www.indegene.com/what-we-think/blogs' },
           { label: 'About', url: 'https://www.indegene.com/who-we-are/about-us' },
           { label: 'Contact Us', url: 'contactus.html' }
@@ -222,22 +227,35 @@
   }
 
   function normalizeMobileNavGroups(groups) {
+    var canonicalGroups = getCanonicalMobileNavGroups();
+
     if (!Array.isArray(groups) || !groups.length) {
-      return getCanonicalMobileNavGroups();
+      return canonicalGroups;
     }
 
-    var legacyLabels = groups.map(function (group) {
-      return String(group?.label || '').trim().toLowerCase();
+    var normalised = groups.map(function (group) {
+      return {
+        label: String(group?.label || '').trim(),
+        items: Array.isArray(group?.items) ? group.items.map(function (item) {
+          return {
+            label: String(item?.label || '').trim(),
+            url: String(item?.url || '').trim()
+          };
+        }) : []
+      };
     });
-    var hasLegacyStructure = legacyLabels.indexOf('what we do') !== -1
-      || legacyLabels.indexOf('how we deliver') !== -1
-      || legacyLabels.indexOf('what we think') !== -1;
 
-    if (hasLegacyStructure) {
-      return getCanonicalMobileNavGroups();
+    if (normalised.length !== canonicalGroups.length) {
+      return canonicalGroups;
     }
 
-    return groups;
+    for (var i = 0; i < canonicalGroups.length; i += 1) {
+      if (normalised[i].label !== canonicalGroups[i].label || normalised[i].items.length !== canonicalGroups[i].items.length) {
+        return canonicalGroups;
+      }
+    }
+
+    return normalised;
   }
 
   function renderMobileNav(groups) {

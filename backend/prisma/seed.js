@@ -35,11 +35,14 @@ async function upsertMenus() {
       title: 'Header Navigation',
       location: 'header',
       items: [
-        { label: 'Who We Serve', url: '/biopharmaceuticals' },
-        { label: 'What We Do', url: '/services' },
-        { label: 'How We Deliver', url: '/why-choose-us' },
-        { label: 'What We Think', url: '/case-studies' },
-        { label: 'Contact Us', url: '/contact' }
+        { label: 'Who We Serve', url: '/biopharmaceuticals.html' },
+        { label: 'Capabilities', url: '/services.html' },
+        { label: 'Why Choose Us', url: '/by_role.html' },
+        { label: 'Case Studies', url: '/casestudy.html' },
+        { label: 'GenAI', url: '/genai.html' },
+        { label: 'Insights', url: 'https://www.indegene.com/what-we-think/blogs' },
+        { label: 'About', url: 'https://www.indegene.com/who-we-are/about-us' },
+        { label: 'Contact Us', url: '/contactus.html' }
       ]
     },
     {
