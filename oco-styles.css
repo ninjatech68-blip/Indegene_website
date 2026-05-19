@@ -8410,9 +8410,23 @@ a.oco-home-trust__logo-item:hover {
   }
 
   .oco-home-trust__logo-wall {
-    grid-template-columns: repeat(8, minmax(0, 1fr));
+    display: flex;
+    align-items: stretch;
+    gap: 12px;
     overflow-x: auto;
     overflow-y: hidden;
+    scroll-snap-type: x mandatory;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: none;
+    padding: 2px 2px 6px;
+  }
+
+  .oco-home-trust__logo-wall::-webkit-scrollbar {
+    display: none;
+  }
+
+  .oco-home-trust__logo-wall.is-marquee {
+    scroll-behavior: auto;
   }
 
   .oco-home-motion__field {
@@ -8425,6 +8439,25 @@ a.oco-home-trust__logo-item:hover {
 
   .oco-home-trust + .oco-home-reality {
     padding-top: 20px;
+  }
+
+  .oco-home-trust__logo-item {
+    flex: 0 0 min(46vw, 180px);
+    min-height: 100px;
+    padding: 18px 14px;
+    scroll-snap-align: center;
+    scroll-snap-stop: always;
+    border: 0;
+    border-radius: 0;
+    background: transparent;
+  }
+
+  .oco-home-trust__logo-item img {
+    width: 100%;
+    max-width: 138px;
+    max-height: 38px !important;
+    height: 38px !important;
+    opacity: 0.9;
   }
 
   .oco-home-motion__core {

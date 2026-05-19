@@ -301,6 +301,79 @@
     } else {
       wrap.setAttribute('hidden', 'hidden');
     }
+
+    initializeMobileLogoCarousel(wall);
+  }
+
+  function initializeMobileLogoCarousel(wall) {
+    if (!wall || wall.dataset.carouselReady === 'true') {
+      return;
+    }
+
+    var mobileQuery = window.matchMedia('(max-width: 767px)');
+    var timerId = null;
+
+    function stop() {
+      if (timerId) {
+        window.clearInterval(timerId);
+        timerId = null;
+      }
+    }
+
+    function start() {
+      stop();
+      if (!mobileQuery.matches || !wall.scrollWidth || wall.scrollWidth <= wall.clientWidth + 4) {
+        wall.classList.remove('is-marquee');
+        return;
+      }
+
+      wall.classList.add('is-marquee');
+      wall.scrollLeft = 0;
+      timerId = window.setInterval(function () {
+        if (document.hidden) {
+          return;
+        }
+
+        var maxScrollLeft = wall.scrollWidth - wall.clientWidth;
+        if (maxScrollLeft <= 0) {
+          return;
+        }
+
+        wall.scrollLeft += 1;
+        if (wall.scrollLeft >= maxScrollLeft - 1) {
+          wall.scrollLeft = 0;
+        }
+      }, 24);
+    }
+
+    function sync() {
+      if (window.requestAnimationFrame) {
+        window.requestAnimationFrame(start);
+      } else {
+        start();
+      }
+    }
+
+    wall.dataset.carouselReady = 'true';
+    if (typeof mobileQuery.addEventListener === 'function') {
+      mobileQuery.addEventListener('change', sync);
+    } else if (typeof mobileQuery.addListener === 'function') {
+      mobileQuery.addListener(sync);
+    }
+    window.addEventListener('resize', sync);
+    window.addEventListener('beforeunload', stop);
+    sync();
+  }
+
+  function bootstrapStaticMobileLogoCarousel() {
+    var wall = document.querySelector('#homeTrustLogos .oco-home-trust__logo-wall');
+    initializeMobileLogoCarousel(wall);
+  }
+
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', bootstrapStaticMobileLogoCarousel);
+  } else {
+    bootstrapStaticMobileLogoCarousel();
   }
 
   function renderTestimonials(items) {
