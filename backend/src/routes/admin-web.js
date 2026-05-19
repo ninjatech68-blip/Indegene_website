@@ -1593,18 +1593,46 @@ async function syncCaseStudyRelations(caseStudyId, relations) {
     : [];
   const existingTagIds = new Set(existingTagRows.map((row) => row.id));
 
-  await prisma.caseStudy.update({
-    where: { id: caseStudyId },
-    data: {
-      featuredImage: featuredImageRelation,
-      tags: {
-        deleteMany: {},
-        create: Array.from(existingTagIds).map((tagId) => ({
-          tag: { connect: { id: tagId } }
-        }))
-      }
+  const runtimeCaseStudyModel = prisma._runtimeDataModel?.models?.CaseStudy;
+  const caseStudyFields = new Set(Array.isArray(runtimeCaseStudyModel?.fields) ? runtimeCaseStudyModel.fields.map((field) => field.name) : []);
+  const updateData = {};
+
+  if (!caseStudyFields.size || caseStudyFields.has('featuredImage')) {
+    updateData.featuredImage = featuredImageRelation;
+  } else if (caseStudyFields.has('featuredImageId')) {
+    updateData.featuredImageId = featuredImageId || null;
+  }
+
+  if (!caseStudyFields.size || caseStudyFields.has('tags')) {
+    updateData.tags = {
+      deleteMany: {},
+      create: Array.from(existingTagIds).map((tagId) => ({
+        tag: { connect: { id: tagId } }
+      }))
+    };
+  }
+
+  if (!Object.keys(updateData).length) {
+    return;
+  }
+
+  try {
+    await prisma.caseStudy.update({
+      where: { id: caseStudyId },
+      data: updateData
+    });
+  } catch (error) {
+    const isValidationError = String(error?.name || '') === 'PrismaClientValidationError';
+    if (isValidationError && !caseStudyFields.size) {
+      // Runtime model metadata unavailable on this deployment; fall back to scalar-only update.
+      await prisma.caseStudy.update({
+        where: { id: caseStudyId },
+        data: { featuredImageId: featuredImageId || null }
+      });
+      return;
     }
-  });
+    throw error;
+  }
 }
 
 function getNotice(req) {
