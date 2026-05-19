@@ -52,7 +52,8 @@ export const cmsCollections = {
       structuredData: 'Website placement and related-story settings are managed through the guided editor.',
       publishedAt: 'Publishing timestamp used for sorting and visibility.'
     },
-    fields: ['slug', 'title', 'excerpt', 'content', 'sourceUrl', 'status', 'seoTitle', 'seoDescription', 'structuredData', 'publishedAt', 'isFeatured']
+    fields: ['title', 'excerpt', 'status', 'publishedAt', 'isFeatured', 'seoTitle', 'seoDescription'],
+    editorFields: ['title', 'excerpt', 'status', 'publishedAt', 'isFeatured', 'seoTitle', 'seoDescription']
   },
   privatePageResources: {
     label: 'Private Page Resources',
@@ -72,7 +73,8 @@ export const cmsCollections = {
       url: 'Direct link to the deck, demo, document, or related destination.',
       ctaLabel: 'Optional custom button label. Defaults to “Open resource” on the frontend.'
     },
-    fields: ['pageKey', 'title', 'resourceType', 'description', 'url', 'ctaLabel', 'isVisible', 'sortOrder']
+    fields: ['pageKey', 'title', 'resourceType', 'description', 'url', 'ctaLabel', 'isVisible', 'sortOrder'],
+    editorFields: ['pageKey', 'title', 'resourceType', 'description', 'url', 'ctaLabel', 'isVisible', 'sortOrder']
   },
   privatePageCredentials: {
     label: 'Private Page Credentials',
@@ -92,7 +94,8 @@ export const cmsCollections = {
       password: 'Set a password when creating a credential. On edits, leave blank to keep the existing password.',
       assignedResources: 'Choose exactly which protected resources this credential is allowed to view.'
     },
-    fields: ['pageKey', 'username', 'description', 'isActive']
+    fields: ['pageKey', 'username', 'description', 'isActive'],
+    editorFields: ['pageKey', 'username', 'description', 'isActive']
   },
   testimonials: {
     label: 'Testimonials',
@@ -110,24 +113,23 @@ export const cmsCollections = {
       quote: 'Client-approved testimonial quote.',
       isVisible: 'Controls whether the testimonial can appear on the site.'
     },
-    fields: ['clientName', 'role', 'company', 'quote', 'isVisible', 'sortOrder']
+    fields: ['clientName', 'role', 'company', 'quote', 'isVisible', 'sortOrder'],
+    editorFields: ['clientName', 'role', 'company', 'quote', 'isVisible', 'sortOrder']
   },
   clients: {
     label: 'Trust & Platform Logos',
     model: 'client',
     icon: 'bi-buildings',
     description: 'Manage homepage trust logos, partner marks, ordering, and optional destination links.',
-    searchableFields: ['slug', 'name', 'description', 'websiteUrl'],
+    searchableFields: ['name'],
     orderBy: [{ sortOrder: 'asc' }, { updatedAt: 'desc' }],
     sortOptions: [
       { value: 'sort-asc', label: 'Sort order' },
       { value: 'updated-desc', label: 'Recently updated' },
       { value: 'name-asc', label: 'Client name A–Z' }
     ],
-    fieldHelp: {
-      websiteUrl: 'Optional outbound link for the client logo or record.'
-    },
-    fields: ['slug', 'name', 'description', 'websiteUrl', 'isVisible', 'sortOrder']
+    fields: ['name', 'isVisible', 'sortOrder'],
+    editorFields: ['name', 'isVisible', 'sortOrder']
   },
   settings: {
     label: 'Shared Site Copy',

@@ -1365,6 +1365,16 @@ function shapeCollectionWriteData(collectionKey, data) {
     }
   }
 
+  if (!['pages', 'caseStudies', 'pageSections'].includes(collectionKey)) {
+    const collectionConfig = getCollectionConfig(collectionKey);
+    const allowedKeys = new Set(getEditableFieldsForCollection(collectionConfig));
+    Object.keys(next).forEach((key) => {
+      if (!allowedKeys.has(key)) {
+        delete next[key];
+      }
+    });
+  }
+
   return next;
 }
 
@@ -1855,6 +1865,15 @@ function getFieldChoices(field, options = {}) {
   return [];
 }
 
+function getEditableFieldsForCollection(collection) {
+  const candidate = Array.isArray(collection?.editorFields) && collection.editorFields.length
+    ? collection.editorFields
+    : Array.isArray(collection?.fields)
+      ? collection.fields
+      : [];
+  return candidate.filter((field) => !['body', 'config', 'structuredData', 'value'].includes(field));
+}
+
 function serializeFieldValue(field, value) {
   if (value === null || typeof value === 'undefined') return '';
   if (field === 'publishedAt' && value) {
@@ -2151,6 +2170,7 @@ router.get('/:collection/new', requireAuth, requireRole('ADMIN', 'EDITOR'), asyn
       activeCollectionKey: req.params.collection,
       collections: cmsCollections,
       collection,
+      editableFields: getEditableFieldsForCollection(collection),
       item: {},
       fieldOptions,
       getFieldType,
@@ -2245,6 +2265,7 @@ router.get('/:collection/:id', requireAuth, requireRole('ADMIN', 'EDITOR'), asyn
       activeCollectionKey: req.params.collection,
       collections: cmsCollections,
       collection,
+      editableFields: getEditableFieldsForCollection(collection),
       item,
       fieldOptions,
       getFieldType,

@@ -4,6 +4,20 @@
   <%- include('partials/head') %>
 </head>
 <body>
+  <%
+    const advancedFieldNames = new Set([
+      'slug',
+      'status',
+      'publishedAt',
+      'seoTitle',
+      'seoDescription',
+      'editorOriginalSourceUrl',
+      'editorPageFile',
+      'editorFeaturedImageId',
+      'editorNewTags'
+    ]);
+    const isAdvancedField = (name) => advancedFieldNames.has(String(name || ''));
+  %>
   <div class="admin-shell">
     <%- include('partials/sidebar', { collections, activeCollectionKey, currentUser }) %>
 
@@ -27,6 +41,12 @@
             <h2 class="admin-section-title admin-section-title--tight">Record details</h2>
             <p class="admin-section-copy">Update the live website content below. Editors are tailored to the frontend layout so non-technical teams can work in plain language instead of implementation detail.</p>
           </div>
+          <% if (!readOnly) { %>
+            <div class="admin-guided-toggle" data-guided-toggle>
+              <span>Guided edit mode</span>
+              <button class="admin-btn-secondary" type="button" data-guided-toggle-btn aria-pressed="true">Advanced fields hidden</button>
+            </div>
+          <% } %>
           <% if (readOnly && collectionKey === 'formSubmissions') { %>
             <div class="admin-actions">
               <% if (item.meta?.status === 'READ' || item.meta?.read) { %>
@@ -62,7 +82,7 @@
             </div>
           </div>
         <% } else if (collectionKey === 'pages') { %>
-          <form class="admin-form" method="post" action="<%= item.id ? `/admin/${collectionKey}/${item.id}` : `/admin/${collectionKey}` %>">
+          <form class="admin-form" data-guided-scope method="post" action="<%= item.id ? `/admin/${collectionKey}/${item.id}` : `/admin/${collectionKey}` %>">
             <input type="hidden" name="_csrf" value="<%= csrfToken %>">
 
             <% (editorState?.pageGroups || []).forEach((group) => { %>
@@ -75,7 +95,7 @@
                 </div>
                 <div class="admin-form__grid">
                   <% group.fields.forEach((field) => { %>
-                    <div class="<%= field.full ? 'admin-form__field--full' : '' %>">
+                    <div class="<%= field.full ? 'admin-form__field--full' : '' %> <%= isAdvancedField(field.name) ? 'admin-advanced-field' : '' %>">
                       <label for="<%= field.name %>"><%= field.label %></label>
                       <% if (field.type === 'textarea') { %>
                         <textarea class="admin-textarea" id="<%= field.name %>" name="<%= field.name %>" placeholder="<%= field.placeholder || '' %>" <%= field.readOnly ? 'readonly' : '' %>><%= field.value %></textarea>
@@ -170,7 +190,7 @@
             </div>
           <% } %>
         <% } else if (collectionKey === 'caseStudies') { %>
-          <form class="admin-form" method="post" action="<%= item.id ? `/admin/${collectionKey}/${item.id}` : `/admin/${collectionKey}` %>">
+          <form class="admin-form" data-guided-scope method="post" action="<%= item.id ? `/admin/${collectionKey}/${item.id}` : `/admin/${collectionKey}` %>">
             <input type="hidden" name="_csrf" value="<%= csrfToken %>">
 
             <section class="admin-editor-group">
@@ -191,7 +211,7 @@
                   const choices = getFieldChoices(field, fieldOptions);
                   const isFull = ['excerpt'].includes(field);
                 %>
-                  <div class="<%= isFull ? 'admin-form__field--full' : '' %>">
+                  <div class="<%= isFull ? 'admin-form__field--full' : '' %> <%= isAdvancedField(field) ? 'admin-advanced-field' : '' %>">
                     <label for="<%= field %>"><%= humanizeField(field) %></label>
                     <% if (fieldType === 'textarea') { %>
                       <textarea class="admin-textarea" id="<%= field %>" name="<%= field %>"><%= serializeFieldValue(field, item[field]) %></textarea>
@@ -212,7 +232,7 @@
                     <% } %>
                   </div>
                 <% }) %>
-                <div>
+                <div class="admin-advanced-field">
                   <label for="editorFeaturedImageId">Featured media</label>
                   <select class="admin-select" id="editorFeaturedImageId" name="editorFeaturedImageId">
                     <option value="">No featured media</option>
@@ -242,7 +262,7 @@
               </div>
             </section>
 
-            <section class="admin-editor-group">
+            <section class="admin-editor-group admin-advanced-field">
               <div class="admin-editor-group__head">
                 <div>
                   <h3 class="admin-section-title admin-section-title--tight">Website placement</h3>
@@ -282,7 +302,7 @@
               </div>
             </section>
 
-            <section class="admin-editor-group">
+            <section class="admin-editor-group admin-advanced-field">
               <div class="admin-editor-group__head">
                 <div>
                   <h3 class="admin-section-title admin-section-title--tight">Case study content blocks</h3>
@@ -402,7 +422,7 @@
             </div>
           <% } %>
         <% } else if (collectionKey === 'privatePageCredentials') { %>
-          <form class="admin-form" method="post" action="<%= item.id ? `/admin/${collectionKey}/${item.id}` : `/admin/${collectionKey}` %>">
+          <form class="admin-form" data-guided-scope method="post" action="<%= item.id ? `/admin/${collectionKey}/${item.id}` : `/admin/${collectionKey}` %>">
             <input type="hidden" name="_csrf" value="<%= csrfToken %>">
 
             <section class="admin-editor-group">
@@ -510,7 +530,7 @@
             </div>
           <% } %>
         <% } else if (collectionKey === 'settings') { %>
-          <form class="admin-form" method="post" action="<%= item.id ? `/admin/${collectionKey}/${item.id}` : `/admin/${collectionKey}` %>">
+          <form class="admin-form" data-guided-scope method="post" action="<%= item.id ? `/admin/${collectionKey}/${item.id}` : `/admin/${collectionKey}` %>">
             <input type="hidden" name="_csrf" value="<%= csrfToken %>">
             <input type="hidden" name="key" value="<%= item.key || '' %>">
 
@@ -562,16 +582,16 @@
             </div>
           <% } %>
         <% } else { %>
-          <form class="admin-form" method="post" action="<%= item.id ? `/admin/${collectionKey}/${item.id}` : `/admin/${collectionKey}` %>">
+          <form class="admin-form" data-guided-scope method="post" action="<%= item.id ? `/admin/${collectionKey}/${item.id}` : `/admin/${collectionKey}` %>">
             <input type="hidden" name="_csrf" value="<%= csrfToken %>">
 
             <div class="admin-form__grid">
-              <% collection.fields.filter((field) => !['body', 'config', 'structuredData', 'value'].includes(field)).forEach((field) => { 
+              <% (editableFields || []).forEach((field) => { 
                 const fieldType = getFieldType(field);
                 const choices = getFieldChoices(field, fieldOptions);
                 const isFull = ['content','excerpt','quote','summary','subheading','seoDescription','description'].includes(field);
               %>
-                <div class="<%= isFull ? 'admin-form__field--full' : '' %>">
+                <div class="<%= isFull ? 'admin-form__field--full' : '' %> <%= isAdvancedField(field) ? 'admin-advanced-field' : '' %>">
                   <label for="<%= field %>"><%= humanizeField(field) %></label>
 
                   <% if (fieldType === 'textarea') { %>

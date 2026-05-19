@@ -1,4 +1,26 @@
 document.addEventListener('DOMContentLoaded', () => {
+  const guidedToggle = document.querySelector('[data-guided-toggle]');
+  const guidedButton = guidedToggle?.querySelector('[data-guided-toggle-btn]');
+  const guidedScope = document.querySelector('[data-guided-scope]');
+  const guidedStorageKey = 'oco_cms_guided_mode';
+  const setGuidedMode = (enabled) => {
+    if (!guidedButton || !guidedScope) return;
+    guidedScope.classList.toggle('is-guided', enabled);
+    guidedButton.setAttribute('aria-pressed', enabled ? 'true' : 'false');
+    guidedButton.textContent = enabled ? 'Advanced fields hidden' : 'Show guided fields';
+  };
+
+  if (guidedButton && guidedScope) {
+    const saved = window.localStorage.getItem(guidedStorageKey);
+    const isGuided = saved !== 'off';
+    setGuidedMode(isGuided);
+    guidedButton.addEventListener('click', () => {
+      const enabled = !guidedScope.classList.contains('is-guided');
+      setGuidedMode(enabled);
+      window.localStorage.setItem(guidedStorageKey, enabled ? 'on' : 'off');
+    });
+  }
+
   document.querySelectorAll('[data-admin-tabs]').forEach((tabsRoot) => {
     const tabs = Array.from(tabsRoot.querySelectorAll('[data-tab-target]'));
     const panels = Array.from(tabsRoot.querySelectorAll('[data-tab-panel]'));
