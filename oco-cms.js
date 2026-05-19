@@ -147,9 +147,7 @@
     if (Array.isArray(settings['mobile.nav'])) {
       renderMobileNav(settings['mobile.nav']);
     }
-    if (Array.isArray(settings['footer.columns'])) {
-      renderFooterColumns(settings['footer.columns'], settings['footer.cta']);
-    }
+    renderFooterColumns(settings['footer.columns'], settings['footer.cta']);
     if (settings['footer.copy']) {
       setText('.oco-footer__brand p', settings['footer.copy']);
     }
@@ -1354,6 +1352,7 @@
   };
 
   document.addEventListener('DOMContentLoaded', function () {
+    renderFooterColumns(null, { label: 'Contact Us', url: 'contactus.html' });
     hydrateCurrentPage();
     bindSiteShellForms();
 

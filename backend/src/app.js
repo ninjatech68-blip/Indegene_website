@@ -61,6 +61,9 @@ app.use(cors({
     try {
       const parsed = new URL(origin);
       const host = parsed.hostname.toLowerCase();
+      if (host === 'localhost' || host === '127.0.0.1') {
+        return callback(null, true);
+      }
       if (host.endsWith('.netlify.app') || host.endsWith('.onrender.com')) {
         return callback(null, true);
       }

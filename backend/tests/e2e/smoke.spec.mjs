@@ -2,8 +2,8 @@ import { test, expect } from '@playwright/test';
 
 const FRONTEND_BASE_URL = process.env.FRONTEND_BASE_URL || 'http://localhost:8081';
 const ADMIN_BASE_URL = process.env.ADMIN_BASE_URL || process.env.API_BASE_URL || 'http://localhost:4000';
-const ADMIN_EMAIL = process.env.DEFAULT_ADMIN_EMAIL || 'admin@local.test';
-const ADMIN_PASSWORD = process.env.DEFAULT_ADMIN_PASSWORD || 'LocalStrongPass123!';
+const ADMIN_EMAIL = process.env.DEFAULT_ADMIN_EMAIL || 'admin@example.com';
+const ADMIN_PASSWORD = process.env.DEFAULT_ADMIN_PASSWORD || 'ChangeMe123!';
 
 test.describe('Public website smoke', () => {
   test('homepage renders shell, opens modal CTA, and navigates to full contact page from header/footer', async ({ page }) => {

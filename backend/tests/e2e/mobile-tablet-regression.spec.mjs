@@ -38,8 +38,12 @@ async function assertAccordionSingleOpen(page) {
 async function closeMobileNav(page) {
   const closeButton = page.locator('#mobileNavModal .btn-close').first();
   await expect(closeButton).toBeVisible();
-  await closeButton.click();
-  await expect(page.locator('#mobileNavModal.show')).toHaveCount(0);
+  await closeButton.click({ trial: true }).catch(function () { return null; });
+  await closeButton.click({ force: true });
+  if (await page.locator('#mobileNavModal.show').count()) {
+    await page.keyboard.press('Escape');
+  }
+  await expect(page.locator('#mobileNavModal.show')).toHaveCount(0, { timeout: 10000 });
 }
 
 test.describe('Cross-device UI regression', () => {

@@ -127,13 +127,61 @@
     return escapeHtml(String(value || '')).replace(/\n/g, '<br>');
   }
 
+  function getCanonicalFooterColumns() {
+    return [
+      {
+        title: 'Core',
+        links: [
+          { label: 'Home', url: 'index.html' },
+          { label: 'Services', url: 'services.html' },
+          { label: 'Case Studies', url: 'casestudy.html' },
+          { label: 'GenAI', url: 'genai.html' },
+          { label: 'Contact Us', url: 'contactus.html' }
+        ]
+      },
+      {
+        title: 'Who We Serve',
+        links: [
+          { label: 'Biopharmaceuticals', url: 'biopharmaceuticals.html' },
+          { label: 'Emerging Biotech', url: 'emerging-biotech.html' },
+          { label: 'Medical Devices', url: 'medical-devices.html' },
+          { label: 'Animal Healthcare', url: 'animal-health.html' }
+        ]
+      },
+      {
+        title: 'Capabilities',
+        links: [
+          { label: 'Strategy', url: 'strategy.html' },
+          { label: 'Planning', url: 'planning.html' },
+          { label: 'Orchestration', url: 'orchestration.html' },
+          { label: 'Execution', url: 'execution.html' },
+          { label: 'Measurement', url: 'measurement.html' },
+          { label: 'Analytics', url: 'analytics.html' }
+        ]
+      },
+      {
+        title: 'Why Choose Us',
+        links: [
+          { label: 'Pharma-Native Expertise', url: 'by_role.html' },
+          { label: 'Compliance-by-Design', url: 'by_function.html' },
+          { label: 'Omnichannel Execution at Scale', url: 'by_channel.html' }
+        ]
+      }
+    ];
+  }
+
+  function sanitizeFooterColumns(columns) {
+    var canonical = getCanonicalFooterColumns();
+    return canonical;
+  }
+
   function renderFooterColumns(columns, cta) {
-    if (!Array.isArray(columns)) return;
+    columns = sanitizeFooterColumns(columns);
     var colNodes = document.querySelectorAll('.oco-footer__col');
     Array.prototype.forEach.call(colNodes, function (colNode, index) {
       var column = columns[index];
       if (!column) return;
-      var title = colNode.querySelector('h5');
+      var title = colNode.querySelector('h2, h5');
       var list = colNode.querySelector('ul');
       if (title) title.textContent = column.title;
       if (list) {

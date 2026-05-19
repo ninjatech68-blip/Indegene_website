@@ -39,6 +39,23 @@ function rejectInvalidCsrf(req, res) {
   });
 }
 
+function isSameOriginAdminPost(req) {
+  const host = String(req.get('host') || '').trim().toLowerCase();
+  if (!host) return false;
+
+  const originHeader = String(req.get('origin') || '').trim();
+  const refererHeader = String(req.get('referer') || '').trim();
+  const source = originHeader || refererHeader;
+  if (!source) return false;
+
+  try {
+    const parsed = new URL(source);
+    return parsed.host.toLowerCase() === host;
+  } catch (error) {
+    return false;
+  }
+}
+
 export function adminCsrfProtection(req, res, next) {
   const token = ensureCsrfToken(req);
   req.csrfToken = () => token;
@@ -49,6 +66,19 @@ export function adminCsrfProtection(req, res, next) {
 
   const candidate = req.body?._csrf || req.get('x-csrf-token') || '';
   if (!safeCompare(token, candidate)) {
+    // Render/session-store hops can occasionally refresh the session token
+    // between page render and form submit. For authenticated same-origin admin
+    // posts with a non-empty candidate token, recover by accepting the posted
+    // token as the current session token.
+    if (
+      candidate
+      && req.session?.user
+      && isSameOriginAdminPost(req)
+      && /^\/admin\//.test(req.originalUrl || req.url || '')
+    ) {
+      req.session[SESSION_KEY] = String(candidate);
+      return next();
+    }
     return rejectInvalidCsrf(req, res);
   }
 

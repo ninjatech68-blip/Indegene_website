@@ -50,6 +50,7 @@
     { title: 'Execution Layer', meta: 'Why Choose Us', href: 'by_channel.html', keywords: 'execution layer channels seo sem ppc social media programmatic email whatsapp sms' },
     { title: 'Value Chain', meta: 'Why Choose Us', href: 'by_function.html', keywords: 'value chain campaign management digital marketing marketing automation qa project management account management' },
     { title: 'Capabilities Overview', meta: 'Services page', href: 'services.html', keywords: 'capabilities omnichannel strategy planning orchestration execution measurement analytics delivery' },
+    { title: 'GenAI Services', meta: 'Capabilities', href: 'genai.html', keywords: 'genai generative ai ai copilots agents prompts llm workflow automation content intelligence' },
     { title: 'Contact Us', meta: 'Get in touch', href: 'contactus.html', keywords: 'contact contact us get in touch enquire enquiry partnership' },
     { title: 'Case Studies', meta: 'Customer Proof', href: 'casestudy.html', keywords: 'case studies proof outcomes examples client work customer proof' },
     { title: 'Insights', meta: 'Thought Leadership', href: 'https://www.indegene.com/what-we-think/blogs', keywords: 'insights blogs thought leadership articles commercialization omnichannel' },
@@ -208,54 +209,214 @@
     }
   }
 
-  function scoreSearchEntry(entry, query) {
-    var haystack = (entry.title + ' ' + entry.meta + ' ' + entry.keywords).toLowerCase();
-    var terms = query.toLowerCase().trim().split(/\s+/).filter(Boolean);
-    var score = 0;
+  function normalizeToken(value) {
+    return String(value || '')
+      .toLowerCase()
+      .replace(/[^a-z0-9\s-]/g, ' ')
+      .replace(/\s+/g, ' ')
+      .trim();
+  }
 
-    if (!terms.length) {
-      return 0;
+  function tokenize(value) {
+    return normalizeToken(value).split(/\s+/).filter(Boolean);
+  }
+
+  function startsWithWord(haystack, needle) {
+    var pattern = new RegExp('(?:^|\\s)' + needle.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'));
+    return pattern.test(haystack);
+  }
+
+  function levenshteinDistance(a, b) {
+    var left = String(a || '');
+    var right = String(b || '');
+    if (left === right) return 0;
+    if (!left.length) return right.length;
+    if (!right.length) return left.length;
+
+    var prev = new Array(right.length + 1);
+    var curr = new Array(right.length + 1);
+    var i;
+    var j;
+
+    for (j = 0; j <= right.length; j += 1) {
+      prev[j] = j;
     }
 
-    terms.forEach(function (term) {
-      if (entry.title.toLowerCase() === term) {
-        score += 120;
+    for (i = 1; i <= left.length; i += 1) {
+      curr[0] = i;
+      for (j = 1; j <= right.length; j += 1) {
+        var cost = left.charAt(i - 1) === right.charAt(j - 1) ? 0 : 1;
+        curr[j] = Math.min(
+          curr[j - 1] + 1,
+          prev[j] + 1,
+          prev[j - 1] + cost
+        );
       }
-      if (entry.title.toLowerCase().indexOf(term) !== -1) {
-        score += 40;
+      for (j = 0; j <= right.length; j += 1) {
+        prev[j] = curr[j];
       }
-      if (entry.meta.toLowerCase().indexOf(term) !== -1) {
-        score += 18;
+    }
+
+    return prev[right.length];
+  }
+
+  function isNearMatch(term, candidate) {
+    if (!term || !candidate) return false;
+    var len = Math.max(term.length, candidate.length);
+    if (len <= 4) return false;
+    var distance = levenshteinDistance(term, candidate);
+    return distance <= (len >= 8 ? 2 : 1);
+  }
+
+  function buildExpandedTerms(rawQuery) {
+    var aliasMap = {
+      ai: ['genai', 'artificial intelligence'],
+      genai: ['ai', 'generative ai'],
+      cases: ['case', 'case study', 'case studies'],
+      pharma: ['pharmaceuticals', 'biopharmaceuticals'],
+      biopharma: ['biopharmaceuticals', 'pharma'],
+      biotech: ['emerging biotech'],
+      medtech: ['medical devices'],
+      contact: ['contact us', 'get in touch'],
+      testimonial: ['testimonials', 'client proof'],
+      proof: ['outcomes', 'enterprise proof'],
+      analytics: ['measurement', 'insights']
+    };
+
+    var base = tokenize(rawQuery);
+    var expanded = [];
+    base.forEach(function (term) {
+      expanded.push(term);
+      (aliasMap[term] || []).forEach(function (alias) {
+        tokenize(alias).forEach(function (token) {
+          expanded.push(token);
+        });
+      });
+    });
+    return Array.from(new Set(expanded));
+  }
+
+  function normalizeHref(href) {
+    var value = String(href || '').trim();
+    if (!value) return '';
+    return value.replace(/^Index\.html$/i, 'index.html');
+  }
+
+  function scoreSearchEntry(entry, rawQuery, expandedTerms) {
+    var title = normalizeToken(entry.title);
+    var meta = normalizeToken(entry.meta);
+    var keywords = normalizeToken(entry.keywords);
+    var haystack = (title + ' ' + meta + ' ' + keywords).trim();
+    var titleTokens = tokenize(entry.title);
+    var metaTokens = tokenize(entry.meta);
+    var keywordTokens = tokenize(entry.keywords);
+    var score = 0;
+    var exactHits = 0;
+
+    if (!expandedTerms.length) {
+      return { score: 0, exactHits: 0 };
+    }
+
+    expandedTerms.forEach(function (term) {
+      if (!term) return;
+      var termHit = false;
+      var shortToken = term.length <= 2;
+
+      if (title === term) {
+        score += 180;
+        termHit = true;
       }
-      if (haystack.indexOf(term) !== -1) {
-        score += 10;
+
+      if (shortToken ? titleTokens.indexOf(term) !== -1 : startsWithWord(title, term)) {
+        score += 80;
+        termHit = true;
+      } else if (!shortToken && term.length >= 4 && title.indexOf(term) !== -1) {
+        score += 45;
+        termHit = true;
+      }
+
+      if (shortToken ? metaTokens.indexOf(term) !== -1 : startsWithWord(meta, term)) {
+        score += 28;
+        termHit = true;
+      } else if (!shortToken && term.length >= 4 && meta.indexOf(term) !== -1) {
+        score += 16;
+        termHit = true;
+      }
+
+      if (shortToken ? keywordTokens.indexOf(term) !== -1 : keywords.indexOf(term) !== -1) {
+        score += 12;
+        termHit = true;
+      }
+
+      if (!termHit) {
+        var fuzzy = titleTokens.some(function (token) {
+          return isNearMatch(term, token);
+        });
+        if (!fuzzy) {
+          fuzzy = tokenize(meta + ' ' + keywords).some(function (token) {
+            return isNearMatch(term, token);
+          });
+        }
+        if (fuzzy) {
+          score += 9;
+          termHit = true;
+        }
+      }
+
+      if (termHit) {
+        exactHits += 1;
       }
     });
 
-    if (haystack.indexOf(query.toLowerCase()) !== -1) {
-      score += 60;
+    var normalizedQuery = normalizeToken(rawQuery);
+    if (normalizedQuery && title.indexOf(normalizedQuery) !== -1) {
+      score += 65;
+    }
+    if (normalizedQuery && haystack.indexOf(normalizedQuery) !== -1) {
+      score += 40;
     }
 
-    return score;
+    if (!exactHits) {
+      score = 0;
+    } else {
+      score += Math.min(24, exactHits * 6);
+    }
+
+    return {
+      score: score,
+      exactHits: exactHits
+    };
   }
 
   function performSearch(query) {
-    return searchIndex
-      .map(function (entry) {
-        return {
-          title: entry.title,
-          meta: entry.meta,
-          href: entry.href,
-          score: scoreSearchEntry(entry, query)
-        };
-      })
-      .filter(function (entry) {
-        return entry.score > 0;
-      })
+    var expandedTerms = buildExpandedTerms(query);
+    var dedupeByHref = new Map();
+
+    searchIndex.forEach(function (entry) {
+      var href = normalizeHref(entry.href);
+      if (!href) return;
+      var metrics = scoreSearchEntry(entry, query, expandedTerms);
+      if (metrics.score <= 0) return;
+
+      var candidate = {
+        title: entry.title,
+        meta: entry.meta,
+        href: href,
+        score: metrics.score,
+        exactHits: metrics.exactHits
+      };
+
+      var existing = dedupeByHref.get(href);
+      if (!existing || candidate.score > existing.score) {
+        dedupeByHref.set(href, candidate);
+      }
+    });
+
+    return Array.from(dedupeByHref.values())
       .sort(function (a, b) {
-        return b.score - a.score || a.title.localeCompare(b.title);
+        return b.score - a.score || b.exactHits - a.exactHits || a.title.localeCompare(b.title);
       })
-      .slice(0, 6);
+      .slice(0, 8);
   }
 
   function renderSearchResults(query) {

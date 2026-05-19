@@ -93,6 +93,35 @@ function getSectionDisplayLabel(section) {
   return sectionLabel;
 }
 
+function inferPageTemplateForSlug(slug) {
+  if (slug === 'home') return 'HOME';
+  if (slug === 'services') return 'SERVICES';
+  if (slug === 'contact') return 'CONTACT';
+  if (slug === 'case-studies') return 'CASE_STUDY_LIST';
+  return 'STANDARD';
+}
+
+function createMissingPageRecordFromMap(slug) {
+  const mapped = WEBSITE_PAGES.find((page) => page.slug === slug);
+  if (!mapped) return null;
+
+  const sectionKeys = Array.isArray(mapped.sections) ? mapped.sections : [];
+  return {
+    slug: mapped.slug,
+    title: mapped.title,
+    template: inferPageTemplateForSlug(mapped.slug),
+    status: 'PUBLISHED',
+    sections: {
+      create: sectionKeys.map((sectionKey, index) => ({
+        sectionKey,
+        sectionLabel: getSectionDisplayLabel({ sectionKey, sectionLabel: sectionKey }),
+        visibility: true,
+        sortOrder: index
+      }))
+    }
+  };
+}
+
 router.use(attachCurrentUser);
 router.use((req, res, next) => {
   res.locals.csrfToken = typeof req.csrfToken === 'function' ? req.csrfToken() : '';
@@ -2099,15 +2128,33 @@ router.get('/:collection/new', requireAuth, requireRole('ADMIN', 'EDITOR'), asyn
 
 router.get('/pages/slug/:slug', requireAuth, requireRole('ADMIN', 'EDITOR'), async (req, res, next) => {
   try {
-    const item = await prisma.page.findUnique({
-      where: { slug: req.params.slug }
+    const slug = String(req.params.slug || '').trim();
+    let item = await prisma.page.findUnique({
+      where: { slug }
     });
 
     if (!item) {
-      return res.redirect(`/admin/pages?notice=${encodeURIComponent(`No CMS page record exists yet for "${req.params.slug}".`)}`);
+      const seedData = createMissingPageRecordFromMap(slug);
+      if (seedData) {
+        item = await prisma.page.create({
+          data: seedData
+        });
+      }
     }
 
-    return res.redirect(`/admin/pages/${item.id}`);
+    if (!item) {
+      return res.redirect(`/admin/pages?notice=${encodeURIComponent(`No CMS page record exists yet for "${slug}".`)}`);
+    }
+
+    const withSections = await prisma.page.findUnique({
+      where: { slug: req.params.slug }
+    });
+
+    if (!withSections?.id) {
+      return res.redirect(`/admin/pages?notice=${encodeURIComponent(`No CMS page record exists yet for "${slug}".`)}`);
+    }
+
+    return res.redirect(`/admin/pages/${withSections.id}`);
   } catch (error) {
     next(error);
   }
@@ -2122,11 +2169,7 @@ router.get('/:collection/:id', requireAuth, requireRole('ADMIN', 'EDITOR'), asyn
 
     const item = req.params.collection === 'caseStudies'
       ? await prisma[collection.model].findUnique({
-          where: { id: req.params.id },
-          include: {
-            tags: { include: { tag: true } },
-            featuredImage: true
-          }
+          where: { id: req.params.id }
         })
       : req.params.collection === 'pages'
         ? await prisma[collection.model].findUnique({
