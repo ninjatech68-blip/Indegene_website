@@ -1,7 +1,21 @@
 import bcrypt from 'bcryptjs';
+import rateLimit from 'express-rate-limit';
 
 export function registerAdminWebAuthRoutes(router, deps) {
   const { prisma, requireAuth } = deps;
+  const isLoopbackIp = (ip = '') => ip === '127.0.0.1' || ip === '::1' || ip === '::ffff:127.0.0.1';
+  const adminLoginLimiter = rateLimit({
+    windowMs: 15 * 60 * 1000,
+    max: 10,
+    standardHeaders: true,
+    legacyHeaders: false,
+    skip: (req) => isLoopbackIp(req.ip)
+  });
+  const renderInvalidCredentials = (res, nextUrl) => res.status(401).render('admin/login', {
+    title: 'Admin Login',
+    error: 'Invalid credentials',
+    next: nextUrl === '/admin' ? '' : nextUrl
+  });
 
   router.get('/login', (req, res) => {
     if (req.session?.user) {
@@ -14,34 +28,42 @@ export function registerAdminWebAuthRoutes(router, deps) {
     });
   });
 
-  router.post('/login', async (req, res, next) => {
+  router.post('/login', adminLoginLimiter, async (req, res, next) => {
     try {
       const { email, password } = req.body;
       const nextUrl = typeof req.body.next === 'string' && req.body.next.startsWith('/admin')
         ? req.body.next
         : '/admin';
+      if (!email || !password) {
+        return renderInvalidCredentials(res, nextUrl);
+      }
       const user = await prisma.user.findUnique({ where: { email } });
 
       if (!user || !user.isActive) {
-        return res.status(401).render('admin/login', {
-          title: 'Admin Login',
-          error: 'Invalid credentials',
-          next: nextUrl === '/admin' ? '' : nextUrl
-        });
+        return renderInvalidCredentials(res, nextUrl);
       }
 
-      const isValid = await bcrypt.compare(password, user.passwordHash);
+      if (!user.passwordHash || typeof user.passwordHash !== 'string') {
+        return renderInvalidCredentials(res, nextUrl);
+      }
+
+      let isValid = false;
+      try {
+        isValid = await bcrypt.compare(String(password), user.passwordHash);
+      } catch (compareError) {
+        return renderInvalidCredentials(res, nextUrl);
+      }
       if (!isValid) {
-        return res.status(401).render('admin/login', {
-          title: 'Admin Login',
-          error: 'Invalid credentials',
-          next: nextUrl === '/admin' ? '' : nextUrl
-        });
+        return renderInvalidCredentials(res, nextUrl);
       }
 
       req.session.regenerate((regenerateError) => {
         if (regenerateError) {
-          return next(regenerateError);
+          return res.status(503).render('admin/login', {
+            title: 'Admin Login',
+            error: 'Login is temporarily unavailable. Please try again.',
+            next: nextUrl === '/admin' ? '' : nextUrl
+          });
         }
 
         req.session.user = {
@@ -53,7 +75,11 @@ export function registerAdminWebAuthRoutes(router, deps) {
 
         req.session.save((saveError) => {
           if (saveError) {
-            return next(saveError);
+            return res.status(503).render('admin/login', {
+              title: 'Admin Login',
+              error: 'Login is temporarily unavailable. Please try again.',
+              next: nextUrl === '/admin' ? '' : nextUrl
+            });
           }
 
           res.redirect(nextUrl);
