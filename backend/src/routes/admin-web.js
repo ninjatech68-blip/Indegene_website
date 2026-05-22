@@ -1332,6 +1332,13 @@ function shapeCollectionWriteData(collectionKey, data) {
     if (!next.slug && next.title) {
       next.slug = toSlug(next.title);
     }
+    next.status = String(next.status || '').trim() || 'DRAFT';
+    if (!['DRAFT', 'PUBLISHED', 'ARCHIVED'].includes(next.status)) {
+      next.status = 'DRAFT';
+    }
+    if (typeof next.isFeatured !== 'boolean') {
+      next.isFeatured = false;
+    }
 
     if (!next.sourceUrl) {
       next.sourceUrl = null;
@@ -1373,6 +1380,45 @@ function shapeCollectionWriteData(collectionKey, data) {
         delete next[key];
       }
     });
+  }
+
+  if (collectionKey === 'privatePageCredentials' && data.passwordHash) {
+    next.passwordHash = data.passwordHash;
+  }
+
+  if (collectionKey === 'testimonials') {
+    next.clientName = String(next.clientName || '').trim();
+    next.role = String(next.role || '').trim();
+    next.quote = String(next.quote || '').trim();
+    next.company = String(next.company || '').trim() || null;
+    if (!next.clientName) throw new Error('Client name is required.');
+    if (!next.role) throw new Error('Role is required.');
+    if (!next.quote) throw new Error('Quote is required.');
+    if (typeof next.isVisible !== 'boolean') {
+      next.isVisible = true;
+    }
+    const sortOrder = Number(next.sortOrder);
+    next.sortOrder = Number.isFinite(sortOrder) ? sortOrder : 0;
+  }
+
+  if (collectionKey === 'clients') {
+    next.name = String(next.name || '').trim();
+    if (!next.name) throw new Error('Client name is required.');
+    next.slug = String(next.slug || '').trim() || toSlug(next.name);
+    next.description = next.description ? String(next.description).trim() : null;
+    next.websiteUrl = next.websiteUrl ? String(next.websiteUrl).trim() : null;
+    if (typeof next.isVisible !== 'boolean') {
+      next.isVisible = true;
+    }
+    const sortOrder = Number(next.sortOrder);
+    next.sortOrder = Number.isFinite(sortOrder) ? sortOrder : 0;
+  }
+
+  if (collectionKey === 'privatePageCredentials') {
+    next.description = next.description ? String(next.description).trim() : null;
+    if (typeof next.isActive !== 'boolean') {
+      next.isActive = true;
+    }
   }
 
   return next;
@@ -2000,9 +2046,13 @@ async function getCollectionListing(collectionKey, req) {
 async function buildPrivatePageCredentialData(rawData, existingItem = null) {
   const data = normalizeAdminData(rawData);
   const password = String(rawData.password || '').trim();
+  data.username = String(data.username || '').trim();
 
   if (!data.pageKey) {
     data.pageKey = PRIVATE_PAGE_OPTIONS[0].value;
+  }
+  if (!data.username) {
+    throw new Error('Username is required.');
   }
 
   if (password) {
@@ -2036,6 +2086,37 @@ function buildPrivatePageResourceData(rawData) {
   if (!data.pageKey) {
     data.pageKey = PRIVATE_PAGE_OPTIONS[0].value;
   }
+
+  data.title = String(data.title || '').trim();
+  data.resourceType = String(data.resourceType || '').trim();
+  data.url = String(data.url || '').trim();
+
+  if (!data.title) {
+    throw new Error('Resource title is required.');
+  }
+  if (!data.resourceType) {
+    throw new Error('Resource type is required.');
+  }
+  if (!data.url) {
+    throw new Error('Resource URL is required.');
+  }
+
+  if (typeof data.description !== 'undefined') {
+    const description = String(data.description || '').trim();
+    data.description = description || null;
+  }
+
+  if (typeof data.ctaLabel !== 'undefined') {
+    const ctaLabel = String(data.ctaLabel || '').trim();
+    data.ctaLabel = ctaLabel || null;
+  }
+
+  if (typeof data.isVisible !== 'boolean') {
+    data.isVisible = true;
+  }
+
+  const parsedSortOrder = Number(data.sortOrder);
+  data.sortOrder = Number.isFinite(parsedSortOrder) ? parsedSortOrder : 0;
 
   return data;
 }

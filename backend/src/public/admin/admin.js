@@ -1,7 +1,40 @@
 document.addEventListener('DOMContentLoaded', () => {
+  const inferInputGuidance = (input) => {
+    if (!input) return 'Provide the value for this field.';
+    const tag = (input.tagName || '').toLowerCase();
+    const type = String(input.getAttribute('type') || '').toLowerCase();
+    if (tag === 'textarea') return 'Enter clear plain-language content. Use line breaks for readability.';
+    if (tag === 'select') return 'Select the most appropriate option from the list.';
+    if (type === 'url') return 'Enter a full URL including https://';
+    if (type === 'email') return 'Enter a valid email address.';
+    if (type === 'number') return 'Enter a numeric value only.';
+    if (type === 'datetime-local') return 'Select date and time in local format.';
+    if (type === 'password') return 'Enter a strong password value.';
+    return 'Enter concise, publish-ready text.';
+  };
+
+  document.querySelectorAll('.admin-form label[for]').forEach((label) => {
+    if (label.querySelector('.admin-info-inline')) return;
+    const fieldId = label.getAttribute('for');
+    if (!fieldId) return;
+    const input = document.getElementById(fieldId);
+    if (!input) return;
+    const fieldWrap = label.closest('div');
+    const helpNode = fieldWrap?.querySelector('.admin-field-help');
+    const helpText = (helpNode?.textContent || '').trim() || inferInputGuidance(input);
+    const info = document.createElement('span');
+    info.className = 'admin-info-inline';
+    info.setAttribute('title', helpText);
+    info.setAttribute('aria-label', helpText);
+    info.textContent = '(i)';
+    label.appendChild(document.createTextNode(' '));
+    label.appendChild(info);
+  });
+
   const guidedToggle = document.querySelector('[data-guided-toggle]');
   const guidedButton = guidedToggle?.querySelector('[data-guided-toggle-btn]');
   const guidedScope = document.querySelector('[data-guided-scope]');
+  const advancedFieldCount = document.querySelectorAll('.admin-advanced-field').length;
   const guidedStorageKey = 'oco_cms_guided_mode';
   const setGuidedMode = (enabled) => {
     if (!guidedButton || !guidedScope) return;
@@ -11,6 +44,12 @@ document.addEventListener('DOMContentLoaded', () => {
   };
 
   if (guidedButton && guidedScope) {
+    if (!advancedFieldCount) {
+      guidedButton.textContent = 'No advanced fields';
+      guidedButton.disabled = true;
+      guidedButton.setAttribute('aria-pressed', 'false');
+      return;
+    }
     const saved = window.localStorage.getItem(guidedStorageKey);
     const isGuided = saved !== 'off';
     setGuidedMode(isGuided);
@@ -19,6 +58,10 @@ document.addEventListener('DOMContentLoaded', () => {
       setGuidedMode(enabled);
       window.localStorage.setItem(guidedStorageKey, enabled ? 'on' : 'off');
     });
+  } else if (guidedButton && !guidedScope) {
+    guidedButton.textContent = 'Advanced fields unavailable';
+    guidedButton.disabled = true;
+    guidedButton.setAttribute('aria-pressed', 'false');
   }
 
   document.querySelectorAll('[data-admin-tabs]').forEach((tabsRoot) => {

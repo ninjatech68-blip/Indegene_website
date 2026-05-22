@@ -29,6 +29,12 @@
           <p class="admin-subtitle"><%= collection.description %></p>
         </div>
         <div class="admin-actions">
+          <% if (!readOnly) { %>
+            <div class="admin-guided-toggle" data-guided-toggle>
+              <span>Guided edit mode</span>
+              <button class="admin-btn-secondary" type="button" data-guided-toggle-btn aria-pressed="true">Advanced fields hidden</button>
+            </div>
+          <% } %>
           <a class="admin-btn-secondary" href="/admin/<%= collectionKey %>">Back to collection</a>
         </div>
       </div>
@@ -41,12 +47,6 @@
             <h2 class="admin-section-title admin-section-title--tight">Record details</h2>
             <p class="admin-section-copy">Update the live website content below. Editors are tailored to the frontend layout so non-technical teams can work in plain language instead of implementation detail.</p>
           </div>
-          <% if (!readOnly) { %>
-            <div class="admin-guided-toggle" data-guided-toggle>
-              <span>Guided edit mode</span>
-              <button class="admin-btn-secondary" type="button" data-guided-toggle-btn aria-pressed="true">Advanced fields hidden</button>
-            </div>
-          <% } %>
           <% if (readOnly && collectionKey === 'formSubmissions') { %>
             <div class="admin-actions">
               <% if (item.meta?.status === 'READ' || item.meta?.read) { %>

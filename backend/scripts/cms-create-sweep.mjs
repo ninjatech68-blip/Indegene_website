@@ -143,15 +143,6 @@ async function run() {
       verify: (items) => items.find((item) => item.username === `qa-user-${stamp}`) || null
     },
     {
-      collection: 'settings',
-      payload: {
-        key: `qa.sweep.${stamp}`,
-        value: 'temporary value',
-        description: 'Automated create-sweep setting'
-      },
-      verify: (items) => items.find((item) => item.key === `qa.sweep.${stamp}`) || null
-    },
-    {
       collection: 'pages',
       payload: {
         title: `QA Sweep Page ${stamp}`,

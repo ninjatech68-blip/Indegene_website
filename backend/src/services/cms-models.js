@@ -3,7 +3,7 @@ export const cmsCollections = {
     label: 'Media Library',
     model: 'mediaAsset',
     icon: 'bi-images',
-    description: 'Upload, review, and reuse approved media assets for the website and CMS records.',
+    description: 'Central media repository for approved website assets, including metadata and accessibility text.',
     searchableFields: ['fileName', 'publicUrl', 'altText'],
     orderBy: { updatedAt: 'desc' },
     readOnly: true,
@@ -19,7 +19,7 @@ export const cmsCollections = {
     label: 'Website Pages',
     model: 'page',
     icon: 'bi-file-earmark-text',
-    description: 'Manage page hero content and SEO metadata for the live website.',
+    description: 'Manage page-level messaging, hero content, and search metadata for live website pages.',
     searchableFields: ['slug', 'title', 'heroTitle', 'heroSubtitle', 'seoTitle', 'seoDescription'],
     orderBy: { updatedAt: 'desc' },
     sortOptions: [
@@ -37,7 +37,7 @@ export const cmsCollections = {
     label: 'Case Studies',
     model: 'caseStudy',
     icon: 'bi-journal-richtext',
-    description: 'Publish proof points, detailed case studies, SEO metadata, and featured content.',
+    description: 'Manage case-study narratives, proof points, publication controls, and search metadata.',
     searchableFields: ['slug', 'title', 'excerpt', 'content', 'seoTitle', 'seoDescription'],
     orderBy: [{ updatedAt: 'desc' }],
     sortOptions: [
@@ -59,7 +59,7 @@ export const cmsCollections = {
     label: 'Private Page Resources',
     model: 'privatePageResource',
     icon: 'bi-link-45deg',
-    description: 'Manage protected-page links such as presentation decks, live demos, and supporting assets.',
+    description: 'Maintain protected partner resources, including destination links, labels, ordering, and visibility.',
     searchableFields: ['pageKey', 'title', 'resourceType', 'description', 'url'],
     orderBy: [{ pageKey: 'asc' }, { sortOrder: 'asc' }, { updatedAt: 'desc' }],
     sortOptions: [
@@ -80,7 +80,7 @@ export const cmsCollections = {
     label: 'Private Page Credentials',
     model: 'privatePageCredential',
     icon: 'bi-shield-lock',
-    description: 'Manage username/password access for protected pages without exposing stored password hashes.',
+    description: 'Control credential-based access to protected pages and resource-level visibility.',
     searchableFields: ['pageKey', 'username', 'description'],
     orderBy: [{ pageKey: 'asc' }, { updatedAt: 'desc' }],
     sortOptions: [
@@ -101,7 +101,7 @@ export const cmsCollections = {
     label: 'Testimonials',
     model: 'testimonial',
     icon: 'bi-chat-quote',
-    description: 'Curate client quotes, attribution, and homepage visibility.',
+    description: 'Curate client testimonials, attribution details, display order, and visibility.',
     searchableFields: ['clientName', 'role', 'company', 'quote'],
     orderBy: [{ sortOrder: 'asc' }, { updatedAt: 'desc' }],
     sortOptions: [
@@ -120,7 +120,7 @@ export const cmsCollections = {
     label: 'Trust & Platform Logos',
     model: 'client',
     icon: 'bi-buildings',
-    description: 'Manage homepage trust logos, partner marks, ordering, and optional destination links.',
+    description: 'Manage trust logo entries used on the homepage, including ordering and publish visibility.',
     searchableFields: ['name'],
     orderBy: [{ sortOrder: 'asc' }, { updatedAt: 'desc' }],
     sortOptions: [
@@ -129,19 +129,20 @@ export const cmsCollections = {
       { value: 'name-asc', label: 'Client name A–Z' }
     ],
     fields: ['name', 'isVisible', 'sortOrder'],
-    editorFields: ['name', 'isVisible', 'sortOrder']
+    editorFields: ['slug', 'name', 'isVisible', 'sortOrder']
   },
   settings: {
     label: 'Shared Site Copy',
     model: 'siteSetting',
     icon: 'bi-sliders',
-    description: 'Global settings for taglines, footer content, navigation groups, and search copy.',
+    description: 'Govern shared site copy across navigation, footer, brand language, and global interface text.',
     searchableFields: ['key', 'description'],
     orderBy: { updatedAt: 'desc' },
     sortOptions: [
       { value: 'updated-desc', label: 'Recently updated' },
       { value: 'key-asc', label: 'Key A–Z' }
     ],
+    noCreate: true,
     fieldHelp: {
       value: 'Use plain language content for the shared website text shown in this setting.'
     },
@@ -151,7 +152,7 @@ export const cmsCollections = {
     label: 'Contact Inbox',
     model: 'formSubmission',
     icon: 'bi-inboxes',
-    description: 'Review contact enquiries, newsletter signups, source pages, and response status.',
+    description: 'Review inbound form activity, source attribution, and response-read status.',
     searchableFields: ['fullName', 'email', 'company', 'message', 'sourcePage'],
     orderBy: { createdAt: 'desc' },
     readOnly: true,
