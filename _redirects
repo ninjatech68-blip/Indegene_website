@@ -1,1 +1,4 @@
+# Netlify-only proxy path: on the Netlify static deploy, /api/* is forwarded to
+# the hosted backend. This is NOT used by the Docker/nginx stack, where nginx
+# proxies /api/ to the internal `backend` service. Active Netlify deploy config.
 /api/* https://indegene-backend.onrender.com/api/:splat 200

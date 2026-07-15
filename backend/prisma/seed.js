@@ -1489,6 +1489,17 @@ async function upsertPrivatePageAccess() {
 }
 
 async function main() {
+  // Destructive guard: this seed calls deleteMany() on testimonials, clients,
+  // services, case studies, tags, and resources. Refuse to run against a
+  // production database unless the operator has explicitly opted in.
+  if (process.env.NODE_ENV === 'production' && process.env.ALLOW_DESTRUCTIVE_SEED !== 'true') {
+    console.error(
+      '[seed] Refusing to run: NODE_ENV=production and this seed performs destructive deleteMany() operations.\n' +
+      '[seed] If you really intend to wipe and reseed the production database, re-run with ALLOW_DESTRUCTIVE_SEED=true.'
+    );
+    process.exit(1);
+  }
+
   const passwordHash = await bcrypt.hash(env.DEFAULT_ADMIN_PASSWORD, 12);
 
   await prisma.user.upsert({
