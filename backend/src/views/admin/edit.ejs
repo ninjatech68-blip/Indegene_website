@@ -552,9 +552,9 @@
                       <div class="<%= field.full ? 'admin-form__field--full' : '' %>">
                         <label for="<%= field.name %>"><%= field.label %></label>
                         <% if (field.type === 'textarea') { %>
-                          <textarea class="admin-textarea" id="<%= field.name %>" name="<%= field.name %>"><%= field.value %></textarea>
+                          <textarea class="admin-textarea" id="<%= field.name %>" name="<%= field.name %>" <%= field.readOnly ? 'readonly' : '' %>><%= field.value %></textarea>
                         <% } else { %>
-                          <input class="admin-input" id="<%= field.name %>" type="<%= field.type %>" name="<%= field.name %>" value="<%= field.value %>">
+                          <input class="admin-input" id="<%= field.name %>" type="<%= field.type %>" name="<%= field.name %>" value="<%= field.value %>" <%= field.readOnly ? 'readonly' : '' %>>
                         <% } %>
                         <% if (field.help) { %>
                           <div class="admin-field-help"><%= field.help %></div>

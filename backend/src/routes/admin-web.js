@@ -349,6 +349,13 @@ function toMultilineText(value) {
 }
 
 function buildSectionField(name, label, value, options = {}) {
+  // Internal page links are fixed by the site structure and must not be
+  // hand-entered in the CMS (avoids wrong mapping / stale link targets). Omit
+  // any internal-link URL input. `seoCanonicalUrl` is SEO metadata, not a nav
+  // link, so it remains editable.
+  if (options.type === 'url' && name !== 'seoCanonicalUrl') {
+    return null;
+  }
   return {
     name,
     label,
@@ -902,6 +909,11 @@ function buildPageSectionEditorState(item = {}, fieldOptions = {}) {
       break;
   }
 
+  // Drop omitted (internal-link URL) fields so groups only expose editable copy.
+  groups.forEach((group) => {
+    if (Array.isArray(group.fields)) group.fields = group.fields.filter(Boolean);
+  });
+
   return {
     sectionKey,
     groups
@@ -926,41 +938,47 @@ function buildPageEditorState(item = {}, fieldOptions = {}) {
       })
     : [];
 
+  const pageGroups = [
+    {
+      title: 'Page setup',
+      copy: 'Control the page record, banner metadata, and search-facing settings here. The mapped sections below drive the full page content.',
+      fields: [
+        buildSectionField('title', 'Page title', item.title || ''),
+        buildSectionField('heroKicker', 'Hero kicker', item.heroKicker || ''),
+        buildSectionField('heroTitle', 'Hero heading', item.heroTitle || ''),
+        buildSectionField('heroSubtitle', 'Hero supporting copy', item.heroSubtitle || '', {
+          type: 'textarea',
+          full: true
+        }),
+        buildSectionField('heroPrimaryLabel', 'Primary CTA label', item.heroPrimaryLabel || ''),
+        buildSectionField('heroPrimaryUrl', 'Primary CTA URL', item.heroPrimaryUrl || '', { type: 'url' }),
+        buildSectionField('heroSecondaryLabel', 'Secondary CTA label', item.heroSecondaryLabel || ''),
+        buildSectionField('heroSecondaryUrl', 'Secondary CTA URL', item.heroSecondaryUrl || '', { type: 'url' })
+      ]
+    },
+    {
+      title: 'SEO',
+      copy: 'These values support search, sharing, and platform indexing without changing the frontend layout.',
+      fields: [
+        buildSectionField('seoTitle', 'SEO title', item.seoTitle || ''),
+        buildSectionField('seoDescription', 'SEO description', item.seoDescription || '', {
+          type: 'textarea',
+          full: true
+        }),
+        buildSectionField('seoCanonicalUrl', 'Canonical URL', item.seoCanonicalUrl || '', {
+          type: 'url',
+          full: true
+        })
+      ]
+    }
+  ];
+  // Drop omitted internal-link URL fields (e.g. hero CTA URLs).
+  pageGroups.forEach((group) => {
+    if (Array.isArray(group.fields)) group.fields = group.fields.filter(Boolean);
+  });
+
   return {
-    pageGroups: [
-      {
-        title: 'Page setup',
-        copy: 'Control the page record, banner metadata, and search-facing settings here. The mapped sections below drive the full page content.',
-        fields: [
-          buildSectionField('title', 'Page title', item.title || ''),
-          buildSectionField('heroKicker', 'Hero kicker', item.heroKicker || ''),
-          buildSectionField('heroTitle', 'Hero heading', item.heroTitle || ''),
-          buildSectionField('heroSubtitle', 'Hero supporting copy', item.heroSubtitle || '', {
-            type: 'textarea',
-            full: true
-          }),
-          buildSectionField('heroPrimaryLabel', 'Primary CTA label', item.heroPrimaryLabel || ''),
-          buildSectionField('heroPrimaryUrl', 'Primary CTA URL', item.heroPrimaryUrl || '', { type: 'url' }),
-          buildSectionField('heroSecondaryLabel', 'Secondary CTA label', item.heroSecondaryLabel || ''),
-          buildSectionField('heroSecondaryUrl', 'Secondary CTA URL', item.heroSecondaryUrl || '', { type: 'url' })
-        ]
-      },
-      {
-        title: 'SEO',
-        copy: 'These values support search, sharing, and platform indexing without changing the frontend layout.',
-        fields: [
-          buildSectionField('seoTitle', 'SEO title', item.seoTitle || ''),
-          buildSectionField('seoDescription', 'SEO description', item.seoDescription || '', {
-            type: 'textarea',
-            full: true
-          }),
-          buildSectionField('seoCanonicalUrl', 'Canonical URL', item.seoCanonicalUrl || '', {
-            type: 'url',
-            full: true
-          })
-        ]
-      }
-    ],
+    pageGroups,
     sections: sections.map((section) => ({
       id: section.id,
       sectionKey: section.sectionKey,
@@ -968,6 +986,25 @@ function buildPageEditorState(item = {}, fieldOptions = {}) {
       groups: buildPageSectionEditorState(section, fieldOptions).groups
     }))
   };
+}
+
+// Internal page links are fixed by the site structure and are no longer
+// editable in the CMS. When a section's body/config is rebuilt on save, copy
+// every URL-like field (ctaUrl, url, secondaryCtaUrl, ...) back from the
+// previously stored value so a save can never change or blank a link target.
+function preserveUrlFields(next, prev) {
+  if (Array.isArray(next) && Array.isArray(prev)) {
+    next.forEach((item, index) => preserveUrlFields(item, prev[index]));
+    return;
+  }
+  if (!next || !prev || typeof next !== 'object' || typeof prev !== 'object') return;
+  Object.keys(next).forEach((key) => {
+    if (/url$/i.test(key)) {
+      if (typeof prev[key] === 'string') next[key] = prev[key];
+    } else {
+      preserveUrlFields(next[key], prev[key]);
+    }
+  });
 }
 
 function buildPageSectionAdminData(rawData, existingItem = {}) {
@@ -999,6 +1036,10 @@ function buildPageSectionAdminData(rawData, existingItem = {}) {
   const withBody = function withBody(body, config = existingConfig) {
     data.body = body && Object.keys(body).length ? body : null;
     data.config = config && Object.keys(config).length ? config : null;
+    // Internal link targets are fixed; restore them from the stored values so
+    // rebuilding the section never changes or blanks a URL.
+    preserveUrlFields(data.body, existingBody);
+    preserveUrlFields(data.config, existingConfig);
     return data;
   };
 
