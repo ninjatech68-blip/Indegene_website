@@ -30,6 +30,19 @@ export function normalizePrivatePageKey(value) {
   return String(value || '').trim().toLowerCase() || DEFAULT_PRIVATE_PAGE_KEY;
 }
 
+export function clampPage(value, fallback = 1) {
+  const parsed = Math.floor(Number(value));
+  return Number.isFinite(parsed) && parsed >= 1 ? parsed : fallback;
+}
+
+export function clampLimit(value, { def = 12, max = 50 } = {}) {
+  const parsed = Math.floor(Number(value));
+  if (!Number.isFinite(parsed) || parsed < 1) {
+    return def;
+  }
+  return Math.min(parsed, max);
+}
+
 function orderMenuItems(items = []) {
   const byParent = new Map();
 
@@ -151,6 +164,8 @@ async function fetchRelatedCaseStudies(relatedSlugs = []) {
 }
 
 export async function getPublishedCaseStudies({ page = 1, limit = 12, tag } = {}) {
+  const safePage = clampPage(page);
+  const safeLimit = clampLimit(limit, { def: 12, max: 1000 });
   const where = {
     status: 'PUBLISHED',
     ...(tag
@@ -172,8 +187,8 @@ export async function getPublishedCaseStudies({ page = 1, limit = 12, tag } = {}
         tags: { include: { tag: true } }
       },
       orderBy: [{ isFeatured: 'desc' }, { publishedAt: 'desc' }],
-      skip: (page - 1) * limit,
-      take: limit
+      skip: (safePage - 1) * safeLimit,
+      take: safeLimit
     }),
     prisma.caseStudy.count({ where })
   ]);
@@ -184,10 +199,10 @@ export async function getPublishedCaseStudies({ page = 1, limit = 12, tag } = {}
       structuredData: normalizeCmsValue(item.structuredData)
     })),
     pagination: {
-      page,
-      limit,
+      page: safePage,
+      limit: safeLimit,
       total,
-      totalPages: Math.ceil(total / limit)
+      totalPages: Math.ceil(total / safeLimit)
     }
   };
 }
@@ -256,6 +271,8 @@ export async function getCaseStudyBySource(source) {
 }
 
 export async function getPublishedResources({ page = 1, limit = 12 } = {}) {
+  const safePage = clampPage(page);
+  const safeLimit = clampLimit(limit, { def: 12, max: 50 });
   const [items, total] = await Promise.all([
     prisma.resource.findMany({
       where: { status: 'PUBLISHED' },
@@ -264,8 +281,8 @@ export async function getPublishedResources({ page = 1, limit = 12 } = {}) {
         tags: { include: { tag: true } }
       },
       orderBy: { publishedAt: 'desc' },
-      skip: (page - 1) * limit,
-      take: limit
+      skip: (safePage - 1) * safeLimit,
+      take: safeLimit
     }),
     prisma.resource.count({ where: { status: 'PUBLISHED' } })
   ]);
@@ -276,10 +293,10 @@ export async function getPublishedResources({ page = 1, limit = 12 } = {}) {
       structuredData: normalizeCmsValue(item.structuredData)
     })),
     pagination: {
-      page,
-      limit,
+      page: safePage,
+      limit: safeLimit,
       total,
-      totalPages: Math.ceil(total / limit)
+      totalPages: Math.ceil(total / safeLimit)
     }
   };
 }

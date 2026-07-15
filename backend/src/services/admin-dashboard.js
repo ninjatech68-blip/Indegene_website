@@ -70,6 +70,18 @@ export async function getDashboardData({
   websiteRoot,
   isReadSubmission
 }) {
+  const now = new Date();
+  const trendStart = new Date(now);
+  trendStart.setDate(now.getDate() - 6);
+  trendStart.setHours(0, 0, 0, 0);
+
+  const readSubmissionWhere = {
+    OR: [
+      { meta: { path: ['status'], equals: 'READ' } },
+      { meta: { path: ['read'], equals: true } }
+    ]
+  };
+
   const [
     pages,
     caseStudies,
@@ -80,7 +92,10 @@ export async function getDashboardData({
     privatePageResources,
     privatePageCredentials,
     submissionTotal,
-    submissionSummaryRows,
+    contactTotal,
+    newsletterTotal,
+    readTotal,
+    trendRows,
     recentSubmissions
   ] = await Promise.all([
     prisma.page.findMany({
@@ -104,8 +119,12 @@ export async function getDashboardData({
     prisma.privatePageResource.count(),
     prisma.privatePageCredential.count(),
     prisma.formSubmission.count(),
+    prisma.formSubmission.count({ where: { formType: 'CONTACT' } }),
+    prisma.formSubmission.count({ where: { formType: 'NEWSLETTER' } }),
+    prisma.formSubmission.count({ where: readSubmissionWhere }),
     prisma.formSubmission.findMany({
-      select: { formType: true, createdAt: true, meta: true }
+      where: { createdAt: { gte: trendStart } },
+      select: { formType: true, createdAt: true }
     }),
     prisma.formSubmission.findMany({
       orderBy: { createdAt: 'desc' },
@@ -113,7 +132,6 @@ export async function getDashboardData({
     })
   ]);
 
-  const now = new Date();
   const trend = Array.from({ length: 7 }, (_, index) => {
     const date = new Date(now);
     date.setDate(now.getDate() - (6 - index));
@@ -126,7 +144,7 @@ export async function getDashboardData({
     };
   });
 
-  submissionSummaryRows.forEach((submission) => {
+  trendRows.forEach((submission) => {
     const key = submission.createdAt.toISOString().slice(0, 10);
     const bucket = trend.find((item) => item.key === key);
     if (!bucket) return;
@@ -136,9 +154,9 @@ export async function getDashboardData({
 
   const summary = {
     total: submissionTotal,
-    pending: submissionSummaryRows.filter((item) => !isReadSubmission(item)).length,
-    contact: submissionSummaryRows.filter((item) => item.formType === 'CONTACT').length,
-    newsletter: submissionSummaryRows.filter((item) => item.formType === 'NEWSLETTER').length
+    pending: Math.max(0, submissionTotal - readTotal),
+    contact: contactTotal,
+    newsletter: newsletterTotal
   };
 
   const websitePageCards = buildWebsitePageCards({

@@ -1,5 +1,11 @@
 function escapeCsv(value) {
-  return `"${String(value ?? '').replace(/"/g, '""')}"`;
+  let cell = String(value ?? '');
+  // Neutralize spreadsheet formula injection: values starting with a formula
+  // trigger character are prefixed with a single quote before quoting.
+  if (/^[=+\-@\t\r]/.test(cell)) {
+    cell = `'${cell}`;
+  }
+  return `"${cell.replace(/"/g, '""')}"`;
 }
 
 export function registerAdminWebSubmissionRoutes(router, deps) {

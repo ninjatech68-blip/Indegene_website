@@ -17,6 +17,7 @@ import {
   getSharedAdminCollections,
   getWebsitePages
 } from '../services/frontend-map.js';
+import { clampPage } from '../services/site-content.js';
 import { toSlug } from '../utils/slug.js';
 
 const router = Router();
@@ -133,6 +134,13 @@ router.use((req, res, next) => {
   next();
 });
 
+function clientError(message) {
+  const error = new Error(message);
+  error.statusCode = 400;
+  error.expose = true;
+  return error;
+}
+
 function normalizeAdminValue(value) {
   if (value === 'true') return true;
   if (value === 'false') return false;
@@ -161,7 +169,7 @@ function normalizeAdminData(rawData) {
       try {
         data.value = JSON.parse(trimmed);
       } catch (error) {
-        data.value = data.value;
+        throw clientError('Invalid JSON in value.');
       }
     }
   }
@@ -176,7 +184,7 @@ function normalizeAdminData(rawData) {
       try {
         data[field] = JSON.parse(trimmed);
       } catch (error) {
-        data[field] = data[field];
+        throw clientError(`Invalid JSON in ${field}.`);
       }
     }
   });
@@ -1375,6 +1383,11 @@ function shapeCollectionWriteData(collectionKey, data) {
   if (!['pages', 'caseStudies', 'pageSections'].includes(collectionKey)) {
     const collectionConfig = getCollectionConfig(collectionKey);
     const allowedKeys = new Set(getEditableFieldsForCollection(collectionConfig));
+    // Shared Site Copy edits persist their JSON `value`, which getEditableFields
+    // intentionally omits from the generic editor field list.
+    if (collectionKey === 'settings') {
+      allowedKeys.add('value');
+    }
     Object.keys(next).forEach((key) => {
       if (!allowedKeys.has(key)) {
         delete next[key];
@@ -1391,9 +1404,9 @@ function shapeCollectionWriteData(collectionKey, data) {
     next.role = String(next.role || '').trim();
     next.quote = String(next.quote || '').trim();
     next.company = String(next.company || '').trim() || null;
-    if (!next.clientName) throw new Error('Client name is required.');
-    if (!next.role) throw new Error('Role is required.');
-    if (!next.quote) throw new Error('Quote is required.');
+    if (!next.clientName) throw clientError('Client name is required.');
+    if (!next.role) throw clientError('Role is required.');
+    if (!next.quote) throw clientError('Quote is required.');
     if (typeof next.isVisible !== 'boolean') {
       next.isVisible = true;
     }
@@ -1403,7 +1416,7 @@ function shapeCollectionWriteData(collectionKey, data) {
 
   if (collectionKey === 'clients') {
     next.name = String(next.name || '').trim();
-    if (!next.name) throw new Error('Client name is required.');
+    if (!next.name) throw clientError('Client name is required.');
     next.slug = String(next.slug || '').trim() || toSlug(next.name);
     next.description = next.description ? String(next.description).trim() : null;
     next.websiteUrl = next.websiteUrl ? String(next.websiteUrl).trim() : null;
@@ -1647,21 +1660,8 @@ function buildPageAdminData(rawData, existingItem = {}) {
 async function syncCaseStudyRelations(caseStudyId, relations) {
   if (!relations) return;
 
-  const tagIds = new Set((relations.selectedTagIds || []).map((value) => String(value || '').trim()).filter(Boolean));
-
-  for (const label of relations.newTagLabels || []) {
-    const trimmed = String(label || '').trim();
-    if (!trimmed) continue;
-    const tag = await prisma.tag.upsert({
-      where: { slug: toSlug(trimmed) },
-      update: { label: trimmed },
-      create: { slug: toSlug(trimmed), label: trimmed }
-    });
-    tagIds.add(tag.id);
-  }
-
-  let featuredImageRelation = { disconnect: true };
   const featuredImageId = String(relations.featuredImageId || '').trim();
+  let featuredImageRelation = { disconnect: true };
   if (featuredImageId) {
     const hasImage = await prisma.mediaAsset.findUnique({
       where: { id: featuredImageId },
@@ -1672,41 +1672,57 @@ async function syncCaseStudyRelations(caseStudyId, relations) {
     }
   }
 
-  const existingTagRows = tagIds.size
-    ? await prisma.tag.findMany({
-        where: { id: { in: Array.from(tagIds) } },
-        select: { id: true }
-      })
-    : [];
-  const existingTagIds = new Set(existingTagRows.map((row) => row.id));
-
   const runtimeCaseStudyModel = prisma._runtimeDataModel?.models?.CaseStudy;
   const caseStudyFields = new Set(Array.isArray(runtimeCaseStudyModel?.fields) ? runtimeCaseStudyModel.fields.map((field) => field.name) : []);
-  const updateData = {};
-
-  if (!caseStudyFields.size || caseStudyFields.has('featuredImage')) {
-    updateData.featuredImage = featuredImageRelation;
-  } else if (caseStudyFields.has('featuredImageId')) {
-    updateData.featuredImageId = featuredImageId || null;
-  }
-
-  if (!caseStudyFields.size || caseStudyFields.has('tags')) {
-    updateData.tags = {
-      deleteMany: {},
-      create: Array.from(existingTagIds).map((tagId) => ({
-        tag: { connect: { id: tagId } }
-      }))
-    };
-  }
-
-  if (!Object.keys(updateData).length) {
-    return;
-  }
 
   try {
-    await prisma.caseStudy.update({
-      where: { id: caseStudyId },
-      data: updateData
+    await prisma.$transaction(async (tx) => {
+      const tagIds = new Set((relations.selectedTagIds || []).map((value) => String(value || '').trim()).filter(Boolean));
+
+      for (const label of relations.newTagLabels || []) {
+        const trimmed = String(label || '').trim();
+        if (!trimmed) continue;
+        const tag = await tx.tag.upsert({
+          where: { slug: toSlug(trimmed) },
+          update: { label: trimmed },
+          create: { slug: toSlug(trimmed), label: trimmed }
+        });
+        tagIds.add(tag.id);
+      }
+
+      const existingTagRows = tagIds.size
+        ? await tx.tag.findMany({
+            where: { id: { in: Array.from(tagIds) } },
+            select: { id: true }
+          })
+        : [];
+      const existingTagIds = new Set(existingTagRows.map((row) => row.id));
+
+      const updateData = {};
+
+      if (!caseStudyFields.size || caseStudyFields.has('featuredImage')) {
+        updateData.featuredImage = featuredImageRelation;
+      } else if (caseStudyFields.has('featuredImageId')) {
+        updateData.featuredImageId = featuredImageId || null;
+      }
+
+      if (!caseStudyFields.size || caseStudyFields.has('tags')) {
+        updateData.tags = {
+          deleteMany: {},
+          create: Array.from(existingTagIds).map((tagId) => ({
+            tag: { connect: { id: tagId } }
+          }))
+        };
+      }
+
+      if (!Object.keys(updateData).length) {
+        return;
+      }
+
+      await tx.caseStudy.update({
+        where: { id: caseStudyId },
+        data: updateData
+      });
     });
   } catch (error) {
     const isValidationError = String(error?.name || '') === 'PrismaClientValidationError';
@@ -1975,22 +1991,23 @@ async function getCollectionListing(collectionKey, req) {
   const collection = getCollectionConfig(collectionKey);
   if (!collection) return null;
 
-  const page = Math.max(1, Number(req.query.page || 1));
+  const page = clampPage(req.query.page);
   const q = String(req.query.q || '').trim();
   const formType = String(req.query.formType || '');
   const readState = String(req.query.readState || '');
   const sort = String(req.query.sort || '');
 
   if (collection.model === 'formSubmission') {
-    const allItems = await prisma.formSubmission.findMany({
-      orderBy: resolveOrderBy(collection, sort)
-    });
+    const where = buildFormSubmissionWhere({ q, formType, readState });
 
-    const filtered = filterFormSubmissions(allItems, { q, formType, readState });
-
-    const total = filtered.length;
+    const total = await prisma.formSubmission.count({ where });
     const totalPages = Math.max(1, Math.ceil(total / COLLECTION_PAGE_SIZE));
-    const items = filtered.slice((page - 1) * COLLECTION_PAGE_SIZE, page * COLLECTION_PAGE_SIZE);
+    const items = await prisma.formSubmission.findMany({
+      where,
+      orderBy: resolveOrderBy(collection, sort),
+      skip: (page - 1) * COLLECTION_PAGE_SIZE,
+      take: COLLECTION_PAGE_SIZE
+    });
 
     return {
       collection,
@@ -2052,13 +2069,13 @@ async function buildPrivatePageCredentialData(rawData, existingItem = null) {
     data.pageKey = PRIVATE_PAGE_OPTIONS[0].value;
   }
   if (!data.username) {
-    throw new Error('Username is required.');
+    throw clientError('Username is required.');
   }
 
   if (password) {
     data.passwordHash = await bcrypt.hash(password, 10);
   } else if (!existingItem) {
-    throw new Error('A password is required when creating a private page credential.');
+    throw clientError('A password is required when creating a private page credential.');
   }
 
   delete data.password;
@@ -2092,13 +2109,13 @@ function buildPrivatePageResourceData(rawData) {
   data.url = String(data.url || '').trim();
 
   if (!data.title) {
-    throw new Error('Resource title is required.');
+    throw clientError('Resource title is required.');
   }
   if (!data.resourceType) {
-    throw new Error('Resource type is required.');
+    throw clientError('Resource type is required.');
   }
   if (!data.url) {
-    throw new Error('Resource URL is required.');
+    throw clientError('Resource URL is required.');
   }
 
   if (typeof data.description !== 'undefined') {
@@ -2140,20 +2157,22 @@ async function syncPrivateCredentialResources(credentialId, pageKey, rawResource
   });
   const allowedIds = allowedResources.map((resource) => resource.id);
 
-  await prisma.privatePageCredentialResource.deleteMany({
-    where: { credentialId }
-  });
+  await prisma.$transaction(async (tx) => {
+    await tx.privatePageCredentialResource.deleteMany({
+      where: { credentialId }
+    });
 
-  if (!allowedIds.length) {
-    return;
-  }
+    if (!allowedIds.length) {
+      return;
+    }
 
-  await prisma.privatePageCredentialResource.createMany({
-    data: allowedIds.map((resourceId) => ({
-      credentialId,
-      resourceId
-    })),
-    skipDuplicates: true
+    await tx.privatePageCredentialResource.createMany({
+      data: allowedIds.map((resourceId) => ({
+        credentialId,
+        resourceId
+      })),
+      skipDuplicates: true
+    });
   });
 }
 
@@ -2167,6 +2186,37 @@ function filterFormSubmissions(items, filters) {
     const matchesRead = !filters.readState || (filters.readState === 'read' ? read : !read);
     return matchesQuery && matchesType && matchesRead;
   });
+}
+
+const READ_SUBMISSION_WHERE = {
+  OR: [
+    { meta: { path: ['status'], equals: 'READ' } },
+    { meta: { path: ['read'], equals: true } }
+  ]
+};
+
+function buildFormSubmissionWhere({ q, formType, readState }) {
+  const and = [];
+
+  if (formType) {
+    and.push({ formType });
+  }
+
+  if (q) {
+    and.push({
+      OR: ['fullName', 'email', 'company', 'message', 'sourcePage'].map((field) => ({
+        [field]: { contains: q, mode: 'insensitive' }
+      }))
+    });
+  }
+
+  if (readState === 'read') {
+    and.push(READ_SUBMISSION_WHERE);
+  } else if (readState === 'unread') {
+    and.push({ NOT: READ_SUBMISSION_WHERE });
+  }
+
+  return and.length ? { AND: and } : {};
 }
 registerAdminWebAuthRoutes(router, { prisma, requireAuth });
 registerAdminWebDashboardRoutes(router, {
@@ -2498,47 +2548,54 @@ router.post('/:collection/:id', requireAuth, requireRole('ADMIN', 'EDITOR'), asy
     const shapedData = shapeCollectionWriteData(req.params.collection, data);
     const prismaData = filterDataToPrismaModelFields(collection.model, shapedData);
 
-    await prisma[collection.model].update({
-      where: { id: req.params.id },
-      data: prismaData
-    });
+    if (req.params.collection === 'pages') {
+      await prisma.$transaction(async (tx) => {
+        await tx[collection.model].update({
+          where: { id: req.params.id },
+          data: prismaData
+        });
+
+        for (const sectionUpdate of pagePayload.sectionUpdates) {
+          const sectionData = shapeCollectionWriteData('pageSections', sectionUpdate.data);
+          const updateResult = await tx.pageSection.updateMany({
+            where: {
+              id: sectionUpdate.id,
+              pageId: req.params.id
+            },
+            data: sectionData
+          });
+
+          if (!updateResult.count) {
+            const sectionKey = String(sectionData.sectionKey || '').trim();
+            if (!sectionKey) {
+              continue;
+            }
+
+            await tx.pageSection.upsert({
+              where: {
+                pageId_sectionKey: {
+                  pageId: req.params.id,
+                  sectionKey
+                }
+              },
+              update: sectionData,
+              create: {
+                ...sectionData,
+                page: { connect: { id: req.params.id } }
+              }
+            });
+          }
+        }
+      });
+    } else {
+      await prisma[collection.model].update({
+        where: { id: req.params.id },
+        data: prismaData
+      });
+    }
 
     if (req.params.collection === 'caseStudies') {
       await syncCaseStudyRelations(req.params.id, caseStudyPayload.relations);
-    }
-
-    if (req.params.collection === 'pages') {
-      for (const sectionUpdate of pagePayload.sectionUpdates) {
-        const sectionData = shapeCollectionWriteData('pageSections', sectionUpdate.data);
-        const updateResult = await prisma.pageSection.updateMany({
-          where: {
-            id: sectionUpdate.id,
-            pageId: req.params.id
-          },
-          data: sectionData
-        });
-
-        if (!updateResult.count) {
-          const sectionKey = String(sectionData.sectionKey || '').trim();
-          if (!sectionKey) {
-            continue;
-          }
-
-          await prisma.pageSection.upsert({
-            where: {
-              pageId_sectionKey: {
-                pageId: req.params.id,
-                sectionKey
-              }
-            },
-            update: sectionData,
-            create: {
-              ...sectionData,
-              page: { connect: { id: req.params.id } }
-            }
-          });
-        }
-      }
     }
 
     if (req.params.collection === 'privatePageCredentials') {
