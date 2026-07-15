@@ -10,21 +10,28 @@
   };
 
   function getApiBase() {
-    var queryValue = '';
-    try {
-      queryValue = new URLSearchParams(window.location.search).get('apiBase') || '';
-    } catch (error) {
-      queryValue = '';
-    }
+    var hostname = window.location.hostname;
+    var isDevHost = hostname === 'localhost' || hostname === '127.0.0.1';
 
-    if (queryValue && window.localStorage) {
-      window.localStorage.setItem('oco-cms-api-base', queryValue);
+    // The ?apiBase= override (and its persisted localStorage copy) is a
+    // dev-only convenience and must never be trusted on production hosts.
+    var queryValue = '';
+    if (isDevHost) {
+      try {
+        queryValue = new URLSearchParams(window.location.search).get('apiBase') || '';
+      } catch (error) {
+        queryValue = '';
+      }
+
+      if (queryValue && window.localStorage) {
+        window.localStorage.setItem('oco-cms-api-base', queryValue);
+      }
     }
 
     var explicit = queryValue
       || document.body?.dataset?.cmsApiBase
       || document.querySelector('meta[name="oco-cms-api-base"]')?.getAttribute('content')
-      || window.localStorage?.getItem('oco-cms-api-base');
+      || (isDevHost ? window.localStorage?.getItem('oco-cms-api-base') : '');
 
     if (explicit) {
       return explicit.replace(/\/$/, '');

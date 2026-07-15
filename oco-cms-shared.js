@@ -112,7 +112,7 @@
   function renderParagraphs(container, paragraphs) {
     if (!container || !Array.isArray(paragraphs)) return;
     container.innerHTML = paragraphs.map(function (paragraph) {
-      return '<p>' + paragraph + '</p>';
+      return '<p>' + escapeHtml(paragraph) + '</p>';
     }).join('');
   }
 

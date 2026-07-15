@@ -45,19 +45,21 @@ document.addEventListener('DOMContentLoaded', () => {
 
   if (guidedButton && guidedScope) {
     if (!advancedFieldCount) {
+      // No advanced fields: skip only the guided-toggle wiring, but continue
+      // with the rest of the initialization below (tabs, delete confirms, etc.).
       guidedButton.textContent = 'No advanced fields';
       guidedButton.disabled = true;
       guidedButton.setAttribute('aria-pressed', 'false');
-      return;
+    } else {
+      const saved = window.localStorage.getItem(guidedStorageKey);
+      const isGuided = saved !== 'off';
+      setGuidedMode(isGuided);
+      guidedButton.addEventListener('click', () => {
+        const enabled = !guidedScope.classList.contains('is-guided');
+        setGuidedMode(enabled);
+        window.localStorage.setItem(guidedStorageKey, enabled ? 'on' : 'off');
+      });
     }
-    const saved = window.localStorage.getItem(guidedStorageKey);
-    const isGuided = saved !== 'off';
-    setGuidedMode(isGuided);
-    guidedButton.addEventListener('click', () => {
-      const enabled = !guidedScope.classList.contains('is-guided');
-      setGuidedMode(enabled);
-      window.localStorage.setItem(guidedStorageKey, enabled ? 'on' : 'off');
-    });
   } else if (guidedButton && !guidedScope) {
     guidedButton.textContent = 'Advanced fields unavailable';
     guidedButton.disabled = true;
@@ -153,7 +155,17 @@ document.addEventListener('DOMContentLoaded', () => {
         }
         if (resultNode) {
           resultNode.className = 'admin-upload__result is-success';
-          resultNode.innerHTML = `Upload complete. Asset ID: <strong>${payload.data.id}</strong> · <a href="${payload.data.publicUrl}" target="_blank" rel="noreferrer">Open file</a>`;
+          resultNode.textContent = 'Upload complete. Asset ID: ';
+          const idNode = document.createElement('strong');
+          idNode.textContent = String(payload.data.id);
+          resultNode.appendChild(idNode);
+          resultNode.appendChild(document.createTextNode(' · '));
+          const linkNode = document.createElement('a');
+          linkNode.setAttribute('href', String(payload.data.publicUrl));
+          linkNode.setAttribute('target', '_blank');
+          linkNode.setAttribute('rel', 'noreferrer');
+          linkNode.textContent = 'Open file';
+          resultNode.appendChild(linkNode);
         }
         uploadForm.reset();
         window.setTimeout(() => window.location.reload(), 900);
