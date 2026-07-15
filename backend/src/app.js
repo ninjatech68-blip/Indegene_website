@@ -58,29 +58,35 @@ const allowedCorsOrigins = new Set(
     ? configuredCorsOrigins
     : [env.FRONTEND_URL, env.APP_URL]
 );
-app.use(cors({
-  origin(origin, callback) {
-    if (!origin) {
-      return callback(null, true);
-    }
-    if (allowedCorsOrigins.has(origin)) {
-      return callback(null, true);
-    }
-    try {
-      const parsed = new URL(origin);
-      const host = parsed.hostname.toLowerCase();
-      // Preserve localhost/127.0.0.1 dev access only. Shared-hosting domains
-      // (e.g. *.netlify.app, *.onrender.com) are NOT wildcarded; specific
-      // deployment hostnames must be listed explicitly via env or the defaults.
-      if (host === 'localhost' || host === '127.0.0.1') {
-        return callback(null, true);
-      }
-    } catch (error) {
-      // Ignore malformed origin; reject below.
-    }
-    return callback(new Error('CORS origin not allowed'), false);
-  },
-  credentials: true
+function isAllowedCorsOrigin(origin, req) {
+  // No Origin header => not a CORS request (same-origin navigation, curl,
+  // server-to-server). Always allow.
+  if (!origin) return true;
+  if (allowedCorsOrigins.has(origin)) return true;
+  try {
+    const parsed = new URL(origin);
+    const host = parsed.hostname.toLowerCase();
+    // Preserve localhost/127.0.0.1 dev access.
+    if (host === 'localhost' || host === '127.0.0.1') return true;
+    // Same-origin requests are never a CORS concern: if the Origin's host
+    // matches the request Host, allow it regardless of the allowlist. This is
+    // what keeps the server-rendered admin panel working on its own domain.
+    const requestHost = String(req.headers['x-forwarded-host'] || req.headers.host || '')
+      .trim()
+      .toLowerCase();
+    if (requestHost && parsed.host.toLowerCase() === requestHost) return true;
+  } catch (error) {
+    // Malformed origin -> deny below.
+  }
+  return false;
+}
+
+// Request-aware CORS delegate. Disallowed origins are denied by simply not
+// emitting CORS headers (origin:false) rather than throwing — a cross-origin
+// request the browser will block, never a 500 for the caller.
+app.use(cors((req, callback) => {
+  const allowed = isAllowedCorsOrigin(req.headers.origin, req);
+  callback(null, { origin: allowed, credentials: true });
 }));
 app.use(morgan(isProduction ? 'combined' : 'dev'));
 app.use(express.json({ limit: '1mb' }));
