@@ -27,6 +27,14 @@ These pages are part of the live website journey and are owned by `/admin/pages/
 | `by-function` | `by_function.html` | `/admin/pages/slug/by-function` |
 | `by-channel` | `by_channel.html` | `/admin/pages/slug/by-channel` |
 
+## Case Study Detail Pages
+
+The 14 `case-study-*.html` files are individual case study detail pages. They are not standalone CMS page routes; each is rendered from a `caseStudies` collection record and addressed by its slug.
+
+| Pattern | Files | Source Collection |
+| --- | --- | --- |
+| `case-study-*.html` | 14 detail pages (e.g. `case-study-indegene-revitalizes-sales-for-a-mature-rls-drug.html`) | `caseStudies` (listing at `casestudy.html`, slug `case-studies`) |
+
 ## Shared CMS Collections
 
 These do not map to one public route; they are shared across pages.

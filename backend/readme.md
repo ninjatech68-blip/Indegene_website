@@ -23,7 +23,7 @@ This backend converts the current static OCO marketing website into a CMS-driven
 
 1. Copy `.env.example` to `.env`
 2. Start infrastructure:
-   - `docker compose up -d db redis`
+   - `docker compose up -d db`
 3. Install dependencies:
    - `npm install`
 4. Generate Prisma client:
@@ -65,4 +65,4 @@ The current HTML frontend can be progressively migrated by replacing hardcoded s
 - `POST /api/forms/contact`
 - `POST /api/forms/newsletter`
 
-See [docs/FRONTEND_INTEGRATION.md](./docs/FRONTEND_INTEGRATION.md) and [docs/API_REFERENCE.md](./docs/API_REFERENCE.md) for details.
+See [docs/frontend_integration.md](./docs/frontend_integration.md) and [docs/api_reference.md](./docs/api_reference.md) for details.

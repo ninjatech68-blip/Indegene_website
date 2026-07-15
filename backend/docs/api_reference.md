@@ -8,6 +8,9 @@
 ### Pages
 - `GET /api/public/pages/:slug`
 
+### Bootstrap
+- `GET /api/public/bootstrap/:slug`
+
 ### Case Studies
 - `GET /api/public/case-studies?page=1&limit=12&tag=automation`
 - `GET /api/public/case-studies/:slug`
@@ -77,6 +80,10 @@ Supported collections:
 - `navigationMenus`
 - `navigationItems`
 - `settings`
+- `privatePageResources`
+- `privatePageCredentials`
+- `formSubmissions`
+- `mediaAssets`
 
 ## Media Upload
 
@@ -86,3 +93,8 @@ Multipart fields:
 
 - `file`
 - `altText`
+
+## Security
+
+### CSP Report
+- `POST /api/security/csp-report`

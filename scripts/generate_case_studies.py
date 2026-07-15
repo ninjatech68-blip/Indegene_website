@@ -8,7 +8,9 @@ from pathlib import Path
 from bs4 import BeautifulSoup, NavigableString, Tag
 
 
-ROOT = Path("/Users/piyushsharma/Downloads/FINAL CODE")
+import os
+
+ROOT = Path(os.environ.get("SITE_ROOT", Path(__file__).resolve().parent.parent))
 SOURCE_DIR = ROOT / ".case-study-source"
 TEMPLATE_PATH = ROOT / "Indegene Revitalizes.html"
 CASESTUDY_INDEX = ROOT / "casestudy.html"
