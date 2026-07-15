@@ -14,7 +14,17 @@ COPY backend/scripts ./scripts
 COPY *.html *.css *.js *.json /app/public/
 COPY images /app/public/images
 
+# Run as the unprivileged `node` user shipped with the base image.
+# Ensure the app tree (and the uploads mount point) is writable by it.
+RUN mkdir -p /app/backend/uploads && chown -R node:node /app
+USER node
+
 EXPOSE 4000
+
+# Container-level liveness check against the app's /health endpoint.
+# node 22 provides a global fetch, so no extra tooling is needed in alpine.
+HEALTHCHECK --interval=30s --timeout=5s --start-period=20s --retries=3 \
+  CMD node -e "fetch('http://localhost:4000/health').then(r=>process.exit(r.ok?0:1)).catch(()=>process.exit(1))"
 
 # Migrations are handled by docker-compose (one-shot) to keep container start fast and predictable.
 CMD ["npm", "run", "start"]

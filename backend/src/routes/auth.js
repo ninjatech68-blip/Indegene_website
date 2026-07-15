@@ -6,13 +6,15 @@ import { prisma } from '../lib/prisma.js';
 import { validate } from '../middleware/validate.js';
 
 const router = Router();
-const isLoopbackIp = (ip = '') => ip === '127.0.0.1' || ip === '::1' || ip === '::ffff:127.0.0.1';
+// Constant hash used to perform a dummy bcrypt.compare when a user is not
+// found, so the not-found path takes comparable time to the found path and
+// does not leak account existence via response timing.
+const DUMMY_PASSWORD_HASH = '$2a$10$WDL2.d1BYkKlx.AmAYsUneZznz64JvFQHcBcc/peSHs26CRgVsvhK';
 const authLimiter = rateLimit({
   windowMs: 15 * 60 * 1000,
   max: 10,
   standardHeaders: true,
-  legacyHeaders: false,
-  skip: (req) => isLoopbackIp(req.ip)
+  legacyHeaders: false
 });
 
 const loginSchema = z.object({
@@ -26,11 +28,14 @@ router.post('/login', authLimiter, validate(loginSchema), async (req, res, next)
       where: { email: req.body.email }
     });
 
-    if (!user || !user.isActive) {
-      return res.status(401).json({ error: 'Unauthorized', message: 'Invalid credentials' });
-    }
-
-    if (!user.passwordHash || typeof user.passwordHash !== 'string') {
+    if (!user || !user.isActive || !user.passwordHash || typeof user.passwordHash !== 'string') {
+      // Perform a dummy compare so the not-found/inactive path spends
+      // comparable time to the found path (mitigates user enumeration).
+      try {
+        await bcrypt.compare(String(req.body.password), DUMMY_PASSWORD_HASH);
+      } catch (compareError) {
+        // Ignore; response is the same either way.
+      }
       return res.status(401).json({ error: 'Unauthorized', message: 'Invalid credentials' });
     }
 

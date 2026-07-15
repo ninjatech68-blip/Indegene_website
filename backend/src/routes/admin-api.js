@@ -17,6 +17,14 @@ function coerceBoolean(value) {
   return Boolean(value);
 }
 
+function invalidJsonError(field) {
+  const error = new Error(`Invalid JSON in ${field}.`);
+  error.statusCode = 400;
+  error.status = 400;
+  error.expose = true;
+  return error;
+}
+
 function normalizePayload(model, payload) {
   const data = Object.fromEntries(
     Object.entries(payload).filter(([key]) => key !== '_csrf')
@@ -51,10 +59,13 @@ function normalizePayload(model, payload) {
   }
 
   if ('value' in data && typeof data.value === 'string') {
-    try {
-      data.value = JSON.parse(data.value.trim());
-    } catch (error) {
-      data.value = data.value;
+    const trimmed = data.value.trim();
+    if (trimmed) {
+      try {
+        data.value = JSON.parse(trimmed);
+      } catch (error) {
+        throw invalidJsonError('value');
+      }
     }
   }
 
@@ -68,7 +79,7 @@ function normalizePayload(model, payload) {
       try {
         data[field] = JSON.parse(trimmed);
       } catch (error) {
-        data[field] = data[field];
+        throw invalidJsonError(field);
       }
     }
   });
@@ -121,9 +132,22 @@ function validateCollectionPayload(collectionKey, payload) {
   }
 }
 
+// The credentials schema deliberately omits passwordHash so clients cannot set
+// it directly. The server-generated hash is validated separately and merged back.
+function validateCredentialPayload(collectionKey, built) {
+  const validated = validateCollectionPayload(collectionKey, built);
+  if (built.passwordHash) {
+    validated.passwordHash = built.passwordHash;
+  }
+  return validated;
+}
+
 async function buildAdminApiCredentialPayload(payload, existingItem = null) {
   const data = normalizePayload('privatePageCredential', payload);
   const password = String(payload.password || '').trim();
+
+  // Never trust a client-supplied hash; only the dedicated path below sets it.
+  delete data.passwordHash;
 
   if (!data.pageKey) {
     data.pageKey = 'partner-access';
@@ -169,20 +193,22 @@ async function syncPrivateCredentialResources(credentialId, pageKey, rawResource
     select: { id: true }
   });
 
-  await prisma.privatePageCredentialResource.deleteMany({
-    where: { credentialId }
-  });
+  await prisma.$transaction(async (tx) => {
+    await tx.privatePageCredentialResource.deleteMany({
+      where: { credentialId }
+    });
 
-  if (!allowedResources.length) {
-    return;
-  }
+    if (!allowedResources.length) {
+      return;
+    }
 
-  await prisma.privatePageCredentialResource.createMany({
-    data: allowedResources.map((resource) => ({
-      credentialId,
-      resourceId: resource.id
-    })),
-    skipDuplicates: true
+    await tx.privatePageCredentialResource.createMany({
+      data: allowedResources.map((resource) => ({
+        credentialId,
+        resourceId: resource.id
+      })),
+      skipDuplicates: true
+    });
   });
 }
 
@@ -195,7 +221,7 @@ router.get('/:collection', async (req, res, next) => {
 
     const items = await prisma[collection.model].findMany({
       take: 100,
-      orderBy: { updatedAt: 'desc' }
+      orderBy: collection.orderBy || { createdAt: 'desc' }
     });
 
     res.json({ data: items });
@@ -234,7 +260,7 @@ router.post('/:collection', async (req, res, next) => {
     assertCollectionWritable(collection);
 
     const data = collection.model === 'privatePageCredential'
-      ? validateCollectionPayload(req.params.collection, await buildAdminApiCredentialPayload(req.body))
+      ? validateCredentialPayload(req.params.collection, await buildAdminApiCredentialPayload(req.body))
       : collection.model === 'privatePageResource'
         ? validateCollectionPayload(req.params.collection, buildAdminApiPrivatePageResourcePayload(req.body))
         : validateCollectionPayload(req.params.collection, normalizePayload(collection.model, req.body));
@@ -267,7 +293,7 @@ router.put('/:collection/:id', async (req, res, next) => {
     }
 
     const data = collection.model === 'privatePageCredential'
-      ? validateCollectionPayload(req.params.collection, await buildAdminApiCredentialPayload(req.body, existingItem))
+      ? validateCredentialPayload(req.params.collection, await buildAdminApiCredentialPayload(req.body, existingItem))
       : collection.model === 'privatePageResource'
         ? validateCollectionPayload(req.params.collection, buildAdminApiPrivatePageResourcePayload(req.body))
         : validateCollectionPayload(req.params.collection, normalizePayload(collection.model, req.body));

@@ -65,20 +65,9 @@ export function adminCsrfProtection(req, res, next) {
   }
 
   const candidate = req.body?._csrf || req.get('x-csrf-token') || '';
-  if (!safeCompare(token, candidate)) {
-    // Render/session-store hops can occasionally refresh the session token
-    // between page render and form submit. For authenticated same-origin admin
-    // posts with a non-empty candidate token, recover by accepting the posted
-    // token as the current session token.
-    if (
-      candidate
-      && req.session?.user
-      && isSameOriginAdminPost(req)
-      && /^\/admin\//.test(req.originalUrl || req.url || '')
-    ) {
-      req.session[SESSION_KEY] = String(candidate);
-      return next();
-    }
+  // A valid, matching session token is required. Same-origin is enforced as an
+  // ADDITIONAL requirement but never substitutes for a valid token.
+  if (!safeCompare(token, candidate) || !isSameOriginAdminPost(req)) {
     return rejectInvalidCsrf(req, res);
   }
 

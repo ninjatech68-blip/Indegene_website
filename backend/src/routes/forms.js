@@ -57,7 +57,7 @@ router.post('/contact', validate(contactSchema), async (req, res, next) => {
     });
 
     res.status(201).json({
-      data: submission,
+      data: { ok: true, id: submission.id },
       message: 'Your enquiry has been received'
     });
   } catch (error) {
@@ -86,7 +86,7 @@ router.post('/newsletter', validate(newsletterSchema), async (req, res, next) =>
     });
 
     res.status(201).json({
-      data: submission,
+      data: { ok: true, id: submission.id },
       message: 'Subscription recorded'
     });
   } catch (error) {

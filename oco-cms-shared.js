@@ -112,7 +112,7 @@
   function renderParagraphs(container, paragraphs) {
     if (!container || !Array.isArray(paragraphs)) return;
     container.innerHTML = paragraphs.map(function (paragraph) {
-      return '<p>' + paragraph + '</p>';
+      return '<p>' + escapeHtml(paragraph) + '</p>';
     }).join('');
   }
 
@@ -172,7 +172,16 @@
 
   function sanitizeFooterColumns(columns) {
     var canonical = getCanonicalFooterColumns();
-    return canonical;
+    if (!Array.isArray(columns) || !columns.length) return canonical;
+    var cleaned = columns.map(function (col) {
+      return {
+        title: String(col && col.title || '').trim(),
+        links: Array.isArray(col && col.links) ? col.links.map(function (link) {
+          return { label: String(link && link.label || '').trim(), url: String(link && link.url || '').trim() };
+        }).filter(function (link) { return link.label && link.url; }) : []
+      };
+    }).filter(function (col) { return col.title && col.links.length; });
+    return cleaned.length ? cleaned : canonical;
   }
 
   function renderFooterColumns(columns, cta) {
@@ -289,21 +298,13 @@
             label: String(item?.label || '').trim(),
             url: String(item?.url || '').trim()
           };
-        }) : []
+        }).filter(function (item) { return item.label && item.url; }) : []
       };
-    });
+    }).filter(function (group) { return group.label && group.items.length; });
 
-    if (normalised.length !== canonicalGroups.length) {
-      return canonicalGroups;
-    }
-
-    for (var i = 0; i < canonicalGroups.length; i += 1) {
-      if (normalised[i].label !== canonicalGroups[i].label || normalised[i].items.length !== canonicalGroups[i].items.length) {
-        return canonicalGroups;
-      }
-    }
-
-    return normalised;
+    // Use the CMS-authored groups whenever they are well-formed; only fall
+    // back to the canonical menu when the CMS provides nothing usable.
+    return normalised.length ? normalised : canonicalGroups;
   }
 
   function renderMobileNav(groups) {

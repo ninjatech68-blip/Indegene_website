@@ -17,6 +17,7 @@ import {
   getSharedAdminCollections,
   getWebsitePages
 } from '../services/frontend-map.js';
+import { clampPage } from '../services/site-content.js';
 import { toSlug } from '../utils/slug.js';
 
 const router = Router();
@@ -133,6 +134,13 @@ router.use((req, res, next) => {
   next();
 });
 
+function clientError(message) {
+  const error = new Error(message);
+  error.statusCode = 400;
+  error.expose = true;
+  return error;
+}
+
 function normalizeAdminValue(value) {
   if (value === 'true') return true;
   if (value === 'false') return false;
@@ -161,7 +169,7 @@ function normalizeAdminData(rawData) {
       try {
         data.value = JSON.parse(trimmed);
       } catch (error) {
-        data.value = data.value;
+        throw clientError('Invalid JSON in value.');
       }
     }
   }
@@ -176,7 +184,7 @@ function normalizeAdminData(rawData) {
       try {
         data[field] = JSON.parse(trimmed);
       } catch (error) {
-        data[field] = data[field];
+        throw clientError(`Invalid JSON in ${field}.`);
       }
     }
   });
@@ -341,6 +349,13 @@ function toMultilineText(value) {
 }
 
 function buildSectionField(name, label, value, options = {}) {
+  // Internal page links are fixed by the site structure and must not be
+  // hand-entered in the CMS (avoids wrong mapping / stale link targets). Omit
+  // any internal-link URL input. `seoCanonicalUrl` is SEO metadata, not a nav
+  // link, so it remains editable.
+  if (options.type === 'url' && name !== 'seoCanonicalUrl') {
+    return null;
+  }
   return {
     name,
     label,
@@ -894,6 +909,11 @@ function buildPageSectionEditorState(item = {}, fieldOptions = {}) {
       break;
   }
 
+  // Drop omitted (internal-link URL) fields so groups only expose editable copy.
+  groups.forEach((group) => {
+    if (Array.isArray(group.fields)) group.fields = group.fields.filter(Boolean);
+  });
+
   return {
     sectionKey,
     groups
@@ -918,41 +938,47 @@ function buildPageEditorState(item = {}, fieldOptions = {}) {
       })
     : [];
 
+  const pageGroups = [
+    {
+      title: 'Page setup',
+      copy: 'Control the page record, banner metadata, and search-facing settings here. The mapped sections below drive the full page content.',
+      fields: [
+        buildSectionField('title', 'Page title', item.title || ''),
+        buildSectionField('heroKicker', 'Hero kicker', item.heroKicker || ''),
+        buildSectionField('heroTitle', 'Hero heading', item.heroTitle || ''),
+        buildSectionField('heroSubtitle', 'Hero supporting copy', item.heroSubtitle || '', {
+          type: 'textarea',
+          full: true
+        }),
+        buildSectionField('heroPrimaryLabel', 'Primary CTA label', item.heroPrimaryLabel || ''),
+        buildSectionField('heroPrimaryUrl', 'Primary CTA URL', item.heroPrimaryUrl || '', { type: 'url' }),
+        buildSectionField('heroSecondaryLabel', 'Secondary CTA label', item.heroSecondaryLabel || ''),
+        buildSectionField('heroSecondaryUrl', 'Secondary CTA URL', item.heroSecondaryUrl || '', { type: 'url' })
+      ]
+    },
+    {
+      title: 'SEO',
+      copy: 'These values support search, sharing, and platform indexing without changing the frontend layout.',
+      fields: [
+        buildSectionField('seoTitle', 'SEO title', item.seoTitle || ''),
+        buildSectionField('seoDescription', 'SEO description', item.seoDescription || '', {
+          type: 'textarea',
+          full: true
+        }),
+        buildSectionField('seoCanonicalUrl', 'Canonical URL', item.seoCanonicalUrl || '', {
+          type: 'url',
+          full: true
+        })
+      ]
+    }
+  ];
+  // Drop omitted internal-link URL fields (e.g. hero CTA URLs).
+  pageGroups.forEach((group) => {
+    if (Array.isArray(group.fields)) group.fields = group.fields.filter(Boolean);
+  });
+
   return {
-    pageGroups: [
-      {
-        title: 'Page setup',
-        copy: 'Control the page record, banner metadata, and search-facing settings here. The mapped sections below drive the full page content.',
-        fields: [
-          buildSectionField('title', 'Page title', item.title || ''),
-          buildSectionField('heroKicker', 'Hero kicker', item.heroKicker || ''),
-          buildSectionField('heroTitle', 'Hero heading', item.heroTitle || ''),
-          buildSectionField('heroSubtitle', 'Hero supporting copy', item.heroSubtitle || '', {
-            type: 'textarea',
-            full: true
-          }),
-          buildSectionField('heroPrimaryLabel', 'Primary CTA label', item.heroPrimaryLabel || ''),
-          buildSectionField('heroPrimaryUrl', 'Primary CTA URL', item.heroPrimaryUrl || '', { type: 'url' }),
-          buildSectionField('heroSecondaryLabel', 'Secondary CTA label', item.heroSecondaryLabel || ''),
-          buildSectionField('heroSecondaryUrl', 'Secondary CTA URL', item.heroSecondaryUrl || '', { type: 'url' })
-        ]
-      },
-      {
-        title: 'SEO',
-        copy: 'These values support search, sharing, and platform indexing without changing the frontend layout.',
-        fields: [
-          buildSectionField('seoTitle', 'SEO title', item.seoTitle || ''),
-          buildSectionField('seoDescription', 'SEO description', item.seoDescription || '', {
-            type: 'textarea',
-            full: true
-          }),
-          buildSectionField('seoCanonicalUrl', 'Canonical URL', item.seoCanonicalUrl || '', {
-            type: 'url',
-            full: true
-          })
-        ]
-      }
-    ],
+    pageGroups,
     sections: sections.map((section) => ({
       id: section.id,
       sectionKey: section.sectionKey,
@@ -960,6 +986,25 @@ function buildPageEditorState(item = {}, fieldOptions = {}) {
       groups: buildPageSectionEditorState(section, fieldOptions).groups
     }))
   };
+}
+
+// Internal page links are fixed by the site structure and are no longer
+// editable in the CMS. When a section's body/config is rebuilt on save, copy
+// every URL-like field (ctaUrl, url, secondaryCtaUrl, ...) back from the
+// previously stored value so a save can never change or blank a link target.
+function preserveUrlFields(next, prev) {
+  if (Array.isArray(next) && Array.isArray(prev)) {
+    next.forEach((item, index) => preserveUrlFields(item, prev[index]));
+    return;
+  }
+  if (!next || !prev || typeof next !== 'object' || typeof prev !== 'object') return;
+  Object.keys(next).forEach((key) => {
+    if (/url$/i.test(key)) {
+      if (typeof prev[key] === 'string') next[key] = prev[key];
+    } else {
+      preserveUrlFields(next[key], prev[key]);
+    }
+  });
 }
 
 function buildPageSectionAdminData(rawData, existingItem = {}) {
@@ -991,6 +1036,10 @@ function buildPageSectionAdminData(rawData, existingItem = {}) {
   const withBody = function withBody(body, config = existingConfig) {
     data.body = body && Object.keys(body).length ? body : null;
     data.config = config && Object.keys(config).length ? config : null;
+    // Internal link targets are fixed; restore them from the stored values so
+    // rebuilding the section never changes or blanks a URL.
+    preserveUrlFields(data.body, existingBody);
+    preserveUrlFields(data.config, existingConfig);
     return data;
   };
 
@@ -1259,9 +1308,19 @@ function buildPageSectionAdminData(rawData, existingItem = {}) {
       });
 
     default:
-      if ('bodyText' in rawData || 'configText' in rawData) {
-        data.body = String(rawData.bodyText || '').trim() || null;
-        data.config = String(rawData.configText || '').trim() || null;
+      // Sections without a tailored editor only expose plain-text body/config
+      // boxes, which cannot represent structured (object) content. Preserve any
+      // existing object body/config so an innocent save never wipes it; only a
+      // string/empty (i.e. actually editable) body/config may be overwritten.
+      if (typeof existingItem.body === 'string' || existingItem.body == null) {
+        if ('bodyText' in rawData) data.body = String(rawData.bodyText || '').trim() || null;
+      } else {
+        data.body = existingItem.body;
+      }
+      if (typeof existingItem.config === 'string' || existingItem.config == null) {
+        if ('configText' in rawData) data.config = String(rawData.configText || '').trim() || null;
+      } else {
+        data.config = existingItem.config;
       }
       return data;
   }
@@ -1375,6 +1434,11 @@ function shapeCollectionWriteData(collectionKey, data) {
   if (!['pages', 'caseStudies', 'pageSections'].includes(collectionKey)) {
     const collectionConfig = getCollectionConfig(collectionKey);
     const allowedKeys = new Set(getEditableFieldsForCollection(collectionConfig));
+    // Shared Site Copy edits persist their JSON `value`, which getEditableFields
+    // intentionally omits from the generic editor field list.
+    if (collectionKey === 'settings') {
+      allowedKeys.add('value');
+    }
     Object.keys(next).forEach((key) => {
       if (!allowedKeys.has(key)) {
         delete next[key];
@@ -1391,9 +1455,9 @@ function shapeCollectionWriteData(collectionKey, data) {
     next.role = String(next.role || '').trim();
     next.quote = String(next.quote || '').trim();
     next.company = String(next.company || '').trim() || null;
-    if (!next.clientName) throw new Error('Client name is required.');
-    if (!next.role) throw new Error('Role is required.');
-    if (!next.quote) throw new Error('Quote is required.');
+    if (!next.clientName) throw clientError('Client name is required.');
+    if (!next.role) throw clientError('Role is required.');
+    if (!next.quote) throw clientError('Quote is required.');
     if (typeof next.isVisible !== 'boolean') {
       next.isVisible = true;
     }
@@ -1403,7 +1467,7 @@ function shapeCollectionWriteData(collectionKey, data) {
 
   if (collectionKey === 'clients') {
     next.name = String(next.name || '').trim();
-    if (!next.name) throw new Error('Client name is required.');
+    if (!next.name) throw clientError('Client name is required.');
     next.slug = String(next.slug || '').trim() || toSlug(next.name);
     next.description = next.description ? String(next.description).trim() : null;
     next.websiteUrl = next.websiteUrl ? String(next.websiteUrl).trim() : null;
@@ -1620,6 +1684,16 @@ function buildPageAdminData(rawData, existingItem = {}) {
     }
   });
 
+  // The page editor does not expose slug/template/status, but
+  // shapeCollectionWriteData would otherwise regenerate the slug from the
+  // title, reset the template to STANDARD, and reset status to DRAFT. Preserve
+  // the existing values on update so a save never changes the page's URL slug,
+  // its template (HOME/SERVICES/etc.), or unpublishes it. On create,
+  // existingItem is empty and shapeCollectionWriteData applies sane defaults.
+  if (existingItem.slug) data.slug = existingItem.slug;
+  if (existingItem.template) data.template = existingItem.template;
+  if (existingItem.status) data.status = existingItem.status;
+
   const sectionUpdates = [];
   const sections = Array.isArray(existingItem.sections) ? existingItem.sections : [];
   for (const section of sections) {
@@ -1647,21 +1721,8 @@ function buildPageAdminData(rawData, existingItem = {}) {
 async function syncCaseStudyRelations(caseStudyId, relations) {
   if (!relations) return;
 
-  const tagIds = new Set((relations.selectedTagIds || []).map((value) => String(value || '').trim()).filter(Boolean));
-
-  for (const label of relations.newTagLabels || []) {
-    const trimmed = String(label || '').trim();
-    if (!trimmed) continue;
-    const tag = await prisma.tag.upsert({
-      where: { slug: toSlug(trimmed) },
-      update: { label: trimmed },
-      create: { slug: toSlug(trimmed), label: trimmed }
-    });
-    tagIds.add(tag.id);
-  }
-
-  let featuredImageRelation = { disconnect: true };
   const featuredImageId = String(relations.featuredImageId || '').trim();
+  let featuredImageRelation = { disconnect: true };
   if (featuredImageId) {
     const hasImage = await prisma.mediaAsset.findUnique({
       where: { id: featuredImageId },
@@ -1672,41 +1733,57 @@ async function syncCaseStudyRelations(caseStudyId, relations) {
     }
   }
 
-  const existingTagRows = tagIds.size
-    ? await prisma.tag.findMany({
-        where: { id: { in: Array.from(tagIds) } },
-        select: { id: true }
-      })
-    : [];
-  const existingTagIds = new Set(existingTagRows.map((row) => row.id));
-
   const runtimeCaseStudyModel = prisma._runtimeDataModel?.models?.CaseStudy;
   const caseStudyFields = new Set(Array.isArray(runtimeCaseStudyModel?.fields) ? runtimeCaseStudyModel.fields.map((field) => field.name) : []);
-  const updateData = {};
-
-  if (!caseStudyFields.size || caseStudyFields.has('featuredImage')) {
-    updateData.featuredImage = featuredImageRelation;
-  } else if (caseStudyFields.has('featuredImageId')) {
-    updateData.featuredImageId = featuredImageId || null;
-  }
-
-  if (!caseStudyFields.size || caseStudyFields.has('tags')) {
-    updateData.tags = {
-      deleteMany: {},
-      create: Array.from(existingTagIds).map((tagId) => ({
-        tag: { connect: { id: tagId } }
-      }))
-    };
-  }
-
-  if (!Object.keys(updateData).length) {
-    return;
-  }
 
   try {
-    await prisma.caseStudy.update({
-      where: { id: caseStudyId },
-      data: updateData
+    await prisma.$transaction(async (tx) => {
+      const tagIds = new Set((relations.selectedTagIds || []).map((value) => String(value || '').trim()).filter(Boolean));
+
+      for (const label of relations.newTagLabels || []) {
+        const trimmed = String(label || '').trim();
+        if (!trimmed) continue;
+        const tag = await tx.tag.upsert({
+          where: { slug: toSlug(trimmed) },
+          update: { label: trimmed },
+          create: { slug: toSlug(trimmed), label: trimmed }
+        });
+        tagIds.add(tag.id);
+      }
+
+      const existingTagRows = tagIds.size
+        ? await tx.tag.findMany({
+            where: { id: { in: Array.from(tagIds) } },
+            select: { id: true }
+          })
+        : [];
+      const existingTagIds = new Set(existingTagRows.map((row) => row.id));
+
+      const updateData = {};
+
+      if (!caseStudyFields.size || caseStudyFields.has('featuredImage')) {
+        updateData.featuredImage = featuredImageRelation;
+      } else if (caseStudyFields.has('featuredImageId')) {
+        updateData.featuredImageId = featuredImageId || null;
+      }
+
+      if (!caseStudyFields.size || caseStudyFields.has('tags')) {
+        updateData.tags = {
+          deleteMany: {},
+          create: Array.from(existingTagIds).map((tagId) => ({
+            tag: { connect: { id: tagId } }
+          }))
+        };
+      }
+
+      if (!Object.keys(updateData).length) {
+        return;
+      }
+
+      await tx.caseStudy.update({
+        where: { id: caseStudyId },
+        data: updateData
+      });
     });
   } catch (error) {
     const isValidationError = String(error?.name || '') === 'PrismaClientValidationError';
@@ -1975,22 +2052,23 @@ async function getCollectionListing(collectionKey, req) {
   const collection = getCollectionConfig(collectionKey);
   if (!collection) return null;
 
-  const page = Math.max(1, Number(req.query.page || 1));
+  const page = clampPage(req.query.page);
   const q = String(req.query.q || '').trim();
   const formType = String(req.query.formType || '');
   const readState = String(req.query.readState || '');
   const sort = String(req.query.sort || '');
 
   if (collection.model === 'formSubmission') {
-    const allItems = await prisma.formSubmission.findMany({
-      orderBy: resolveOrderBy(collection, sort)
-    });
+    const where = buildFormSubmissionWhere({ q, formType, readState });
 
-    const filtered = filterFormSubmissions(allItems, { q, formType, readState });
-
-    const total = filtered.length;
+    const total = await prisma.formSubmission.count({ where });
     const totalPages = Math.max(1, Math.ceil(total / COLLECTION_PAGE_SIZE));
-    const items = filtered.slice((page - 1) * COLLECTION_PAGE_SIZE, page * COLLECTION_PAGE_SIZE);
+    const items = await prisma.formSubmission.findMany({
+      where,
+      orderBy: resolveOrderBy(collection, sort),
+      skip: (page - 1) * COLLECTION_PAGE_SIZE,
+      take: COLLECTION_PAGE_SIZE
+    });
 
     return {
       collection,
@@ -2052,13 +2130,13 @@ async function buildPrivatePageCredentialData(rawData, existingItem = null) {
     data.pageKey = PRIVATE_PAGE_OPTIONS[0].value;
   }
   if (!data.username) {
-    throw new Error('Username is required.');
+    throw clientError('Username is required.');
   }
 
   if (password) {
     data.passwordHash = await bcrypt.hash(password, 10);
   } else if (!existingItem) {
-    throw new Error('A password is required when creating a private page credential.');
+    throw clientError('A password is required when creating a private page credential.');
   }
 
   delete data.password;
@@ -2092,13 +2170,13 @@ function buildPrivatePageResourceData(rawData) {
   data.url = String(data.url || '').trim();
 
   if (!data.title) {
-    throw new Error('Resource title is required.');
+    throw clientError('Resource title is required.');
   }
   if (!data.resourceType) {
-    throw new Error('Resource type is required.');
+    throw clientError('Resource type is required.');
   }
   if (!data.url) {
-    throw new Error('Resource URL is required.');
+    throw clientError('Resource URL is required.');
   }
 
   if (typeof data.description !== 'undefined') {
@@ -2140,20 +2218,22 @@ async function syncPrivateCredentialResources(credentialId, pageKey, rawResource
   });
   const allowedIds = allowedResources.map((resource) => resource.id);
 
-  await prisma.privatePageCredentialResource.deleteMany({
-    where: { credentialId }
-  });
+  await prisma.$transaction(async (tx) => {
+    await tx.privatePageCredentialResource.deleteMany({
+      where: { credentialId }
+    });
 
-  if (!allowedIds.length) {
-    return;
-  }
+    if (!allowedIds.length) {
+      return;
+    }
 
-  await prisma.privatePageCredentialResource.createMany({
-    data: allowedIds.map((resourceId) => ({
-      credentialId,
-      resourceId
-    })),
-    skipDuplicates: true
+    await tx.privatePageCredentialResource.createMany({
+      data: allowedIds.map((resourceId) => ({
+        credentialId,
+        resourceId
+      })),
+      skipDuplicates: true
+    });
   });
 }
 
@@ -2167,6 +2247,37 @@ function filterFormSubmissions(items, filters) {
     const matchesRead = !filters.readState || (filters.readState === 'read' ? read : !read);
     return matchesQuery && matchesType && matchesRead;
   });
+}
+
+const READ_SUBMISSION_WHERE = {
+  OR: [
+    { meta: { path: ['status'], equals: 'READ' } },
+    { meta: { path: ['read'], equals: true } }
+  ]
+};
+
+function buildFormSubmissionWhere({ q, formType, readState }) {
+  const and = [];
+
+  if (formType) {
+    and.push({ formType });
+  }
+
+  if (q) {
+    and.push({
+      OR: ['fullName', 'email', 'company', 'message', 'sourcePage'].map((field) => ({
+        [field]: { contains: q, mode: 'insensitive' }
+      }))
+    });
+  }
+
+  if (readState === 'read') {
+    and.push(READ_SUBMISSION_WHERE);
+  } else if (readState === 'unread') {
+    and.push({ NOT: READ_SUBMISSION_WHERE });
+  }
+
+  return and.length ? { AND: and } : {};
 }
 registerAdminWebAuthRoutes(router, { prisma, requireAuth });
 registerAdminWebDashboardRoutes(router, {
@@ -2498,47 +2609,54 @@ router.post('/:collection/:id', requireAuth, requireRole('ADMIN', 'EDITOR'), asy
     const shapedData = shapeCollectionWriteData(req.params.collection, data);
     const prismaData = filterDataToPrismaModelFields(collection.model, shapedData);
 
-    await prisma[collection.model].update({
-      where: { id: req.params.id },
-      data: prismaData
-    });
+    if (req.params.collection === 'pages') {
+      await prisma.$transaction(async (tx) => {
+        await tx[collection.model].update({
+          where: { id: req.params.id },
+          data: prismaData
+        });
+
+        for (const sectionUpdate of pagePayload.sectionUpdates) {
+          const sectionData = shapeCollectionWriteData('pageSections', sectionUpdate.data);
+          const updateResult = await tx.pageSection.updateMany({
+            where: {
+              id: sectionUpdate.id,
+              pageId: req.params.id
+            },
+            data: sectionData
+          });
+
+          if (!updateResult.count) {
+            const sectionKey = String(sectionData.sectionKey || '').trim();
+            if (!sectionKey) {
+              continue;
+            }
+
+            await tx.pageSection.upsert({
+              where: {
+                pageId_sectionKey: {
+                  pageId: req.params.id,
+                  sectionKey
+                }
+              },
+              update: sectionData,
+              create: {
+                ...sectionData,
+                page: { connect: { id: req.params.id } }
+              }
+            });
+          }
+        }
+      });
+    } else {
+      await prisma[collection.model].update({
+        where: { id: req.params.id },
+        data: prismaData
+      });
+    }
 
     if (req.params.collection === 'caseStudies') {
       await syncCaseStudyRelations(req.params.id, caseStudyPayload.relations);
-    }
-
-    if (req.params.collection === 'pages') {
-      for (const sectionUpdate of pagePayload.sectionUpdates) {
-        const sectionData = shapeCollectionWriteData('pageSections', sectionUpdate.data);
-        const updateResult = await prisma.pageSection.updateMany({
-          where: {
-            id: sectionUpdate.id,
-            pageId: req.params.id
-          },
-          data: sectionData
-        });
-
-        if (!updateResult.count) {
-          const sectionKey = String(sectionData.sectionKey || '').trim();
-          if (!sectionKey) {
-            continue;
-          }
-
-          await prisma.pageSection.upsert({
-            where: {
-              pageId_sectionKey: {
-                pageId: req.params.id,
-                sectionKey
-              }
-            },
-            update: sectionData,
-            create: {
-              ...sectionData,
-              page: { connect: { id: req.params.id } }
-            }
-          });
-        }
-      }
     }
 
     if (req.params.collection === 'privatePageCredentials') {

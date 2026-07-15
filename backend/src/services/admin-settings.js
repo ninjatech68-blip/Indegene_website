@@ -75,10 +75,10 @@ export function buildSettingEditorState(item = {}, buildSectionField) {
         groups: [
           {
             title: key === 'header.cta' ? 'Header call to action' : 'Footer call to action',
-            copy: `Control the shared ${key === 'header.cta' ? 'header' : 'footer'} button label and destination.`,
+            copy: `Edit the shared ${key === 'header.cta' ? 'header' : 'footer'} button label. Its link target is fixed by the site structure and is not editable here.`,
             fields: [
               buildSectionField('settingLabel', 'Button label', value?.label || ''),
-              buildSectionField('settingUrl', 'Button destination', value?.url || '', { type: 'text' })
+              buildSectionField('settingUrl', 'Button destination (fixed)', value?.url || '', { type: 'text', readOnly: true })
             ]
           }
         ]
@@ -90,11 +90,12 @@ export function buildSettingEditorState(item = {}, buildSectionField) {
         groups: [
           {
             title: key === 'header.links' ? 'Desktop header links' : 'Top utility links',
-            copy: 'Use one link per line in the format: Label | URL',
+            copy: 'These navigation links are fixed by the site structure and are shown here for reference only — they are not editable in the CMS.',
             fields: [
-              buildSectionField('settingLinks', 'Links', formatLinkList(value), {
+              buildSectionField('settingLinks', 'Links (fixed)', formatLinkList(value), {
                 type: 'textarea',
-                full: true
+                full: true,
+                readOnly: true
               })
             ]
           }
@@ -106,11 +107,12 @@ export function buildSettingEditorState(item = {}, buildSectionField) {
         groups: [
           {
             title: 'Mobile navigation groups',
-            copy: 'Separate each group with a blank line. First line is the group title, following lines use: Label | URL',
+            copy: 'The mobile navigation is fixed by the site structure and is shown here for reference only — it is not editable in the CMS.',
             fields: [
-              buildSectionField('settingGroupedLinks', 'Navigation groups', formatGroupedLinkBlocks(value), {
+              buildSectionField('settingGroupedLinks', 'Navigation groups (fixed)', formatGroupedLinkBlocks(value), {
                 type: 'textarea',
-                full: true
+                full: true,
+                readOnly: true
               })
             ]
           }
@@ -122,11 +124,12 @@ export function buildSettingEditorState(item = {}, buildSectionField) {
         groups: [
           {
             title: 'Footer columns',
-            copy: 'Separate each column with a blank line. First line is the column title, following lines use: Label | URL',
+            copy: 'The footer navigation columns are fixed by the site structure and are shown here for reference only — they are not editable in the CMS.',
             fields: [
-              buildSectionField('settingGroupedLinks', 'Footer columns', formatGroupedLinkBlocks(value), {
+              buildSectionField('settingGroupedLinks', 'Footer columns (fixed)', formatGroupedLinkBlocks(value), {
                 type: 'textarea',
-                full: true
+                full: true,
+                readOnly: true
               })
             ]
           }
@@ -168,20 +171,19 @@ export function buildSettingAdminData(rawData, existingItem = {}) {
   switch (key) {
     case 'footer.cta':
     case 'header.cta':
+      // Button label is editable; the link target is fixed — preserve it.
       next.value = {
         label: String(rawData.settingLabel || '').trim(),
-        url: String(rawData.settingUrl || '').trim()
+        url: String(existingItem.value?.url || '').trim()
       };
       break;
     case 'topbar.links':
     case 'header.links':
-      next.value = parseLinkList(rawData.settingLinks);
-      break;
     case 'mobile.nav':
-      next.value = parseGroupedLinkBlocks(rawData.settingGroupedLinks, 'items');
-      break;
     case 'footer.columns':
-      next.value = parseGroupedLinkBlocks(rawData.settingGroupedLinks, 'links');
+      // Navigation/footer link structures are fixed by the site structure and
+      // are not editable in the CMS — always keep the stored value.
+      next.value = existingItem.value;
       break;
     default:
       next.value = String(rawData.settingText || '').trim();

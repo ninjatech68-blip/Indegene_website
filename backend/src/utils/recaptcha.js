@@ -15,7 +15,9 @@ function isLocalRuntime() {
 }
 
 export async function verifyRecaptcha(token, remoteIp) {
-  if (env.RECAPTCHA_BYPASS) {
+  // RECAPTCHA_BYPASS is a developer convenience only; it is ignored in
+  // production so verification is always enforced there.
+  if (env.RECAPTCHA_BYPASS && !isProduction) {
     return { success: true, skipped: true, bypassed: true };
   }
 
@@ -58,7 +60,9 @@ export async function verifyRecaptcha(token, remoteIp) {
       errors: result['error-codes'] || []
     };
   } catch (error) {
-    if (isProduction && !localRuntime) {
+    // Fail CLOSED in production on a verification network error rather than
+    // allowing the request through.
+    if (isProduction) {
       return {
         success: false,
         message: 'reCAPTCHA verification failed',

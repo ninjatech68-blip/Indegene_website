@@ -2,22 +2,29 @@
   'use strict';
 
   function getApiBase() {
-    var queryValue = '';
-    try {
-      queryValue = new URLSearchParams(window.location.search).get('apiBase') || '';
-    } catch (error) {
-      queryValue = '';
-    }
+    var hostname = window.location.hostname;
+    var isDevHost = hostname === 'localhost' || hostname === '127.0.0.1';
 
-    if (queryValue && window.localStorage) {
-      window.localStorage.setItem('oco-cms-api-base', queryValue);
+    // The ?apiBase= override (and its persisted localStorage copy) is a
+    // dev-only convenience and must never be trusted on production hosts.
+    var queryValue = '';
+    if (isDevHost) {
+      try {
+        queryValue = new URLSearchParams(window.location.search).get('apiBase') || '';
+      } catch (error) {
+        queryValue = '';
+      }
+
+      if (queryValue && window.localStorage) {
+        window.localStorage.setItem('oco-cms-api-base', queryValue);
+      }
     }
 
     var explicit = queryValue
       || window.OCO_CMS_API_BASE
       || document.body?.dataset?.cmsApiBase
       || document.querySelector('meta[name="oco-cms-api-base"]')?.getAttribute('content')
-      || window.localStorage?.getItem('oco-cms-api-base');
+      || (isDevHost ? window.localStorage?.getItem('oco-cms-api-base') : '');
 
     if (explicit) {
       return explicit.replace(/\/$/, '');
@@ -793,8 +800,8 @@
     renderChips(document.querySelector('#caseLibraryIntro .oco-chips'), intro?.body?.chips);
     if (Array.isArray(intro?.body?.paragraphs)) {
       setHtml('#caseLibraryIntro .oco-wwd__body', [
-        intro.body.paragraphs[0] ? '<p>' + intro.body.paragraphs[0] + '</p>' : '',
-        intro.body.paragraphs[1] ? '<p class="oco-case-library__summary">' + intro.body.paragraphs[1] + '</p>' : ''
+        intro.body.paragraphs[0] ? '<p>' + escapeHtml(intro.body.paragraphs[0]) + '</p>' : '',
+        intro.body.paragraphs[1] ? '<p class="oco-case-library__summary">' + escapeHtml(intro.body.paragraphs[1]) + '</p>' : ''
       ].join(''));
     }
 
@@ -804,7 +811,13 @@
   }
 
   function getCurrentPageFile() {
-    return (window.location.pathname.split('/').pop() || '').trim();
+    var pathname = window.location.pathname;
+    try {
+      pathname = decodeURIComponent(pathname);
+    } catch (error) {
+      pathname = window.location.pathname;
+    }
+    return (pathname.split('/').pop() || '').trim();
   }
 
   function hydrateCaseStudyDetailChrome(payload) {
@@ -839,6 +852,9 @@
     setMetaContent('meta[name="twitter:description"]', item.seoDescription || item.excerpt);
 
     if (typeof item.content === 'string' && item.content.trim().length > 500) {
+      // NOTE: item.content is trusted, rich CMS-authored HTML rendered as-is on
+      // purpose (escaping it would break formatting). It MUST be sanitized
+      // server-side before it reaches this client.
       setHtml('.oco-inner-page__main', item.content);
       activateRevealNodes(document.querySelector('.oco-inner-page__main'));
     }
@@ -1213,8 +1229,17 @@
     return bootstrapCache[slug];
   }
 
+  function decodePathname() {
+    var pathname = window.location.pathname;
+    try {
+      return decodeURIComponent(pathname);
+    } catch (error) {
+      return pathname;
+    }
+  }
+
   function detectPageSlug() {
-    var path = (window.location.pathname.split('/').pop() || '').toLowerCase();
+    var path = (decodePathname().split('/').pop() || '').toLowerCase();
     var pageMap = {
       '': 'home',
       'index.html': 'home',

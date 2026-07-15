@@ -18,7 +18,7 @@ const schemas = {
     heroSecondaryLabel: z.string().max(120).nullish(),
     heroSecondaryUrl: optionalUrl,
     ...sharedSeoFields
-  }).passthrough(),
+  }),
   caseStudies: z.object({
     slug: z.string().min(1).max(160).nullish(),
     title: z.string().min(1).max(200),
@@ -30,7 +30,7 @@ const schemas = {
     isFeatured: z.boolean().nullish(),
     structuredData: z.record(z.any()).nullish(),
     ...sharedSeoFields
-  }).passthrough(),
+  }),
   testimonials: z.object({
     clientName: z.string().min(1).max(120),
     role: z.string().max(120).nullish(),
@@ -38,7 +38,7 @@ const schemas = {
     quote: z.string().min(1).max(2000),
     isVisible: z.boolean().nullish(),
     sortOrder: z.number().int().min(0).max(9999).nullish()
-  }).passthrough(),
+  }),
   clients: z.object({
     slug: z.string().min(1).max(160).nullish(),
     name: z.string().min(1).max(120),
@@ -46,12 +46,12 @@ const schemas = {
     websiteUrl: optionalUrl,
     isVisible: z.boolean().nullish(),
     sortOrder: z.number().int().min(0).max(9999).nullish()
-  }).passthrough(),
+  }),
   settings: z.object({
     key: z.string().min(1).max(160),
     description: z.string().max(240).nullish(),
     value: z.any()
-  }).passthrough(),
+  }),
   privatePageResources: z.object({
     pageKey: z.string().min(1).max(80),
     title: z.string().min(1).max(160),
@@ -61,14 +61,13 @@ const schemas = {
     ctaLabel: z.string().max(120).nullish(),
     isVisible: z.boolean().nullish(),
     sortOrder: z.number().int().min(0).max(9999).nullish()
-  }).passthrough(),
+  }),
   privatePageCredentials: z.object({
     pageKey: z.string().min(1).max(80),
     username: z.string().min(1).max(120),
     description: z.string().max(240).nullish(),
-    isActive: z.boolean().nullish(),
-    passwordHash: z.string().min(20).nullish()
-  }).passthrough()
+    isActive: z.boolean().nullish()
+  })
 };
 
 export function validateAdminCollectionPayload(collectionKey, payload) {

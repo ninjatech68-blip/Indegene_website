@@ -1,7 +1,30 @@
+import { randomBytes } from 'node:crypto';
+
 const API_BASE = process.env.API_BASE_URL || process.env.BASE_URL || 'http://localhost:4000';
 const adminEmail = process.env.DEFAULT_ADMIN_EMAIL || process.env.ADMIN_EMAIL || 'admin@local.test';
 const adminPassword = process.env.DEFAULT_ADMIN_PASSWORD || process.env.ADMIN_PASSWORD || 'LocalStrongPass123!';
 const stamp = Date.now().toString();
+
+// Refuse to create/delete live CMS records (including a login credential)
+// against a non-local target unless explicitly allowed.
+const sweepHost = (() => {
+  try {
+    return new URL(API_BASE).hostname;
+  } catch {
+    return '';
+  }
+})();
+const isLocalTarget = ['localhost', '127.0.0.1', '0.0.0.0', '::1'].includes(sweepHost);
+if (!isLocalTarget && process.env.ALLOW_REMOTE_SWEEP !== 'true') {
+  console.error(`[cms-create-sweep] Refusing to run against non-local target "${API_BASE}".`);
+  console.error('[cms-create-sweep] This script creates and deletes live CMS records, including a login credential.');
+  console.error('[cms-create-sweep] Set ALLOW_REMOTE_SWEEP=true to override intentionally.');
+  process.exit(1);
+}
+
+// Random per-run password (never hardcoded). Prefix guarantees complexity;
+// the base64url suffix adds entropy from crypto.randomBytes.
+const sweepPassword = `Aa1!${randomBytes(18).toString('base64url')}`;
 
 function assert(condition, message) {
   if (!condition) {
@@ -136,7 +159,7 @@ async function run() {
       payload: {
         pageKey: 'partner-access',
         username: `qa-user-${stamp}`,
-        password: 'QaSweepPass123!',
+        password: sweepPassword,
         description: 'Automated create-sweep credential',
         isActive: 'true'
       },
@@ -154,15 +177,26 @@ async function run() {
   ];
 
   for (const testCase of cases) {
+    let created = null;
     try {
       await createThroughAdmin(testCase.collection, testCase.payload, sessionCookie);
       const items = await listViaAdminApi(testCase.collection, sessionCookie);
-      const created = testCase.verify(items);
+      created = testCase.verify(items);
       assert(created, `Record not found after create in ${testCase.collection}`);
-      await deleteViaAdminApi(testCase.collection, created.id, sessionCookie);
       results.push({ collection: testCase.collection, ok: true });
     } catch (error) {
       results.push({ collection: testCase.collection, ok: false, error: error.message });
+    } finally {
+      // Always delete anything we managed to create, even if a later step
+      // failed mid-run, so no sweep artifacts (notably the live credential)
+      // are left behind.
+      if (created?.id) {
+        try {
+          await deleteViaAdminApi(testCase.collection, created.id, sessionCookie);
+        } catch (cleanupError) {
+          console.error(`[cms-create-sweep] cleanup failed for ${testCase.collection}/${created.id}: ${cleanupError.message}`);
+        }
+      }
     }
   }
 

@@ -215,7 +215,7 @@
         : null;
       var submitPromise = window.OCOCMS && typeof config.submitWithCms === 'function'
         ? config.submitWithCms(payload, $form)
-        : Promise.resolve();
+        : Promise.reject(new Error('Form service unavailable'));
 
       submitPromise.then(function () {
         $form[0].reset();
@@ -501,7 +501,7 @@
         };
       },
       submitWithCms: function (payload) {
-        return window.OCOCMS ? window.OCOCMS.postForm('/contact', payload) : Promise.resolve();
+        return window.OCOCMS ? window.OCOCMS.postForm('/contact', payload) : Promise.reject(new Error('Form service unavailable'));
       },
       fields: [
         {

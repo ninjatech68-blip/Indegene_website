@@ -3,6 +3,8 @@ import bcrypt from 'bcryptjs';
 import rateLimit from 'express-rate-limit';
 import { prisma } from '../lib/prisma.js';
 import {
+  clampLimit,
+  clampPage,
   getAnalyticsSettings,
   getBootstrapPayload,
   getCaseStudyBySlug,
@@ -96,8 +98,8 @@ router.get('/pages/:slug', async (req, res, next) => {
 
 router.get('/case-studies', async (req, res, next) => {
   try {
-    const page = Number(req.query.page || 1);
-    const limit = Number(req.query.limit || 12);
+    const page = clampPage(req.query.page);
+    const limit = clampLimit(req.query.limit, { def: 12, max: 50 });
     const tag = req.query.tag;
     const { items, pagination } = await getPublishedCaseStudies({ page, limit, tag });
 
@@ -146,8 +148,8 @@ router.get('/case-studies/:slug', async (req, res, next) => {
 
 router.get('/resources', async (req, res, next) => {
   try {
-    const page = Number(req.query.page || 1);
-    const limit = Number(req.query.limit || 12);
+    const page = clampPage(req.query.page);
+    const limit = clampLimit(req.query.limit, { def: 12, max: 50 });
     const { items, pagination } = await getPublishedResources({ page, limit });
     res.json(withMeta(items, { pagination }));
   } catch (error) {
