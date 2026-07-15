@@ -82,7 +82,7 @@
             </div>
           </div>
         <% } else if (collectionKey === 'pages') { %>
-          <form class="admin-form" data-guided-scope method="post" action="<%= item.id ? `/admin/${collectionKey}/${item.id}` : `/admin/${collectionKey}` %>">
+          <form class="admin-form" data-guided-scope novalidate method="post" action="<%= item.id ? `/admin/${collectionKey}/${item.id}` : `/admin/${collectionKey}` %>">
             <input type="hidden" name="_csrf" value="<%= csrfToken %>">
 
             <% (editorState?.pageGroups || []).forEach((group) => { %>
@@ -190,7 +190,7 @@
             </div>
           <% } %>
         <% } else if (collectionKey === 'caseStudies') { %>
-          <form class="admin-form" data-guided-scope method="post" action="<%= item.id ? `/admin/${collectionKey}/${item.id}` : `/admin/${collectionKey}` %>">
+          <form class="admin-form" data-guided-scope novalidate method="post" action="<%= item.id ? `/admin/${collectionKey}/${item.id}` : `/admin/${collectionKey}` %>">
             <input type="hidden" name="_csrf" value="<%= csrfToken %>">
 
             <section class="admin-editor-group">
@@ -422,7 +422,7 @@
             </div>
           <% } %>
         <% } else if (collectionKey === 'privatePageCredentials') { %>
-          <form class="admin-form" data-guided-scope method="post" action="<%= item.id ? `/admin/${collectionKey}/${item.id}` : `/admin/${collectionKey}` %>">
+          <form class="admin-form" data-guided-scope novalidate method="post" action="<%= item.id ? `/admin/${collectionKey}/${item.id}` : `/admin/${collectionKey}` %>">
             <input type="hidden" name="_csrf" value="<%= csrfToken %>">
 
             <section class="admin-editor-group">
@@ -530,7 +530,7 @@
             </div>
           <% } %>
         <% } else if (collectionKey === 'settings') { %>
-          <form class="admin-form" data-guided-scope method="post" action="<%= item.id ? `/admin/${collectionKey}/${item.id}` : `/admin/${collectionKey}` %>">
+          <form class="admin-form" data-guided-scope novalidate method="post" action="<%= item.id ? `/admin/${collectionKey}/${item.id}` : `/admin/${collectionKey}` %>">
             <input type="hidden" name="_csrf" value="<%= csrfToken %>">
             <input type="hidden" name="key" value="<%= item.key || '' %>">
 
@@ -582,7 +582,7 @@
             </div>
           <% } %>
         <% } else { %>
-          <form class="admin-form" data-guided-scope method="post" action="<%= item.id ? `/admin/${collectionKey}/${item.id}` : `/admin/${collectionKey}` %>">
+          <form class="admin-form" data-guided-scope novalidate method="post" action="<%= item.id ? `/admin/${collectionKey}/${item.id}` : `/admin/${collectionKey}` %>">
             <input type="hidden" name="_csrf" value="<%= csrfToken %>">
 
             <div class="admin-form__grid">

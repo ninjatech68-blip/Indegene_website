@@ -1267,9 +1267,19 @@ function buildPageSectionAdminData(rawData, existingItem = {}) {
       });
 
     default:
-      if ('bodyText' in rawData || 'configText' in rawData) {
-        data.body = String(rawData.bodyText || '').trim() || null;
-        data.config = String(rawData.configText || '').trim() || null;
+      // Sections without a tailored editor only expose plain-text body/config
+      // boxes, which cannot represent structured (object) content. Preserve any
+      // existing object body/config so an innocent save never wipes it; only a
+      // string/empty (i.e. actually editable) body/config may be overwritten.
+      if (typeof existingItem.body === 'string' || existingItem.body == null) {
+        if ('bodyText' in rawData) data.body = String(rawData.bodyText || '').trim() || null;
+      } else {
+        data.body = existingItem.body;
+      }
+      if (typeof existingItem.config === 'string' || existingItem.config == null) {
+        if ('configText' in rawData) data.config = String(rawData.configText || '').trim() || null;
+      } else {
+        data.config = existingItem.config;
       }
       return data;
   }
