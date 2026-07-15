@@ -3,13 +3,14 @@ import rateLimit from 'express-rate-limit';
 
 export function registerAdminWebAuthRoutes(router, deps) {
   const { prisma, requireAuth } = deps;
-  const isLoopbackIp = (ip = '') => ip === '127.0.0.1' || ip === '::1' || ip === '::ffff:127.0.0.1';
+  // Constant hash used for a dummy bcrypt.compare when the user is not found,
+  // so both paths take comparable time (mitigates user enumeration via timing).
+  const DUMMY_PASSWORD_HASH = '$2a$10$WDL2.d1BYkKlx.AmAYsUneZznz64JvFQHcBcc/peSHs26CRgVsvhK';
   const adminLoginLimiter = rateLimit({
     windowMs: 15 * 60 * 1000,
     max: 10,
     standardHeaders: true,
-    legacyHeaders: false,
-    skip: (req) => isLoopbackIp(req.ip)
+    legacyHeaders: false
   });
   const renderInvalidCredentials = (res, nextUrl) => res.status(401).render('admin/login', {
     title: 'Admin Login',
@@ -39,11 +40,14 @@ export function registerAdminWebAuthRoutes(router, deps) {
       }
       const user = await prisma.user.findUnique({ where: { email } });
 
-      if (!user || !user.isActive) {
-        return renderInvalidCredentials(res, nextUrl);
-      }
-
-      if (!user.passwordHash || typeof user.passwordHash !== 'string') {
+      if (!user || !user.isActive || !user.passwordHash || typeof user.passwordHash !== 'string') {
+        // Dummy compare so the not-found/inactive path takes comparable time
+        // to the found path (mitigates user enumeration via timing).
+        try {
+          await bcrypt.compare(String(password), DUMMY_PASSWORD_HASH);
+        } catch (compareError) {
+          // Ignore; response is the same either way.
+        }
         return renderInvalidCredentials(res, nextUrl);
       }
 

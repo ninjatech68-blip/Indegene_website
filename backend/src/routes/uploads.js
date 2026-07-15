@@ -8,8 +8,13 @@ import { env } from '../config/env.js';
 import { requireAuth, requireRole } from '../middleware/auth.js';
 
 const router = Router();
-const allowedMimeTypes = new Set(['image/jpeg', 'image/png', 'image/webp', 'image/gif', 'image/svg+xml', 'image/avif']);
+// SVG is intentionally excluded: it can carry active content and output is
+// rasterized to webp anyway.
+const allowedMimeTypes = new Set(['image/jpeg', 'image/png', 'image/webp', 'image/gif', 'image/avif']);
 const upload = multer({ storage: multer.memoryStorage(), limits: { fileSize: 5 * 1024 * 1024 } });
+// Guard against decompression bombs: a small file can decode to an enormous
+// bitmap. Reject images whose pixel count exceeds this cap before processing.
+const MAX_IMAGE_PIXELS = 40 * 1000 * 1000; // 40 megapixels
 const uploadsDir = path.resolve(process.cwd(), 'uploads');
 
 function sanitizeOriginalFilename(input) {
@@ -39,6 +44,11 @@ router.post('/', requireAuth, requireRole('ADMIN', 'EDITOR'), upload.single('fil
     const outputPath = path.join(uploadsDir, fileName);
     const image = sharp(req.file.buffer);
     const metadata = await image.metadata();
+
+    const pixelCount = (metadata.width || 0) * (metadata.height || 0);
+    if (!pixelCount || pixelCount > MAX_IMAGE_PIXELS) {
+      return res.status(400).json({ error: 'ValidationError', message: 'Image dimensions are too large' });
+    }
 
     await image.webp({ quality: 82 }).toFile(outputPath);
 

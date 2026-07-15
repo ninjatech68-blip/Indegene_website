@@ -49,22 +49,30 @@ app.use(helmet({
   referrerPolicy: { policy: 'strict-origin-when-cross-origin' }
 }));
 app.use(compression());
+const configuredCorsOrigins = String(env.CORS_ALLOWED_ORIGINS || '')
+  .split(',')
+  .map((value) => value.trim())
+  .filter(Boolean);
+const allowedCorsOrigins = new Set(
+  configuredCorsOrigins.length
+    ? configuredCorsOrigins
+    : [env.FRONTEND_URL, env.APP_URL]
+);
 app.use(cors({
   origin(origin, callback) {
     if (!origin) {
       return callback(null, true);
     }
-    const allowedOrigins = [env.FRONTEND_URL, env.APP_URL];
-    if (allowedOrigins.includes(origin)) {
+    if (allowedCorsOrigins.has(origin)) {
       return callback(null, true);
     }
     try {
       const parsed = new URL(origin);
       const host = parsed.hostname.toLowerCase();
+      // Preserve localhost/127.0.0.1 dev access only. Shared-hosting domains
+      // (e.g. *.netlify.app, *.onrender.com) are NOT wildcarded; specific
+      // deployment hostnames must be listed explicitly via env or the defaults.
       if (host === 'localhost' || host === '127.0.0.1') {
-        return callback(null, true);
-      }
-      if (host.endsWith('.netlify.app') || host.endsWith('.onrender.com')) {
         return callback(null, true);
       }
     } catch (error) {

@@ -23,8 +23,15 @@ const envSchema = z.object({
   FRONTEND_URL: z.string().url().default('http://localhost:8081'),
   PUBLIC_ROOT: z.string().default(defaultPublicRoot),
   DATABASE_URL: z.string().min(1),
-  SESSION_SECRET: z.string().min(16),
+  SESSION_SECRET: z
+    .string()
+    .min(32, 'SESSION_SECRET must be at least 32 characters')
+    .refine(
+      (value) => value !== 'replace-with-a-local-secret-at-least-16-characters',
+      'SESSION_SECRET must not use the known placeholder value; set a unique secret of at least 32 characters'
+    ),
   COOKIE_DOMAIN: z.string().default('localhost'),
+  CORS_ALLOWED_ORIGINS: z.string().optional().default(''),
   MEDIA_BASE_URL: z.string().url().default('http://localhost:4000/uploads'),
   GA4_MEASUREMENT_ID: z.string().optional().default(''),
   RECAPTCHA_SITE_KEY: z.string().optional().default(''),
