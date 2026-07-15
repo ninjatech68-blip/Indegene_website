@@ -1643,6 +1643,16 @@ function buildPageAdminData(rawData, existingItem = {}) {
     }
   });
 
+  // The page editor does not expose slug/template/status, but
+  // shapeCollectionWriteData would otherwise regenerate the slug from the
+  // title, reset the template to STANDARD, and reset status to DRAFT. Preserve
+  // the existing values on update so a save never changes the page's URL slug,
+  // its template (HOME/SERVICES/etc.), or unpublishes it. On create,
+  // existingItem is empty and shapeCollectionWriteData applies sane defaults.
+  if (existingItem.slug) data.slug = existingItem.slug;
+  if (existingItem.template) data.template = existingItem.template;
+  if (existingItem.status) data.status = existingItem.status;
+
   const sectionUpdates = [];
   const sections = Array.isArray(existingItem.sections) ? existingItem.sections : [];
   for (const section of sections) {
