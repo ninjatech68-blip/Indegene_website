@@ -75,8 +75,12 @@
   var setText = shared.setText;
   var updateDocumentTitle = shared.updateDocumentTitle;
 
+  // Public reCAPTCHA v3 site key (not secret; safe to ship client-side).
+  // window.OCO_RECAPTCHA_SITE_KEY can override this per-deployment if ever needed.
+  var DEFAULT_RECAPTCHA_SITE_KEY = '6Lc3V1YtAAAAAC_WV60mCGcvTFSKEzN-ZpX1KElB';
+
   function getRecaptchaSiteKey() {
-    return window.OCO_RECAPTCHA_SITE_KEY || '';
+    return window.OCO_RECAPTCHA_SITE_KEY || DEFAULT_RECAPTCHA_SITE_KEY;
   }
 
   function runRecaptcha(action) {
@@ -1371,6 +1375,7 @@
     hydrateResourcesPage: hydrateResourcesPage,
     hydrateStandardPage: hydrateStandardPage,
     bindNewsletterForm: bindNewsletterForm,
+    runRecaptcha: runRecaptcha,
     renderTestimonials: renderTestimonials,
     renderCaseStudies: renderCaseStudies,
     renderPartnerSpotlight: renderHomeTrustLogos

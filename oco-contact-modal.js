@@ -445,7 +445,13 @@
         if (!window.OCOCMS || typeof window.OCOCMS.postForm !== 'function') {
           return Promise.reject(new Error('The contact form service is not configured on this deployment.'));
         }
-        return window.OCOCMS.postForm('/contact', payload).catch(function (error) {
+        var getToken = typeof window.OCOCMS.runRecaptcha === 'function'
+          ? window.OCOCMS.runRecaptcha
+          : function () { return Promise.resolve(''); };
+        return getToken('contact_submit').then(function (token) {
+          payload.recaptchaToken = token || undefined;
+          return window.OCOCMS.postForm('/contact', payload);
+        }).catch(function (error) {
           if (error && error.message) {
             throw error;
           }
@@ -501,7 +507,16 @@
         };
       },
       submitWithCms: function (payload) {
-        return window.OCOCMS ? window.OCOCMS.postForm('/contact', payload) : Promise.reject(new Error('Form service unavailable'));
+        if (!window.OCOCMS) {
+          return Promise.reject(new Error('Form service unavailable'));
+        }
+        var getToken = typeof window.OCOCMS.runRecaptcha === 'function'
+          ? window.OCOCMS.runRecaptcha
+          : function () { return Promise.resolve(''); };
+        return getToken('contact_submit').then(function (token) {
+          payload.recaptchaToken = token || undefined;
+          return window.OCOCMS.postForm('/contact', payload);
+        });
       },
       fields: [
         {
