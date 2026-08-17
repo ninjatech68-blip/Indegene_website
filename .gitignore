@@ -18,3 +18,9 @@ backend/uploads/
 backend/generated/
 
 lh-*.json
+
+# impeccable design skill — ephemeral output (config.json/design.json/critique are tracked)
+.impeccable/config.local.json
+.impeccable/*.png
+.impeccable/live/sessions/
+.impeccable/live/previews/
